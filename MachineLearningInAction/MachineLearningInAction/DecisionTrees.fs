@@ -9,12 +9,12 @@ type Tree =
 module DecisionTrees =
 
     let testData =
-        [| "A"; "B"; "C" |],
-        [| [| "Yes"; "Yes"; "Yes" |];
-           [| "Yes"; "Yes"; "Yes" |];
-           [| "Yes"; "No";  "No"  |];
-           [| "No";  "Yes"; "No"  |];
-           [| "No";  "Yes"; "No"  |] |]
+        [| "Color"; "Size"; "Class" |],
+        [| [| "Red";   "Small"; "Alpha" |];
+           [| "Red";   "Small"; "Alpha" |];
+           [| "Red";   "Big";   "Bravo"  |];
+           [| "Green"; "Small"; "Bravo"  |];
+           [| "Green"; "Small"; "Bravo"  |] |]
 
     let prop count total = (float)count / (float)total
 
@@ -67,13 +67,16 @@ module DecisionTrees =
         let headers, data = dataset
         let size = data |> Array.length
         let feat = headers |> Array.length
-        let currentEntropy = shannonEntropy dataset      
-        let feature =
-            headers.[0 .. feat - 2]
-            |> Array.mapi (fun i f ->
-                (i, f), currentEntropy - splitEntropy dataset i)
-            |> Array.maxBy (fun f -> snd f)
-        if (snd feature > 0.0) then Some(fst feature) else None
+        if feat < 2 
+        then None
+        else
+            let currentEntropy = shannonEntropy dataset      
+            let feature =
+                headers.[0 .. feat - 2]
+                |> Array.mapi (fun i f ->
+                    (i, f), currentEntropy - splitEntropy dataset i)
+                |> Array.maxBy (fun f -> snd f)
+            if (snd feature > 0.0) then Some(fst feature) else None
 
     let majority dataset =
         let header, (data: 'a [][]) = dataset
@@ -97,4 +100,18 @@ module DecisionTrees =
             |> snd
             |> classify subject
 
+    let rec build dataset =
+        match selectSplit dataset with
+        | None -> 
+            printfn "NONE"
+            Conclusion(majority dataset)
+        | Some(feature) -> 
+            printfn "SOME"
+            let (index, name) = feature
+            let (header, groups) = split dataset index
+            let trees = 
+                groups 
+                |> Seq.map (fun (label, data) -> (label, build (header, data)))
+                |> Seq.toArray
+            Choice(name, trees)
         
