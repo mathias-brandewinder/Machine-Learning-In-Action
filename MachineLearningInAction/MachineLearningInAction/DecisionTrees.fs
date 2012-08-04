@@ -28,17 +28,17 @@ module DecisionTrees =
             - p * Math.Log(p, 2.0))
 
     let shannonEntropy dataset =
-        let size = Array.length dataset
-        let cols = dataset.[0] |> Array.length
-        dataset
-        |> Seq.groupBy (fun row -> row.[cols-1])
-        |> Seq.sumBy (fun group -> 
-            let p = prop (Seq.length (snd group)) size
-            - p * Math.Log(p, 2.0))
+        let header, (data: 'a [][]) = dataset
+        let size = data |> Array.length
+        let cols = header |> Array.length
+        data
+        |> Seq.map (fun row -> row.[cols-1])
+        |> Seq.toArray
+        |> h
 
     let remove i vector =
         let size = vector |> Array.length
-        Array.append vector.[0 .. i-1] vector.[i+1 .. size-1]
+        Array.append vector.[ 0 .. i-1 ] vector.[ i+1 .. size-1 ]
 
     let split dataset i =
         let header, (data: 'a [][]) = dataset
@@ -65,7 +65,7 @@ module DecisionTrees =
         let headers, data = dataset
         let size = data |> Array.length
         let feat = headers |> Array.length
-        let currentEntropy = shannonEntropy data
+        let currentEntropy = shannonEntropy dataset
         
         let feature =
             headers.[0 .. feat - 2]

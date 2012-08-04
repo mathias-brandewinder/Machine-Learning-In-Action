@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MachineLearningInAction", "MachineLearningInAction\MachineLearningInAction.fsproj", "{7485C640-4EA7-4A16-A55C-FC5AF62DD3F4}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MachineLearningInAction.Tests", "MachineLearningInAction.Tests\MachineLearningInAction.Tests.fsproj", "{6D6C1A22-F1D0-4B97-B506-284C0EE1B510}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{7485C640-4EA7-4A16-A55C-FC5AF62DD3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7485C640-4EA7-4A16-A55C-FC5AF62DD3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7485C640-4EA7-4A16-A55C-FC5AF62DD3F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6C1A22-F1D0-4B97-B506-284C0EE1B510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6C1A22-F1D0-4B97-B506-284C0EE1B510}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6C1A22-F1D0-4B97-B506-284C0EE1B510}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6C1A22-F1D0-4B97-B506-284C0EE1B510}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
