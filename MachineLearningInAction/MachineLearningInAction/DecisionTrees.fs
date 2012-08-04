@@ -45,8 +45,9 @@ module DecisionTrees =
         remove i header,
         data
         |> Seq.groupBy (fun row -> row.[i])
-        |> Seq.map (fun group -> 
-            group |> snd |> Seq.map (remove i) |> Seq.toArray)
+        |> Seq.map (fun (label, group) -> 
+            label,
+            group |> Seq.toArray |> Array.map (remove i))
 
     let splitEntropy dataset i =
         let headers, (data: 'a [][]) = dataset
@@ -54,9 +55,10 @@ module DecisionTrees =
         let feat = headers |> Array.length
         data
         |> Seq.groupBy(fun row -> row.[i])
-        |> Seq.map (fun subset -> 
-            subset |> snd |> Seq.map (fun row -> row.[feat - 1]))
-        |> Seq.map (fun subset -> subset |> Seq.toArray)
+        |> Seq.map (fun (label, group) -> 
+            group 
+            |> Seq.map (fun row -> row.[feat - 1]) 
+            |> Seq.toArray)
         |> Seq.sumBy (fun subset -> 
             let p = prop (Array.length subset) size
             p * h subset)
@@ -65,11 +67,34 @@ module DecisionTrees =
         let headers, data = dataset
         let size = data |> Array.length
         let feat = headers |> Array.length
-        let currentEntropy = shannonEntropy dataset
-        
+        let currentEntropy = shannonEntropy dataset      
         let feature =
             headers.[0 .. feat - 2]
             |> Array.mapi (fun i f ->
                 (i, f), currentEntropy - splitEntropy dataset i)
             |> Array.maxBy (fun f -> snd f)
         if (snd feature > 0.0) then Some(fst feature) else None
+
+    let majority dataset =
+        let header, (data: 'a [][]) = dataset
+        let size = data |> Array.length
+        let cols = header |> Array.length
+        data
+        |> Seq.groupBy (fun row -> row.[cols-1])
+        |> Seq.maxBy (fun (label, group) -> Seq.length group)
+        |> fst
+
+    let rec classify subject tree =
+        match tree with
+        | Conclusion(c) -> c
+        | Choice(label, options) ->
+            let subjectState =
+                subject
+                |> Seq.find(fun o -> (fst o) = label)
+                |> snd
+            options
+            |> Array.find (fun t -> (fst t) = subjectState)
+            |> snd
+            |> classify subject
+
+        
