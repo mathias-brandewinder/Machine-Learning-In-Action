@@ -34,7 +34,7 @@ module DecisionTrees =
     let shannonEntropy dataset =
         let hdr, data, rows, cols = inspect dataset
         data
-        |> Seq.map (fun row -> row.[cols-1])
+        |> Seq.map (fun row -> row.[ cols-1 ])
         |> Seq.toArray
         |> h
 
@@ -89,10 +89,10 @@ module DecisionTrees =
         | Choice(label, options) ->
             let subjectState =
                 subject
-                |> Seq.find(fun o -> (fst o) = label)
+                |> Seq.find(fun (key, value) -> key = label)
                 |> snd
             options
-            |> Array.find (fun t -> (fst t) = subjectState)
+            |> Array.find (fun (option, tree) -> option = subjectState)
             |> snd
             |> classify subject
 
@@ -106,5 +106,4 @@ module DecisionTrees =
                 groups 
                 |> Seq.map (fun (label, data) -> (label, build (header, data)))
                 |> Seq.toArray
-            Choice(name, trees)
-        
+            Choice(name, trees)       
