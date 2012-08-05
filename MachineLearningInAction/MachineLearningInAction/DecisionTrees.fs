@@ -1,10 +1,10 @@
 ﻿namespace MachineLearning
 
-type Tree = 
-    | Conclusion of string 
-    | Choice of string * (string * Tree) []
-
 module DecisionTrees =
+
+    type Tree = 
+        | Conclusion of string 
+        | Choice of string * (string * Tree) []
 
     let testData =
         [| "Color"; "Size"; "Class" |],

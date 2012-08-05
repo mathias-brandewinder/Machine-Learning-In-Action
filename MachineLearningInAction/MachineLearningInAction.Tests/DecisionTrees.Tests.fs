@@ -1,6 +1,5 @@
 ﻿namespace MachineLearning.Tests
 
-open MachineLearning
 open MachineLearning.DecisionTrees
 open NUnit.Framework
 open FsUnit
