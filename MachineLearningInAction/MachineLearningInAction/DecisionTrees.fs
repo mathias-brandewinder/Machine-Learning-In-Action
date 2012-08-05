@@ -18,6 +18,12 @@ module DecisionTrees =
 
     let prop count total = (float)count / (float)total
 
+    let inspect dataset =
+        let header, (data: 'a [][]) = dataset
+        let rows = data |> Array.length
+        let columns = header |> Array.length
+        header, data, rows, columns
+
     let h vector =
         let size = vector |> Array.length
         vector 
@@ -28,9 +34,7 @@ module DecisionTrees =
             - p * Math.Log(p, 2.0))
 
     let shannonEntropy dataset =
-        let header, (data: 'a [][]) = dataset
-        let size = data |> Array.length
-        let cols = header |> Array.length
+        let hdr, data, rows, cols = inspect dataset
         data
         |> Seq.map (fun row -> row.[cols-1])
         |> Seq.toArray
@@ -41,8 +45,8 @@ module DecisionTrees =
         Array.append vector.[ 0 .. i-1 ] vector.[ i+1 .. size-1 ]
 
     let split dataset i =
-        let header, (data: 'a [][]) = dataset
-        remove i header,
+        let hdr, data, rows, cols = inspect dataset
+        remove i hdr,
         data
         |> Seq.groupBy (fun row -> row.[i])
         |> Seq.map (fun (label, group) -> 
@@ -50,38 +54,32 @@ module DecisionTrees =
             group |> Seq.toArray |> Array.map (remove i))
 
     let splitEntropy dataset i =
-        let headers, (data: 'a [][]) = dataset
-        let size = data |> Array.length
-        let feat = headers |> Array.length
+        let hdr, data, rows, cols = inspect dataset
         data
         |> Seq.groupBy(fun row -> row.[i])
         |> Seq.map (fun (label, group) -> 
             group 
-            |> Seq.map (fun row -> row.[feat - 1]) 
+            |> Seq.map (fun row -> row.[cols - 1]) 
             |> Seq.toArray)
         |> Seq.sumBy (fun subset -> 
-            let p = prop (Array.length subset) size
+            let p = prop (Array.length subset) rows
             p * h subset)
 
     let selectSplit dataset =
-        let headers, data = dataset
-        let size = data |> Array.length
-        let feat = headers |> Array.length
-        if feat < 2 
+        let hdr, data, rows, cols = inspect dataset
+        if cols < 2 
         then None
         else
             let currentEntropy = shannonEntropy dataset      
             let feature =
-                headers.[0 .. feat - 2]
+                hdr.[0 .. cols - 2]
                 |> Array.mapi (fun i f ->
                     (i, f), currentEntropy - splitEntropy dataset i)
                 |> Array.maxBy (fun f -> snd f)
             if (snd feature > 0.0) then Some(fst feature) else None
 
     let majority dataset =
-        let header, (data: 'a [][]) = dataset
-        let size = data |> Array.length
-        let cols = header |> Array.length
+        let hdr, data, rows, cols = inspect dataset
         data
         |> Seq.groupBy (fun row -> row.[cols-1])
         |> Seq.maxBy (fun (label, group) -> Seq.length group)
@@ -102,11 +100,8 @@ module DecisionTrees =
 
     let rec build dataset =
         match selectSplit dataset with
-        | None -> 
-            printfn "NONE"
-            Conclusion(majority dataset)
+        | None -> Conclusion(majority dataset)
         | Some(feature) -> 
-            printfn "SOME"
             let (index, name) = feature
             let (header, groups) = split dataset index
             let trees = 
