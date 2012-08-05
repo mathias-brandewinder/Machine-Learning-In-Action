@@ -1,7 +1,5 @@
 ﻿namespace MachineLearning
 
-open System
-
 type Tree = 
     | Conclusion of string 
     | Choice of string * (string * Tree) []
@@ -31,7 +29,7 @@ module DecisionTrees =
         |> Seq.sumBy (fun e ->
             let count = e |> snd |> Seq.length
             let p = prop count size
-            - p * Math.Log(p, 2.0))
+            - p * log p)
 
     let shannonEntropy dataset =
         let hdr, data, rows, cols = inspect dataset
