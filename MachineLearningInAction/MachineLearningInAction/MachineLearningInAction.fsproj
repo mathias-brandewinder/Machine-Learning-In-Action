@@ -37,6 +37,7 @@
     <Compile Include="Knn.fs" />
     <Compile Include="DecisionTrees.fs" />
     <None Include="packages.config" />
+    <None Include="Chapter3.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

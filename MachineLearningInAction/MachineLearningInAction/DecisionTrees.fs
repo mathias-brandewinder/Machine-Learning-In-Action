@@ -6,14 +6,6 @@ module DecisionTrees =
         | Conclusion of string 
         | Choice of string * (string * Tree) []
 
-    let testData =
-        [| "Color"; "Size"; "Class" |],
-        [| [| "Red";   "Small"; "Alpha" |];
-           [| "Red";   "Small"; "Alpha" |];
-           [| "Red";   "Big";   "Bravo"  |];
-           [| "Green"; "Small"; "Bravo"  |];
-           [| "Green"; "Small"; "Bravo"  |] |]
-
     let prop count total = (float)count / (float)total
 
     let inspect dataset =
@@ -31,8 +23,8 @@ module DecisionTrees =
             let p = prop count size
             - p * log p)
 
-    let shannonEntropy dataset =
-        let hdr, data, rows, cols = inspect dataset
+    let entropy dataset =
+        let _, data, _, cols = inspect dataset
         data
         |> Seq.map (fun row -> row.[ cols-1 ])
         |> Seq.toArray
@@ -43,7 +35,7 @@ module DecisionTrees =
         Array.append vector.[ 0 .. i-1 ] vector.[ i+1 .. size-1 ]
 
     let split dataset i =
-        let hdr, data, rows, cols = inspect dataset
+        let hdr, data, _, _ = inspect dataset
         remove i hdr,
         data
         |> Seq.groupBy (fun row -> row.[i])
@@ -52,7 +44,7 @@ module DecisionTrees =
             group |> Seq.toArray |> Array.map (remove i))
 
     let splitEntropy dataset i =
-        let hdr, data, rows, cols = inspect dataset
+        let _, data, rows, cols = inspect dataset
         data
         |> Seq.groupBy(fun row -> row.[i])
         |> Seq.map (fun (label, group) -> 
@@ -64,11 +56,11 @@ module DecisionTrees =
             p * h subset)
 
     let selectSplit dataset =
-        let hdr, data, rows, cols = inspect dataset
+        let hdr, data, _, cols = inspect dataset
         if cols < 2 
         then None
         else
-            let currentEntropy = shannonEntropy dataset      
+            let currentEntropy = entropy dataset      
             let feature =
                 hdr.[0 .. cols - 2]
                 |> Array.mapi (fun i f ->
@@ -77,11 +69,23 @@ module DecisionTrees =
             if (snd feature > 0.0) then Some(fst feature) else None
 
     let majority dataset =
-        let hdr, data, rows, cols = inspect dataset
+        let _, data, _, cols = inspect dataset
         data
         |> Seq.groupBy (fun row -> row.[cols-1])
         |> Seq.maxBy (fun (label, group) -> Seq.length group)
         |> fst
+
+    let rec build dataset =
+        match selectSplit dataset with
+        | None -> Conclusion(majority dataset)
+        | Some(feature) -> 
+            let (index, name) = feature
+            let (header, groups) = split dataset index
+            let trees = 
+                groups 
+                |> Seq.map (fun (label, data) -> (label, build (header, data)))
+                |> Seq.toArray
+            Choice(name, trees)
 
     let rec classify subject tree =
         match tree with
@@ -95,15 +99,3 @@ module DecisionTrees =
             |> Array.find (fun (option, tree) -> option = subjectState)
             |> snd
             |> classify subject
-
-    let rec build dataset =
-        match selectSplit dataset with
-        | None -> Conclusion(majority dataset)
-        | Some(feature) -> 
-            let (index, name) = feature
-            let (header, groups) = split dataset index
-            let trees = 
-                groups 
-                |> Seq.map (fun (label, data) -> (label, build (header, data)))
-                |> Seq.toArray
-            Choice(name, trees)       
