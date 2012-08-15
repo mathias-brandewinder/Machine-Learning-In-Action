@@ -67,4 +67,9 @@ let classify dataset words text =
             if Seq.exists (fun w -> w = fst token) tokenized 
             then p + log(snd token) 
             else p) (log proba))
-    
+    |> Seq.maxBy snd
+    |> fst
+
+let testWords = allVocabulary dataset
+let classifier = classify dataset testWords
+let test = Seq.map (fun s -> snd s) dataset |> Seq.map (fun t -> classifier t) |> Seq.toList
