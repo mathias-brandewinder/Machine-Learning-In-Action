@@ -12,17 +12,10 @@ let dataset =
        ("Ham",  "Mr Licks ate my steak how to stop him");
        ("Spam", "Quit buying worthless dog food stupid") |]
 
-let update state sample =
-    state
-    |> Seq.map (fun (token, count) -> 
-        if Seq.exists (fun (t, c) -> t = token) sample 
-        then (token, count + 1.0) 
-        else (token, count))
-
 let estimate dataset words =
     let init = words |> Seq.map (fun w -> (w, 1.0))
     dataset
-    |> Seq.fold (fun state (label, sample) -> update state sample) init
+    |> Seq.fold (fun state (label, sample) -> bagFold state sample) init
 
 let evaluate dataset words =
     let size = Seq.length dataset

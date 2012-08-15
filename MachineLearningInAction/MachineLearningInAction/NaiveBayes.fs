@@ -37,3 +37,27 @@ module NaiveBayes =
     let prepare dataset =
         dataset
         |> Seq.map (fun (label, sample) -> (label, wordsCount sample))
+
+    // Set-of-Words Accumulator function: 
+    // state is the current count for each word so far, 
+    // sample the tokenized text.
+    // setFold increases the count by 1 if the word is 
+    // present in the sample.
+    let setFold state sample =
+        state
+        |> Seq.map (fun (token, count) -> 
+            if Seq.exists (fun (t, c) -> t = token) sample 
+            then (token, count + 1.0) 
+            else (token, count))
+
+    // Bag-of-Words Accumulator function: 
+    // state is the current count for each word so far, 
+    // sample the tokenized text.
+    // setFold increases the count by the number of occurences
+    // of the word in the sample.
+    let bagFold state sample =
+        state
+        |> Seq.map (fun (token, count) -> 
+            match Seq.tryFind (fun (t, c) -> t = token) sample with
+            | Some((t, c)) -> (token, count + (float)c) 
+            | None ->         (token, count))
