@@ -38,6 +38,7 @@
     <Compile Include="DecisionTrees.fs" />
     <None Include="packages.config" />
     <None Include="Chapter3.fsx" />
+    <None Include="Chapter4.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
