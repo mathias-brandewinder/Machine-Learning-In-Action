@@ -1,20 +1,8 @@
-﻿open System
+﻿#load "NaiveBayes.fs"
+open MachineLearning.NaiveBayes
+
+open System
 open System.Text.RegularExpressions
-
-let words = new Regex(@"\w+", RegexOptions.IgnoreCase)
-
-// http://stackoverflow.com/a/2159085/114519        
-let wordsCount string =
-    words.Matches(string)
-    |> Seq.cast<Match>
-    |> Seq.groupBy (fun m -> m.Value)
-    |> Seq.map (fun (value, groups) -> value.ToLower(), (groups |> Seq.length))
-
-let vocabulary string =
-    words.Matches(string)
-    |> Seq.cast<Match>
-    |> Seq.map (fun m -> m.Value.ToLower())
-    |> Seq.distinct
    
 let dataset =
     [| ("Ham",  "My dog has flea problems help please");
@@ -23,16 +11,6 @@ let dataset =
        ("Spam", "Stop posting stupid worthless garbage");
        ("Ham",  "Mr Licks ate my steak how to stop him");
        ("Spam", "Quit buying worthless dog food stupid") |]
-
-let allVocabulary dataset =
-    dataset 
-    |> Seq.map (fun sample -> vocabulary (snd sample))
-    |> Seq.concat
-    |> Seq.distinct
-
-let prepare dataset =
-    dataset
-    |> Seq.map (fun (label, sample) -> (label, wordsCount sample))
 
 let update state sample =
     state
@@ -70,6 +48,6 @@ let classify dataset words text =
     |> Seq.maxBy snd
     |> fst
 
-let testWords = allVocabulary dataset
+let testWords = extractWords dataset
 let classifier = classify dataset testWords
 let test = Seq.map (fun s -> snd s) dataset |> Seq.map (fun t -> classifier t) |> Seq.toList

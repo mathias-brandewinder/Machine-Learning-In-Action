@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Knn.fs" />
     <Compile Include="DecisionTrees.fs" />
+    <Compile Include="NaiveBayes.fs" />
     <None Include="packages.config" />
     <None Include="Chapter3.fsx" />
     <None Include="Chapter4.fsx" />
