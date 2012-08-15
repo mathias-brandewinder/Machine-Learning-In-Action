@@ -13,7 +13,7 @@ let wordsCount string =
 let vocabulary string =
     words.Matches(string)
     |> Seq.cast<Match>
-    |> Seq.map (fun m -> m.Value)
+    |> Seq.map (fun m -> m.Value.ToLower())
     |> Seq.distinct
    
 let dataset =
@@ -23,6 +23,12 @@ let dataset =
        ("Spam", "Stop posting stupid worthless garbage");
        ("Ham",  "Mr Licks ate my steak how to stop him");
        ("Spam", "Quit buying worthless dog food stupid") |]
+
+let allVocabulary dataset =
+    dataset 
+    |> Seq.map (fun sample -> vocabulary (snd sample))
+    |> Seq.concat
+    |> Seq.distinct
 
 let prepare dataset =
     dataset
@@ -36,7 +42,7 @@ let update state sample =
         else (token, count))
 
 let estimate dataset words =
-    let init = words |> Seq.map (fun w -> (w, 0.0))
+    let init = words |> Seq.map (fun w -> (w, 1.0))
     dataset
     |> Seq.fold (fun state (label, sample) -> update state sample) init
 
@@ -49,3 +55,16 @@ let evaluate dataset words =
     |> Seq.map (fun (label, total, tokenCount) ->
         let tokensTotal = Seq.sumBy (fun t -> snd t) tokenCount
         label, (float)total/(float)size, Seq.map (fun (token, count) -> token, count / tokensTotal) tokenCount)
+
+let classify dataset words text =
+    let estimator = evaluate dataset words
+    let tokenized = vocabulary text
+    estimator
+    |> Seq.map (fun (label, proba, tokens) ->
+        label,
+        tokens
+        |> Seq.fold (fun p token -> 
+            if Seq.exists (fun w -> w = fst token) tokenized 
+            then p + log(snd token) 
+            else p) (log proba))
+    
