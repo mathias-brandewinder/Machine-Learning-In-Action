@@ -49,8 +49,9 @@ let main =
                 |> Map.toSeq
                 |> Seq.sortBy (fun (w, c) -> -c )
                 |> Seq.take 50
-                |> Seq.iter (fun (w, c) -> printfn "[ %s ] : %f" w c))
+                |> Seq.iter (fun (w, c) -> printfn "[ %s ] : %0.3f" w c))
 
+    printfn ""  
     printfn "Press [Enter] to continue"  
     Console.ReadLine() |> ignore
 
@@ -70,6 +71,7 @@ let main =
                 |> Seq.map (fun t -> programmers, t)
         }
 
+    printfn ""  
     printfn "Classifying StackOverflow sample"  
     stackoverflowTest 
         |> Seq.map (fun sample -> 
@@ -78,11 +80,12 @@ let main =
             printfn "Real: %s, Classified as: %s" (fst sample) (classify (snd sample))
             if (fst sample) = (classify (snd sample)) then 1.0 else 0.0)
         |> Seq.average
-        |> printfn "Success rate: %f"
+        |> printfn "Success rate: %0.3f"
 
     printfn "Press [Enter] to continue"  
     Console.ReadLine() |> ignore
 
+    printfn ""  
     printfn "Classifying Programmers sample"  
     programmersTest
         |> Seq.map (fun sample -> 
@@ -91,7 +94,6 @@ let main =
             printfn "Real: %s, Classified as: %s" (fst sample) (classify (snd sample))
             if (fst sample) = (classify (snd sample)) then 1.0 else 0.0)
         |> Seq.average
-        |> printfn "Success rate: %f"
-
+        |> printfn "Success rate: %0.3f" 
 
     Console.ReadKey()
