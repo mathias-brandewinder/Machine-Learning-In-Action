@@ -38,8 +38,23 @@ let main =
         |> extractWords
         |> Set.filter (fun w -> remove.Contains(w) |> not)
 
+    // Visualize the training results:
+    // what are the most significant words for each site?
+    let training = train setOfWords dataset words
+    training 
+        |> Seq.iter (fun (label, prop, tokens) ->
+            printfn "---------------" 
+            printfn "Group: %s, proportion: %f" label prop
+            tokens 
+                |> Map.toSeq
+                |> Seq.sortBy (fun (w, c) -> -c )
+                |> Seq.take 50
+                |> Seq.iter (fun (w, c) -> printfn "%s Proba: %f" w c))
+
+    // create a classifier
     let classify = classifier setOfWords dataset words
 
+    // Apply the classifier to 2 test samples
     let stackoverflowTest = seq {
             yield! extractFromFile("StackOverflowTest.txt") 
                 |> extractFromJson 
@@ -64,15 +79,5 @@ let main =
         |> Seq.average
         |> printfn "Success rate: %f"
 
-    let training = train setOfWords dataset words
-    training 
-        |> Seq.iter (fun (label, prop, tokens) ->
-            printfn "---------------" 
-            printfn "Group: %s, proportion: %f" label prop
-            tokens 
-                |> Map.toSeq
-                |> Seq.sortBy (fun (w, c) -> -c )
-                |> Seq.take 50
-                |> Seq.iter (fun (w, c) -> printfn "%s Proba: %f" w c))
 
     Console.ReadKey()
