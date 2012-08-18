@@ -13,7 +13,7 @@ module NaiveBayes =
     let wordsCount text =
         matchWords.Matches(text)
         |> Seq.cast<Match>
-        |> Seq.groupBy (fun m -> m.Value)
+        |> Seq.groupBy (fun m -> m.Value.ToLower())
         |> Seq.map (fun (value, groups) -> 
             value.ToLower(), (groups |> Seq.length))
         |> Map.ofSeq
