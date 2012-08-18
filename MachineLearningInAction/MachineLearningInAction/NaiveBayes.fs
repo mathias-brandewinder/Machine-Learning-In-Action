@@ -94,7 +94,10 @@ module NaiveBayes =
             label, Seq.length data, frequency data words)
         |> Seq.map (fun (label, total, tokenCount) ->
             let totTokens = Seq.sumBy (fun t -> snd t) tokenCount
-            label, prop(total, size), Seq.map (fun (token, count) -> token, prop(count, totTokens)) tokenCount)
+            label, 
+            prop(total, size), 
+            Seq.map (fun (token, count) -> 
+                token, prop(count, totTokens)) tokenCount)
 
     // Classifier function:
     // the classifier is trained on the dataset,

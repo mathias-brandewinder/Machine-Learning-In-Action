@@ -15,9 +15,19 @@ let dataset =
 // Retrieve all words from the dataset
 let tokens = extractWords dataset
 
+// using the frequency functions
+let spam = 
+    dataset 
+    |> Seq.filter (fun e -> fst e = "Spam") 
+    |> prepare
+let spamBag = bagOfWords spam tokens |> Seq.toList
+
 // Create 2 classifiers, using all the words found
 let setClassifier = classifier setOfWords dataset tokens
 let bagClassifier = classifier bagOfWords dataset tokens
+
+let test1 = bagClassifier "what a stupid dog"
+let test2 = setClassifier "my dog has flea should I stop going to the park"
 
 // apply the set-of-words classifier 
 // to all elements from the dataset,
