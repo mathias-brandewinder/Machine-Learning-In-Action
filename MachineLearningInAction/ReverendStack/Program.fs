@@ -49,7 +49,10 @@ let main =
                 |> Map.toSeq
                 |> Seq.sortBy (fun (w, c) -> -c )
                 |> Seq.take 50
-                |> Seq.iter (fun (w, c) -> printfn "%s Proba: %f" w c))
+                |> Seq.iter (fun (w, c) -> printfn "[ %s ] : %f" w c))
+
+    printfn "Press [Enter] to continue"  
+    Console.ReadLine() |> ignore
 
     // create a classifier
     let classify = classifier setOfWords dataset words
@@ -69,13 +72,24 @@ let main =
 
     printfn "Classifying StackOverflow sample"  
     stackoverflowTest 
-        |> Seq.map (fun sample -> if (fst sample) = (classify (snd sample)) then 1.0 else 0.0)
+        |> Seq.map (fun sample -> 
+            printfn ""
+            printfn "%s" (snd sample)
+            printfn "Real: %s, Classified as: %s" (fst sample) (classify (snd sample))
+            if (fst sample) = (classify (snd sample)) then 1.0 else 0.0)
         |> Seq.average
         |> printfn "Success rate: %f"
 
+    printfn "Press [Enter] to continue"  
+    Console.ReadLine() |> ignore
+
     printfn "Classifying Programmers sample"  
     programmersTest
-        |> Seq.map (fun sample -> if (fst sample) = (classify (snd sample)) then 1.0 else 0.0)
+        |> Seq.map (fun sample -> 
+            printfn ""
+            printfn "%s" (snd sample)
+            printfn "Real: %s, Classified as: %s" (fst sample) (classify (snd sample))
+            if (fst sample) = (classify (snd sample)) then 1.0 else 0.0)
         |> Seq.average
         |> printfn "Success rate: %f"
 
