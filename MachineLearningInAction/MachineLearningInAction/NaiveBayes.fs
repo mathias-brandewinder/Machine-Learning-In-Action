@@ -16,13 +16,14 @@ module NaiveBayes =
         |> Seq.groupBy (fun m -> m.Value)
         |> Seq.map (fun (value, groups) -> 
             value.ToLower(), (groups |> Seq.length))
+        |> Map.ofSeq
 
     // Extracts all words used in a string.
     let vocabulary text =
         matchWords.Matches(text)
         |> Seq.cast<Match>
         |> Seq.map (fun m -> m.Value.ToLower())
-        |> Seq.distinct
+        |> Set.ofSeq
 
     // Extracts all words used in a dataset;
     // a Dataset is a sequence of "samples", 
@@ -31,7 +32,7 @@ module NaiveBayes =
         dataset 
         |> Seq.map (fun sample -> vocabulary (snd sample))
         |> Seq.concat
-        |> Seq.distinct
+        |> Set.ofSeq
 
     // "Tokenize" the dataset: break each text sample
     // into words and how many times they are used.
@@ -46,10 +47,10 @@ module NaiveBayes =
     // present in the sample.
     let setFold state sample =
         state
-        |> Seq.map (fun (token, count) -> 
-            if Seq.exists (fun (t, c) -> t = token) sample 
-            then (token, count + 1) 
-            else (token, count))
+        |> Map.map (fun token count ->
+            if sample |> Map.containsKey(token) 
+            then count + 1
+            else count)
 
     // Bag-of-Words Accumulator function: 
     // state is the current count for each word so far, 
@@ -58,16 +59,19 @@ module NaiveBayes =
     // of the word in the sample.
     let bagFold state sample =
         state
-        |> Seq.map (fun (token, count) -> 
-            match Seq.tryFind (fun (t, c) -> t = token) sample with
-            | Some((t, c)) -> (token, count + c) 
-            | None ->         (token, count))
+        |> Map.map (fun token count -> 
+            if sample |> Map.containsKey(token)
+            then count + sample.[token]
+            else count)
 
     // Aggregate words frequency across the dataset,
     // using the provided folder.
     // (Supports setFold and bagFold)
     let frequency folder dataset words =
-        let init = words |> Seq.map (fun w -> (w, 1))
+        let init = 
+            words 
+            |> Seq.map (fun w -> (w, 1))
+            |> Map.ofSeq
         dataset
         |> Seq.fold (fun state (label, sample) -> folder state sample) init
 
@@ -93,11 +97,10 @@ module NaiveBayes =
         |> Seq.map (fun (label, data) -> 
             label, Seq.length data, frequency data words)
         |> Seq.map (fun (label, total, tokenCount) ->
-            let totTokens = Seq.sumBy (fun t -> snd t) tokenCount
+            let totTokens = Map.fold (fun total key value -> total + value) 0 tokenCount
             label, 
             prop(total, size), 
-            Seq.map (fun (token, count) -> 
-                token, prop(count, totTokens)) tokenCount)
+            Map.map (fun token count -> prop(count, totTokens)) tokenCount)
 
     // Classifier function:
     // the classifier is trained on the dataset,
@@ -116,9 +119,9 @@ module NaiveBayes =
         |> Seq.map (fun (label, proba, tokens) ->
             label,
             tokens
-            |> Seq.fold (fun p token -> 
-                if Seq.exists (fun w -> w = fst token) tokenized 
-                then p + log(snd token) 
+            |> Map.fold (fun p token value -> 
+                if Set.exists (fun w -> w = token) tokenized 
+                then p + log(value) 
                 else p) (log proba))
         |> Seq.maxBy snd
         |> fst
