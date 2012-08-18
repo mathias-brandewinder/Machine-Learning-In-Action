@@ -1,0 +1,1504 @@
+{
+  "items": [
+    {
+      "title": "Commenting out sections of code for testing"
+    },
+    {
+      "title": "getLinkerUrl not passing cookies across domains - Google Analytics"
+    },
+    {
+      "title": "PHPBB2 + Themes - Changing the Error Messages / Delete Messages Appearance"
+    },
+    {
+      "title": "How to close fancybox at facebook canvas application?"
+    },
+    {
+      "title": "ListView Footer positioning changes"
+    },
+    {
+      "title": "Replacing InnerHTML"
+    },
+    {
+      "title": "mongotop show reading local.oplog.rs taking more than 2 seconds"
+    },
+    {
+      "title": "how to get number of items in listbox c#/.net"
+    },
+    {
+      "title": "Is there any refactoring tool for Python 3?"
+    },
+    {
+      "title": "Is there a better way to get custom repeats and ordering for mysql_query() in PHP?"
+    },
+    {
+      "title": "Check the state validity of a Spring proxied bean without try-catch"
+    },
+    {
+      "title": "How to remove subversion remote in git?"
+    },
+    {
+      "title": "Java Logger Console Stream Duplicate Output"
+    },
+    {
+      "title": "Solutions to convert &amp; export charts/tables generated from web app using HTML/Javascript to editable Powerpoint (.pptx, .ppt)?"
+    },
+    {
+      "title": "Use of atomic properties in Objective C: Any side effects?"
+    },
+    {
+      "title": "Clear User data or Clear cache on Phonegap android"
+    },
+    {
+      "title": "Error occurrs while processing this directive PHP"
+    },
+    {
+      "title": "firefox not showing whole download name and extension"
+    },
+    {
+      "title": "How do I select a node in jsTree and open all parents"
+    },
+    {
+      "title": "Wordpress url shows page not found on localhost, but online its fine"
+    },
+    {
+      "title": "lists not showing bullets in html5 css"
+    },
+    {
+      "title": "Creating a C++ Template Like Functions With Local Variables in C"
+    },
+    {
+      "title": "Wordpress - Frontend User Profile Page with Associated Post Types"
+    },
+    {
+      "title": "Google Maps - Array"
+    },
+    {
+      "title": "any good eclipse plugin for javascript?"
+    },
+    {
+      "title": "Handling photo resizing PHP"
+    },
+    {
+      "title": "elasticsearch query and cURL in PHP"
+    },
+    {
+      "title": "Google OpenID - programmatically select session if user is logged into several google accounts"
+    },
+    {
+      "title": "Serializing a Java Process and then De-Serializing it -- Preferrably in a non-invasive fashion"
+    },
+    {
+      "title": "Inline &lt;style&gt; tags vs. inline css properties"
+    },
+    {
+      "title": "&#39;fatal error&#39; during bundle install in ruby on rails"
+    },
+    {
+      "title": "Youtube HTML5 iframe embed has outline in IE on play"
+    },
+    {
+      "title": "How can I make my capturing link matcher &quot;lazy&quot;?"
+    },
+    {
+      "title": "How to change reference to ItemsSource Ilist collection modify to ItemsSource collection generated from XMLDataProvider?"
+    },
+    {
+      "title": "Why is this element moving?"
+    },
+    {
+      "title": "Read only version of class for const parameter"
+    },
+    {
+      "title": "Permissions issue with WMI custom performance markers inside IIS7 application"
+    },
+    {
+      "title": "Choosing div placement using append in jQuery"
+    },
+    {
+      "title": "convert sql-server *.mdf file into sqlite file"
+    },
+    {
+      "title": "Android - How to edit the size of an image for using as an icon via XML"
+    },
+    {
+      "title": "ASP.Net HTML Document viewer"
+    },
+    {
+      "title": "Powerpoint does not close when using custom addin"
+    },
+    {
+      "title": "Qt 4.7 Emitting a signal to a specific thread"
+    },
+    {
+      "title": "Two rails models both with a habtm relationship to a third model"
+    },
+    {
+      "title": "How to create virtual field with &#39;complex&#39; math function"
+    },
+    {
+      "title": "How to change the text color of comments line in a batch file"
+    },
+    {
+      "title": "Protected properties prefixed with underscores"
+    },
+    {
+      "title": "Difference between .NET Sockets from the AsyncState and the EndAccept() function"
+    },
+    {
+      "title": "100 threads TIMED_WAITING in tomcat, causing it to stall as total number of threads crosses 200"
+    },
+    {
+      "title": "Blotter R Slowness"
+    },
+    {
+      "title": "Replacing one substring multiple times without looping? (using an array of replacements)"
+    },
+    {
+      "title": "Getting Stylus to work with Express and Node"
+    },
+    {
+      "title": "PHPUnit code coverage for inherited from abstract classes"
+    },
+    {
+      "title": "Git rename directory with submodules"
+    },
+    {
+      "title": "does someone know a good educacional sample about use mef with controllers?"
+    },
+    {
+      "title": "Is there any way in Android to force open a link to open in Chrome?"
+    },
+    {
+      "title": "django: cleanest way to save every page served"
+    },
+    {
+      "title": "Logging java varibales online"
+    },
+    {
+      "title": "Android: wrong orientation of files opened with BitmapFactory.decodeFile"
+    },
+    {
+      "title": "Page loading only half of content"
+    },
+    {
+      "title": "Using Named Keys in Array C# MVC razor"
+    },
+    {
+      "title": "What .NET features will allow me to &quot;reload&quot; and &quot;restart&quot; an embedded server?"
+    },
+    {
+      "title": "Java NoSQL, file-based database to store JSON?"
+    },
+    {
+      "title": "Not able to include AndroidHttpTransport in my project"
+    },
+    {
+      "title": "randomly replace a substring in a block of text in javascript or jquery"
+    },
+    {
+      "title": "undefined method &#39;path&#39; for nil:NilClass using chargify_api_ares gem"
+    },
+    {
+      "title": "jQuery interference between Two scripts"
+    },
+    {
+      "title": "ScriptIgnore, JsonSerializer not paying any attention?"
+    },
+    {
+      "title": "ColdFusion JDBC Connection String Issue"
+    },
+    {
+      "title": "Ajax Fragment Meta tag - Googlebot isn&#39;t reading the page&#39;s content"
+    },
+    {
+      "title": "Encapsulation vs Data Hiding - Java"
+    },
+    {
+      "title": "How to callback a function on 404 in JSON ajax request with jQuery? "
+    },
+    {
+      "title": "Activate Wifi on Android from adb (not rooted phone)"
+    },
+    {
+      "title": "Which line is chosen to be reported in exception"
+    },
+    {
+      "title": "Count() returns incorrect result on IEnumerable&lt;T&gt; filled using LINQ"
+    },
+    {
+      "title": "What should i worry about python template engines and web frameworks?"
+    },
+    {
+      "title": "How can I create an expense table using HTML tables and jQuery?"
+    },
+    {
+      "title": "JBoss AS 6 Resteasy Setup"
+    },
+    {
+      "title": "Using a UIGestureRecognizer, a ScrollView and forwarding touches? (cancelsTouchesInView = NO not working)"
+    },
+    {
+      "title": "Batch Program to copy into another folder and make a text file from the copied files"
+    },
+    {
+      "title": "Parse an HTML string to get contents of elements with Javascript"
+    },
+    {
+      "title": "Add extra js in backend block (tab edit form) in Magento (solved)"
+    },
+    {
+      "title": "permissions for custum functions in Spreadsheets (Google Document)"
+    },
+    {
+      "title": "how can I find and isolate a qr code in a complex image?"
+    },
+    {
+      "title": "Does all the C compiler strictly follows operator precedence order"
+    },
+    {
+      "title": "Perl: Merge multiple text files and append current file name at the end of each line"
+    },
+    {
+      "title": "Parse AVI video with Perl"
+    },
+    {
+      "title": "Restrictions on Maven artifactID values"
+    },
+    {
+      "title": "CSV to XML using xslt - how to have incrementing column name"
+    },
+    {
+      "title": "Migrating from Googlecode to Github with full revision history"
+    },
+    {
+      "title": "How do I send an XML document from jQuery (JS) to C# in an MVC project?"
+    },
+    {
+      "title": "Interpolating RGB values for holes in pictures"
+    },
+    {
+      "title": "What are the security risks of allowing all characters in the website URL?"
+    },
+    {
+      "title": "extjs calendar 4.1.1 restricted time slot for booking"
+    },
+    {
+      "title": "How do I sign an Android application as a system app to use DEVICE_POWER permission"
+    },
+    {
+      "title": "Presenting ModalViewController from SplitView sidebar - iPad"
+    },
+    {
+      "title": "Display JS scripts block (for example Ad words script) within Switch block / C#"
+    },
+    {
+      "title": ".NET Workflow 4 Create a Custom Persistence Store that is used by a WCF-enabled Workflow"
+    },
+    {
+      "title": "Go from html form to PDF using PHP"
+    },
+    {
+      "title": "Which assemblies should I emit to trace asp.net web-api exceptions?"
+    },
+    {
+      "title": "CSV to XML using xslt - how to have incrementing column name"
+    },
+    {
+      "title": "Migrating from Googlecode to Github with full revision history"
+    },
+    {
+      "title": "How do I send an XML document from jQuery (JS) to C# in an MVC project?"
+    },
+    {
+      "title": "Interpolating RGB values for holes in pictures"
+    },
+    {
+      "title": "extjs calendar 4.1.1 restricted time slot for booking"
+    },
+    {
+      "title": "How do I sign an Android application as a system app to use DEVICE_POWER permission"
+    },
+    {
+      "title": "Presenting ModalViewController from SplitView sidebar - iPad"
+    },
+    {
+      "title": "Display JS scripts block (for example Ad words script) within Switch block / C#"
+    },
+    {
+      "title": ".NET Workflow 4 Create a Custom Persistence Store that is used by a WCF-enabled Workflow"
+    },
+    {
+      "title": "Go from html form to PDF using PHP"
+    },
+    {
+      "title": "Which assemblies should I emit to trace asp.net web-api exceptions?"
+    },
+    {
+      "title": "how to cast multiple integers as a ctypes array of c_ubyte in Python"
+    },
+    {
+      "title": "Open a View Controller from a UITableViewCell Without a Segue"
+    },
+    {
+      "title": "Targeting device groups using CSS media queries"
+    },
+    {
+      "title": "Annotation-based wiring in Spring for only part of a collection"
+    },
+    {
+      "title": "Sending commands to a console application?"
+    },
+    {
+      "title": "Batch file to list all folders in a directory and output to txt with"
+    },
+    {
+      "title": "Azure and Ninject (No parameterless constructor defined for this object.)"
+    },
+    {
+      "title": "How to write a generic function to compute recursive combination"
+    },
+    {
+      "title": "specifying :hover of a link with a specific ID"
+    },
+    {
+      "title": "Does &quot;more threads&quot; mean more speed?"
+    },
+    {
+      "title": "MVC 3 Razor Syntax for straight text output?"
+    },
+    {
+      "title": "Converting a pcm file to mono"
+    },
+    {
+      "title": "Source not found The JAR file mysql-connector-java-5.1.20-bin.jar has no source attachement"
+    },
+    {
+      "title": "Only IE will correctly run my PHP/ MySQL query!"
+    },
+    {
+      "title": "How to parse an arbitrary option string into a python dictionary"
+    },
+    {
+      "title": "Unable to deploy twitter-bootstrap-rails gem on Heroku because therubyracer fails compilation"
+    },
+    {
+      "title": "JList too wide?"
+    },
+    {
+      "title": "When submitting an app on app store for cocos2d"
+    },
+    {
+      "title": "Servlet forward response to caller/previous page"
+    },
+    {
+      "title": "Java storing sensitive &#39;key&#39; as String or char[]?"
+    },
+    {
+      "title": "What are some user friendly image processing libraries?"
+    },
+    {
+      "title": "Normalize array subscripts for 1-dimensional array so they start with 1"
+    },
+    {
+      "title": "scrollLeft easing animation using mouse position"
+    },
+    {
+      "title": "Android NDK Video Capturing"
+    },
+    {
+      "title": "gitignore file syntax"
+    },
+    {
+      "title": "saving data into arraylist in a loop"
+    },
+    {
+      "title": "Why does my song restart when I change from vertical to horizontal view?"
+    },
+    {
+      "title": "Stateless ejb does not remove the pool"
+    },
+    {
+      "title": "Layered drawing in java"
+    },
+    {
+      "title": "Searching web and displaying the results in a nattive app"
+    },
+    {
+      "title": "Performance bottleneck Url.Action - can I workaround it?"
+    },
+    {
+      "title": "Facebook Login, automatically post on users wall?"
+    },
+    {
+      "title": "what does $ mean here in JQuery"
+    },
+    {
+      "title": "MySQL find invalid foreign keys"
+    },
+    {
+      "title": "Web server processing power required (per web page load) --&gt; What is considered economic?"
+    },
+    {
+      "title": "How can I cast an object to a table?"
+    },
+    {
+      "title": "JAXB and property ordering -"
+    },
+    {
+      "title": "Where can I find up-to-date browser compatibility guides?"
+    },
+    {
+      "title": "MVC Skinny Controller"
+    },
+    {
+      "title": "OpenGL Dynamic Object Motion Blur"
+    },
+    {
+      "title": "Exporting Sqlite table data to csv file programatically"
+    },
+    {
+      "title": "Custom overlay map types and mapTypeControl"
+    },
+    {
+      "title": "removing characters of a specific unicode range from a string"
+    },
+    {
+      "title": "What free software, and portable GUI libraries are non object-oriented?"
+    },
+    {
+      "title": "Xcode: Scheme scripts vs Target scripts"
+    },
+    {
+      "title": "Changing font (or amount of text) on UITextView makes text disappear"
+    },
+    {
+      "title": "SQL Pivot table returning NULL for non-existent child table values"
+    },
+    {
+      "title": "How can I send a image over the network in XNA?"
+    },
+    {
+      "title": "Best practice: How to authenticate/authorize AJAX Calls on the server"
+    },
+    {
+      "title": "Can the IMX.53 LOCO be configured to boot off of SATA?"
+    },
+    {
+      "title": "Good practice for app that times when it crashes"
+    },
+    {
+      "title": "NLP text annotation storage and access"
+    },
+    {
+      "title": "interface vs abstract in C#"
+    },
+    {
+      "title": "NUnit, TestCaseSource/ TestData and incepting before and after - with the actual values?"
+    },
+    {
+      "title": "Optimizing function that searches for binary patterns"
+    },
+    {
+      "title": "Coordinates of a point on a ext.js googlemap panel"
+    },
+    {
+      "title": "how to have multiple colors in a batch file?"
+    },
+    {
+      "title": "Upload DBFile.mdf in App_Data to Azure"
+    },
+    {
+      "title": "Reading from raw_data.txt and writing to a results.txt file with processing in Python"
+    },
+    {
+      "title": "How do you create a transparent demo screen for an Android app?"
+    },
+    {
+      "title": "Apex SOQL subquery in Visualforce"
+    },
+    {
+      "title": "Subversion: Add all unversioned files to subversion using one linux command"
+    },
+    {
+      "title": "Backbone Marionette Routing"
+    },
+    {
+      "title": "Concatenate Strings in Knockout"
+    },
+    {
+      "title": "Why use Mono?"
+    },
+    {
+      "title": "Cells content not shown in JTable until JTable getting focus"
+    },
+    {
+      "title": "In Python, determine if a function calls another function"
+    },
+    {
+      "title": "Parallel.Foreach with MSMQ"
+    },
+    {
+      "title": "How to use move semantics with std::string during function return?"
+    },
+    {
+      "title": "how to work with servlet and business layer?"
+    },
+    {
+      "title": "using CSS or javascript/jQuery, which method would I use to make my site&#39;s nav bar look more 3d-ish?"
+    },
+    {
+      "title": "SetWindowsHookEx not calling hook proc. Win32 console app. External dll. System wide hook"
+    },
+    {
+      "title": "highcharts rescale yaxis aftr addSeries"
+    },
+    {
+      "title": "How to programmatically read permissions on MSMQ queues?"
+    },
+    {
+      "title": "How to check input validation equals &quot;0&quot; and only &quot;0&quot;?"
+    },
+    {
+      "title": "Not understanding why text file contents are not being stored in individual elements of vector"
+    },
+    {
+      "title": "Layout for Android. Fluid layout and a fixed layout"
+    },
+    {
+      "title": "responce time google spreadsheet with large number of rows"
+    },
+    {
+      "title": "find based filename autocomplete in Bash script"
+    },
+    {
+      "title": "Cyrillic encoding in C#"
+    },
+    {
+      "title": "VBA Script hard code email address"
+    },
+    {
+      "title": "Hiding a div upon login with php"
+    },
+    {
+      "title": "node.js how to access an already required object"
+    },
+    {
+      "title": "to insert an image in word document which is generated by php"
+    },
+    {
+      "title": "iOS: iCloud: Using NSUserDefaults to save a data and app storage shows 0.2KB"
+    },
+    {
+      "title": "How to recognize Facebook User-Agent"
+    },
+    {
+      "title": "rails encapsulate tags in textfield"
+    },
+    {
+      "title": "Confusion with setting up a remote git repository"
+    },
+    {
+      "title": "formatting text in jdialog box"
+    },
+    {
+      "title": "How to recognize Facebook User-Agent"
+    },
+    {
+      "title": "rails encapsulate tags in textfield"
+    },
+    {
+      "title": "Confusion with setting up a remote git repository"
+    },
+    {
+      "title": "formatting text in jdialog box"
+    },
+    {
+      "title": "Non-contiguous array pointers in C++"
+    },
+    {
+      "title": "Rails: Create a new entry in a model that belongs_to two other models"
+    },
+    {
+      "title": "permutations/combinatorics library for java?"
+    },
+    {
+      "title": "Jersey/Jaxb aliasing a List of beans"
+    },
+    {
+      "title": "How does J2se applications running as services on my windows NT server"
+    },
+    {
+      "title": "Post image with text on facebook from android"
+    },
+    {
+      "title": "CURLOPT_POSTFIELDS has a length or size limit?"
+    },
+    {
+      "title": "Integrate Solr &amp; Mahout"
+    },
+    {
+      "title": "Re rake after you edit a model?"
+    },
+    {
+      "title": "how to simulate 2d water surface?"
+    },
+    {
+      "title": "Having difficulty with my JS/jQuery creating a div"
+    },
+    {
+      "title": "Sendgrid Newsletter App Custom Tags"
+    },
+    {
+      "title": "How to Set Timeout on WebClient call?"
+    },
+    {
+      "title": "iOS Copy to Clipboard from Browser"
+    },
+    {
+      "title": "Selecting multiple xpath elements using Selenium IDE"
+    },
+    {
+      "title": "Calling a WCF service from classic ASP"
+    },
+    {
+      "title": "Are there any good Bugzilla Skins"
+    },
+    {
+      "title": "How to change Spring version in Grails project?"
+    },
+    {
+      "title": "c++ persisting data"
+    },
+    {
+      "title": "Alternative to Scribd?"
+    },
+    {
+      "title": "XSLT beginner - not sure how to apply template"
+    },
+    {
+      "title": "Dividing text file lines to two different tables of a database"
+    },
+    {
+      "title": "Personality test logic in PHP"
+    },
+    {
+      "title": "Scroll a div when hovering over a clipped item"
+    },
+    {
+      "title": "CSS gradient at pixel location (not %)"
+    },
+    {
+      "title": "Formatting the JSON date"
+    },
+    {
+      "title": "HttpWebRequest POST method runs only once"
+    },
+    {
+      "title": "Is SpiderMonkey safe for running user-submitted scripts?"
+    },
+    {
+      "title": "upload xls file to web server"
+    },
+    {
+      "title": "How to remove files starting with #! or ending with .sh in the name"
+    },
+    {
+      "title": "how to guarantee that update to &quot;reference type&quot; item in array is visible to other threads?"
+    },
+    {
+      "title": "AVPlayer only plays in simulator"
+    },
+    {
+      "title": "Disable HTML link if the URL&#39;s link returns an error"
+    },
+    {
+      "title": "jquery slideToggle prolem with image"
+    },
+    {
+      "title": "Parse error: syntax error, unexpected T_VARIABLE, expecting T_FUNCTION - in php"
+    },
+    {
+      "title": "backbone.js views and session variables"
+    },
+    {
+      "title": "Calling R with RDotNet from C# DLL in Tradelink"
+    },
+    {
+      "title": "Replace a running executable on mac osx"
+    },
+    {
+      "title": "Download pdf or image trough ajax"
+    },
+    {
+      "title": "SQL Server calculate percentage of sql pivot value"
+    },
+    {
+      "title": "Cannot push to Heroku because key fingerprint"
+    },
+    {
+      "title": "Tomcat, HTTP Keep-Alive and Java&#39;s HttpsUrlConnection"
+    },
+    {
+      "title": "spinning network icon with reachability"
+    },
+    {
+      "title": "Objected oriented javascript - use of &quot;this&quot; in IE"
+    },
+    {
+      "title": "Perl Extracting Text"
+    },
+    {
+      "title": "Launching an HTML/Javascript Adobe Air application from a local HTML file."
+    },
+    {
+      "title": "C# HTTP Body with GET method"
+    },
+    {
+      "title": "Verify if a point is Land or Water in Google Maps"
+    },
+    {
+      "title": "Parsing string to int, C# inside of an XSL stylesheet"
+    },
+    {
+      "title": "Globalizing Large Resources in Metro without Network"
+    },
+    {
+      "title": "Does an Index on Part of a MongoDB Query Offer Any Benefit?"
+    },
+    {
+      "title": "SQL Pivot in this case?"
+    },
+    {
+      "title": "How would I write this query with DBIX::Class?"
+    },
+    {
+      "title": "Android EditText over canvas"
+    },
+    {
+      "title": "EF4 One to many to one with Db foreign key"
+    },
+    {
+      "title": "Ruby: How to create commits programmatically and push to github?"
+    },
+    {
+      "title": "How to make a source package for a software in linux?"
+    },
+    {
+      "title": "Solr RSS DIH dateTimeFormat does NOT work"
+    },
+    {
+      "title": "Detect embedded Youtube player captions"
+    },
+    {
+      "title": "unix bash - extract a line from file"
+    },
+    {
+      "title": "What are the Best MongoDB Video tutorial websites for free?"
+    },
+    {
+      "title": "When to use CCScene vs CCLayer?"
+    },
+    {
+      "title": "SQLite data showing"
+    },
+    {
+      "title": "Boost Parameters library"
+    },
+    {
+      "title": "mediaelement.js how do I set the pluginPath variable"
+    },
+    {
+      "title": "Knockout Style binding Top and Left not working"
+    },
+    {
+      "title": "How to update binding or remove earlier binding in knockoutjs"
+    },
+    {
+      "title": "Eclipse Plugin Project does not display Window added in Application Model"
+    },
+    {
+      "title": "Git: How to merge two folder pointing to the same repository"
+    },
+    {
+      "title": "Enable php-curl features in ubuntu"
+    },
+    {
+      "title": "why is one plugin not loading using requireJS (on iOS)?"
+    },
+    {
+      "title": "Insert external data into persistence.xml"
+    },
+    {
+      "title": "SQL timestamp does not change when UPDATE happens"
+    },
+    {
+      "title": "Android cannot find accessory device after enabling WiFi debugging"
+    },
+    {
+      "title": "Bind to datagrid when one of the DataGridTextColumn is a list"
+    },
+    {
+      "title": "Difference between adding separate table rows and using rowspan"
+    },
+    {
+      "title": "printf output convert from one row to number of arguments"
+    },
+    {
+      "title": "How to handle data types in conversion from PHP Mysql API to PDO"
+    },
+    {
+      "title": "Take (n) characters from a string"
+    },
+    {
+      "title": "Global low level keyboard hook - Race Condition"
+    },
+    {
+      "title": "Doxygen does not show how the documented member functions (including the constructors) are called from other classes.?"
+    },
+    {
+      "title": "How to add a copy of an existing library in Add-on Builder"
+    },
+    {
+      "title": "REST API MongoDB Authentication"
+    },
+    {
+      "title": "How to get default value for form field in symfony2 formbuilder"
+    },
+    {
+      "title": "What to do with chrome sending extra requests?"
+    },
+    {
+      "title": "SqlCeException-Expressions in the ORDER BY list cannot contain aggregate functions"
+    },
+    {
+      "title": "override ActionLink Behavior , and parameters to process link appearance according to user privileges (asp.net mvc3)"
+    },
+    {
+      "title": "Force simultaneous threads/tasks for C# load testing app?"
+    },
+    {
+      "title": "Populating dropdown menus using XMLHTTPREQUEST object"
+    },
+    {
+      "title": "Visual Studio 2012 with ClearCase?"
+    },
+    {
+      "title": "SSIS WINSCP SFTP the latest file on everyday basis"
+    },
+    {
+      "title": "Redirect URL for client and Rewrite for server with mod_rewrite"
+    },
+    {
+      "title": "What does -@ operator do in Ruby?"
+    },
+    {
+      "title": "Django: Implementing a referral program"
+    },
+    {
+      "title": "jQuery AJAX POST to PHP file to UPDATE database not updating"
+    },
+    {
+      "title": "Stretch=&quot;uniform&quot; not behaving as expected on Silverlight MediaElement"
+    },
+    {
+      "title": "What does -@ operator do in Ruby?"
+    },
+    {
+      "title": "Django: Implementing a referral program"
+    },
+    {
+      "title": "jQuery AJAX POST to PHP file to UPDATE database not updating"
+    },
+    {
+      "title": "Stretch=&quot;uniform&quot; not behaving as expected on Silverlight MediaElement"
+    },
+    {
+      "title": "Any way to exclude binary data from SMO Transfer operation?"
+    },
+    {
+      "title": "Sproc and Linq to sql"
+    },
+    {
+      "title": "&#39;cfx&#39; is not recognized as internal or external command"
+    },
+    {
+      "title": "undefined method `paginate&#39;"
+    },
+    {
+      "title": "Creating a generic List &lt;T&gt; in F#"
+    },
+    {
+      "title": "Load user controls asynchronously ASP.NET"
+    },
+    {
+      "title": "Attaching a PDF to an emil in Appengine (Python)"
+    },
+    {
+      "title": "Extract time from datetime efficiently (as decimal or datetime)"
+    },
+    {
+      "title": "Remove default sample text in YUI Rich Text Editor"
+    },
+    {
+      "title": "IE9 setting background-image to &quot;none&quot; via inline style"
+    },
+    {
+      "title": "IKDeviceBrowserView displays no contents on OSX Mountain Lion"
+    },
+    {
+      "title": "How to detect SUB character and remove it from a text file in C#?"
+    },
+    {
+      "title": "Alternate Data Streams on a folder"
+    },
+    {
+      "title": "How to set default category in MovbleType"
+    },
+    {
+      "title": "Why is my delete account function in rails not working?"
+    },
+    {
+      "title": "Open URL in default browser without giving it focus"
+    },
+    {
+      "title": "Converting lists whose elements&#39; types are paramertized their type-encoded indexes"
+    },
+    {
+      "title": "Passing data to activity"
+    },
+    {
+      "title": "Design Django&#39;s models using ManyToManyField for multivendor scheme?"
+    },
+    {
+      "title": "How to handle a big database in j2me"
+    },
+    {
+      "title": "Changing a stuct inside another struct in a foreach loop"
+    },
+    {
+      "title": "Form Submission vs AJAX Polling Call"
+    },
+    {
+      "title": "ListView wont refresh or update in C# Forms application"
+    },
+    {
+      "title": "Mockito verify no more interactions with any mock"
+    },
+    {
+      "title": "replace a value in NSDictionary in iphone"
+    },
+    {
+      "title": "Get POST Values in ASP.NET using NameValueCollection"
+    },
+    {
+      "title": "PIM testing in netbeans simulator [J2ME]"
+    },
+    {
+      "title": "Browser does not remember password during login"
+    },
+    {
+      "title": "mongodb insert and return id with REST API"
+    },
+    {
+      "title": "What&#39;s wrong? Defining a JavaScript namespace via string"
+    },
+    {
+      "title": "What is the purpose of Hibernate?"
+    },
+    {
+      "title": "Translating multi-level mongodb documents into Backbone.js Models/Collections"
+    },
+    {
+      "title": "Avoiding Repetition in Javascript Using a Master Page"
+    },
+    {
+      "title": "Google Maps Multiple Search Results"
+    },
+    {
+      "title": "Network bandwidth throttling on Android device"
+    },
+    {
+      "title": "Synthesize ivar declaration without overriding parent getter/setters"
+    },
+    {
+      "title": "Load initial data in Play 2.0+"
+    },
+    {
+      "title": "Should I add custom methods to Ext.data.store derived classes"
+    },
+    {
+      "title": "Visual Editor for editing CSS to lessen coding workflow"
+    },
+    {
+      "title": "Get values from string in querystring format vb.net"
+    },
+    {
+      "title": "Export SQL query results to XML format using powershell"
+    },
+    {
+      "title": "Scanning ports with AsyncTask"
+    },
+    {
+      "title": "iOS: How to parse XML for real-time search"
+    },
+    {
+      "title": "Visual Basic 2010 - Looping through listbox issue and other things"
+    },
+    {
+      "title": "How to replicate this fancy green background on Aolitaire games in Java2D?"
+    },
+    {
+      "title": "Preparing list in multithreaded application"
+    },
+    {
+      "title": "Eclipse, Egit and Symlinks or symbolic links - Is it possible to make a dirty eclipse plugin to fix this?"
+    },
+    {
+      "title": "jQuery - on() issue on dynamically added elements"
+    },
+    {
+      "title": "Matlab calling fvtool from freqz, if DFILT object is passed"
+    },
+    {
+      "title": "HTML saving some text in my PC?"
+    },
+    {
+      "title": "Having a SOAP handler pass data back to the webservice client"
+    },
+    {
+      "title": "Published date in Doc List API -- what does it mean?"
+    },
+    {
+      "title": "Processing a list of lists in Python"
+    },
+    {
+      "title": "Using Drools to perform an Action based on Events"
+    },
+    {
+      "title": "How to process string in php"
+    },
+    {
+      "title": "Why doesn&#39;t it use all of the processor?"
+    },
+    {
+      "title": "Apache Wicket - PageExpiredErrorPage in modal window"
+    },
+    {
+      "title": "Facebook “Like” button&#39;s comment box sizing"
+    },
+    {
+      "title": "Include Sidebar Generator plug-in into my WP theme"
+    },
+    {
+      "title": "PHP Regex to determine relative or absolute path"
+    },
+    {
+      "title": "JQuery dialog only shows up after JS processing"
+    },
+    {
+      "title": "Compass/Aircraft Gauge Control"
+    },
+    {
+      "title": "JodaTime DateTimeFormatter"
+    },
+    {
+      "title": "How to embed Vimeo video without Video_ID"
+    },
+    {
+      "title": "C# Conversion from String to HtmlEdit"
+    },
+    {
+      "title": "Forced extra DOM layer using backbone with underscore template"
+    },
+    {
+      "title": "querystring to json in classic asp"
+    },
+    {
+      "title": "Python - Removing certain lines from input file based on content"
+    },
+    {
+      "title": "openssl 1.0.1 with ruby 1.9.3"
+    },
+    {
+      "title": "Formatting MM/DD/YYYY dates in textbox in VBA"
+    },
+    {
+      "title": "what is apache user"
+    },
+    {
+      "title": "How do I unit test a non-generic method that calls a generic method in a sealed non-generic class?"
+    },
+    {
+      "title": "Firefox addon ignore iframes"
+    },
+    {
+      "title": "Programically adding child controls to a asp.net composite control"
+    },
+    {
+      "title": "Parsing/populating the options array on my first jQuery plugin"
+    },
+    {
+      "title": "Tool to test website tracking"
+    },
+    {
+      "title": "ios scrolling background"
+    },
+    {
+      "title": "MBTA Google Places API"
+    },
+    {
+      "title": "IntelliJ Idea opens main, context menus and autocomplete on main display only"
+    },
+    {
+      "title": "Launching .exe from PowerShell window SOMETIMES causes it to be run in separate window, so I can&#39;t see output or get $lastexitcode"
+    },
+    {
+      "title": "Is it possible to override a Spring Namespace handler?"
+    },
+    {
+      "title": "Check module compatibility with different Perl versions"
+    },
+    {
+      "title": "How to make a browser automation program like one that I&#39;ve seen?"
+    },
+    {
+      "title": "Django/Jquery post ajax. Error 500"
+    },
+    {
+      "title": "Rails 3.2.8 - Multiple database access within one single Rails App"
+    },
+    {
+      "title": "Orchard CMS Sidebar Menu"
+    },
+    {
+      "title": "New to php: need to understand password-protecting folder/files"
+    },
+    {
+      "title": "Friend operator declaration in a template class"
+    },
+    {
+      "title": "Moving a Docs collection to a user&#39;s Drive?"
+    },
+    {
+      "title": "only assignment, call, increment, decrement, await and new object expressions can be used as a statement"
+    },
+    {
+      "title": "Extending data from one data frame to multiple rows in another in R"
+    },
+    {
+      "title": "Multiple Quartz schedule for each time zone"
+    },
+    {
+      "title": "Check domains end (url validation)"
+    },
+    {
+      "title": "Consume multivalue Web Service, vb.net"
+    },
+    {
+      "title": "How to check if WriteFile function is done"
+    },
+    {
+      "title": "Populate sibling cells on keyup event"
+    },
+    {
+      "title": "Consume multivalue Web Service, vb.net"
+    },
+    {
+      "title": "How to check if WriteFile function is done"
+    },
+    {
+      "title": "Populate sibling cells on keyup event"
+    },
+    {
+      "title": "SSRS: Would this work to suppress empty reports?"
+    },
+    {
+      "title": "Parsing xml in Go"
+    },
+    {
+      "title": "HTML - display an image as large as possible while preserving aspect ratio"
+    },
+    {
+      "title": "neo4j node property type suggestion, indexes or parent object relatinship?"
+    },
+    {
+      "title": "Multiple expandable list views not scrollable"
+    },
+    {
+      "title": "Search the webpage source for urls?"
+    },
+    {
+      "title": "PHP / CentOS - failed to open stream: Too many open files"
+    },
+    {
+      "title": "Reading Excel files with roo /rails"
+    },
+    {
+      "title": "is it possible to have a unique on a group of rows instead of entire table?"
+    },
+    {
+      "title": "Mule 3.3.0 - Exception occuring with Dynamic enpoint - flow - Inbound Ajax ---&gt; Outbound Http endpoint --&gt;File Outbound"
+    },
+    {
+      "title": "JsonArray parsing"
+    },
+    {
+      "title": "Visual Studio not rebuilding after content file change"
+    },
+    {
+      "title": "how to specify target binary format for cross compiler mips-gcc?"
+    },
+    {
+      "title": "App crashes with setValuesForKeysWithDictionary"
+    },
+    {
+      "title": "SimpleAudioEngine background volume with CCActionTween"
+    },
+    {
+      "title": "Using absolute_import and handling relative module name confilcts in python"
+    },
+    {
+      "title": "Why doesn&#39;t my TableLayoutPanel use all of its size when divided by percentages?"
+    },
+    {
+      "title": "How to version control a directory in a Mercurial repository using CVS?"
+    },
+    {
+      "title": "jsLint still giving warning &quot;X was used before it was defined.&quot; even when undef is set"
+    },
+    {
+      "title": "jQuery - Adding a smooth animation, or fade in / out to make the transition cleaner"
+    },
+    {
+      "title": "table with closeable? columns"
+    },
+    {
+      "title": "How to do a Rails 3 join query?"
+    },
+    {
+      "title": "fields_for nested form"
+    },
+    {
+      "title": "Java getGraphics() returning null"
+    },
+    {
+      "title": "Accessing Java BigQuery Tools in Maven with Nexus"
+    },
+    {
+      "title": "adbrite with cloudflare"
+    },
+    {
+      "title": "How can I send a kml file to Google Earth, like MyTracks (open source) do?"
+    },
+    {
+      "title": "Mount ext2 sd card with BusyBox"
+    },
+    {
+      "title": "Single sign on multiple django sites"
+    },
+    {
+      "title": "How can I split a PDF file by file size using C#?"
+    },
+    {
+      "title": "Retargeting solution from .Net 4.0 to 4.5 - how to retarget the NuGet packages?"
+    },
+    {
+      "title": "Remove unsaved entity form related entitie&#39;s collection"
+    },
+    {
+      "title": "Listing the XPath to an XML node from the command line"
+    },
+    {
+      "title": "How to get selected input:radio"
+    },
+    {
+      "title": "Use offline voice-to-text in Android 4.1 (Jelly Bean) from my application?"
+    },
+    {
+      "title": "Slow SDK download through Android SDK manager - solved"
+    },
+    {
+      "title": "Added Data On Other Page using ItextSharp"
+    },
+    {
+      "title": "eclipse team ( Mercurial Eclipse ) edit highlighting"
+    },
+    {
+      "title": "In the Oracle JDBC driver, what happens to the time zone when you write a Java date to a TIMESTAMP column?"
+    },
+    {
+      "title": "Pascal: Store classes in a 2d array with New and Dispose"
+    },
+    {
+      "title": "how to create a jQuery loading bar? (like the ones used on flash sites)"
+    },
+    {
+      "title": "WCF Web Service serialization error - returning null values"
+    },
+    {
+      "title": "Need a good reference for Google Generic Widget class"
+    },
+    {
+      "title": "SQL query in SQL developer atacking mdb, PIVOT table"
+    },
+    {
+      "title": "Linq Extension to Return Grouped results"
+    },
+    {
+      "title": "Using Rails models with accepts_nested_attributes_for"
+    },
+    {
+      "title": "Changing wallpaper and stretch it on Windows platform using Java(with JNA)"
+    },
+    {
+      "title": "Javascript doesnt contact php page"
+    },
+    {
+      "title": "What is the most efficient way to calculate installed base?"
+    },
+    {
+      "title": "Filtering through a Django Countries list"
+    },
+    {
+      "title": "TCPDF UTF-8 problem"
+    },
+    {
+      "title": "SQL - What is the performance impact of having multiple CASE statements in SELECT - Teradata"
+    },
+    {
+      "title": "Create partial class for referenced assembly"
+    },
+    {
+      "title": "Moving to the last line of a file while reading it in a .each loop in Ruby"
+    },
+    {
+      "title": "Zend Translate doesn&#39;t find language"
+    },
+    {
+      "title": "How do I hash the admin password in my Users table?"
+    },
+    {
+      "title": "kartograph.js - very simple map"
+    },
+    {
+      "title": "WCF and localhost"
+    },
+    {
+      "title": "Extract body text from Email PHP"
+    },
+    {
+      "title": "Countdown Timer keeps starting over on button press"
+    },
+    {
+      "title": "How to get IndexReader from custom request handler?"
+    },
+    {
+      "title": "Reference variable in class definition"
+    },
+    {
+      "title": "Getting authentication token from IP with nunit"
+    },
+    {
+      "title": "How to show balloon only 1 balloon in 1 map?"
+    },
+    {
+      "title": "ASP.Net MVC3 Controller Authorize attribute issue"
+    },
+    {
+      "title": "Is a strange code? UIGraphicsGetImageFromCurrentImageContext"
+    },
+    {
+      "title": "Back button in UINavigationController"
+    },
+    {
+      "title": "max heap and binary tree"
+    },
+    {
+      "title": "Wordpress: Adding &quot;Tags&quot; Section"
+    },
+    {
+      "title": "C# Regex to remove single quotes between single quotes"
+    },
+    {
+      "title": "Guarantees given by the Java Memory Model"
+    },
+    {
+      "title": "DIFFERENCE BETWEEN ORACLE AND MYSQL"
+    },
+    {
+      "title": "How to use MVC3 client-side form validation in an Ajax form?"
+    },
+    {
+      "title": "How can I set the PATH variable for javac so I can manually compile my .java works?"
+    },
+    {
+      "title": "ignore versioned files from being checked out to a working copy"
+    },
+    {
+      "title": "Rails will_paginate and paging newest records in ASC order"
+    },
+    {
+      "title": "bash. Usage of: &#39;./&#39;"
+    },
+    {
+      "title": "Are SCJP 6 and OCJP both same?"
+    },
+    {
+      "title": "Free hosting providers for ASP.Net and SQL server apps"
+    },
+    {
+      "title": "Managing code with C# Windows Forms"
+    },
+    {
+      "title": "Parse error in variable parsing PHP"
+    },
+    {
+      "title": "TSQL not inserting when supposed to"
+    },
+    {
+      "title": "Cannot execute JMX MXBean operation of type CompositeData from JConsole"
+    },
+    {
+      "title": "CSS / margin above first paragraph"
+    },
+    {
+      "title": "CodeIgniter 2.1.1 .htaccess issue after upgrade"
+    },
+    {
+      "title": "What went wrong with my first attempt at running an Android app?"
+    },
+    {
+      "title": "Get data from mysql depending on what the user has done"
+    },
+    {
+      "title": "Loop over a sorted dictionary a specific number of times in a django template"
+    },
+    {
+      "title": "How to check/uncheck a QTableView and trigger setData()"
+    },
+    {
+      "title": "Batch script: how to check for admin rights"
+    },
+    {
+      "title": "GStreamer How to extract video frame from the flow?"
+    },
+    {
+      "title": "Android Status Bar Icon Only"
+    },
+    {
+      "title": ".NET Dependency Management and Tagging/Branching"
+    },
+    {
+      "title": "Watch file create events using ruby guard gem"
+    },
+    {
+      "title": "setPage() not working in Macs"
+    },
+    {
+      "title": "jQuery Slider Step Attribute Not Working"
+    },
+    {
+      "title": "Should I put effort on learning Matlab if I already know and use Numpy/Scipy"
+    }
+  ]
+}

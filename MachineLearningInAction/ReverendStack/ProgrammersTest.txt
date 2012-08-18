@@ -1,0 +1,304 @@
+{
+  "items": [
+    {
+      "title": "What do you call a pair of function that are complements of each other?"
+    },
+    {
+      "title": "thick client migration to web based application"
+    },
+    {
+      "title": "Optimistic work sharing on sparsely distributed systems"
+    },
+    {
+      "title": "Resources relating to Java EE and Scala"
+    },
+    {
+      "title": "How do I Integrate Production Database Hot Fixes into Shared Database Development model?"
+    },
+    {
+      "title": "Privacy using laptop provided by my company"
+    },
+    {
+      "title": "Are there open source alternatives to Bitbucket, Github, Kiln, and similar DVCS browsing and management tools?"
+    },
+    {
+      "title": "Randomly generate directed graph on a grid"
+    },
+    {
+      "title": "How to Determine # of Programmers needed for a project"
+    },
+    {
+      "title": "Personal Software Process (PSP1)"
+    },
+    {
+      "title": "Rate your programming language expertise by language concepts"
+    },
+    {
+      "title": "Suggested HTTP REST status code for &#39;request limit reached&#39;"
+    },
+    {
+      "title": "Splitting Logic, Data, Layout and &quot;Hacks&quot;"
+    },
+    {
+      "title": "Google&#39;s App Inventor is no longer available for Mobile App development..... any alternatives?"
+    },
+    {
+      "title": "Self-Executing Anonymous Function vs Prototype"
+    },
+    {
+      "title": "What languages are the kids of today actually programming in? Does anyone have real data?"
+    },
+    {
+      "title": "Simple Hierarchical Clustering Implementations for C#?"
+    },
+    {
+      "title": "Can manager classes be a sign of bad architecture?"
+    },
+    {
+      "title": "Empirical Evidence of Popularity of Git and Mercurial"
+    },
+    {
+      "title": "USB software protection dongle for Java with an SDK which is cross-platform “for real”. Does it exist?"
+    },
+    {
+      "title": "Visualizing a CUP grammar"
+    },
+    {
+      "title": "Is this the correct approach to an OOP design structure in php?"
+    },
+    {
+      "title": "MVVM Reporting App Approach ? Data Access Layer?"
+    },
+    {
+      "title": "What are your advice, methods, or practices to take out the most from a day on-site at a customer?"
+    },
+    {
+      "title": "Handling extremely large numbers in a language which can&#39;t?"
+    },
+    {
+      "title": "Is there any site which tells or highlights by zone developer income source? I think i am getting less yearly"
+    },
+    {
+      "title": "Basis of definitions"
+    },
+    {
+      "title": "What advantages does developing applications for smartphones have over developing the same application as a web application?"
+    },
+    {
+      "title": "What are the things that you consider in reviewing an iOS source code?"
+    },
+    {
+      "title": "How to manage github issues for (priority, etc)?"
+    },
+    {
+      "title": "Are Business Majors considered for Programming Jobs?"
+    },
+    {
+      "title": "How does someone with a business degree become a software consultant?"
+    },
+    {
+      "title": "Getting users to write decent and useful bug reports"
+    },
+    {
+      "title": "Source control workflow for managing a software platform"
+    },
+    {
+      "title": "What is a &quot;markdown-formatted&quot; README file on Github?"
+    },
+    {
+      "title": "Are there any podcasts (not lectures) about compiler development?"
+    },
+    {
+      "title": "Linux Programmer moving to Windows"
+    },
+    {
+      "title": "What is the name for the programming paradigm characterized by Go?"
+    },
+    {
+      "title": "Should unit tests be stored in the repository?"
+    },
+    {
+      "title": "Change Management Standard"
+    },
+    {
+      "title": "Testing an IRC Bot"
+    },
+    {
+      "title": "Years experience over unfinished degree?"
+    },
+    {
+      "title": "Best practices for team workflow with RoR/Github for designer + coder?"
+    },
+    {
+      "title": "Mercurial Repository structure with heavyweight corporate comms, configuration management &amp; test requirements"
+    },
+    {
+      "title": "Functional Programming: Are Tuples a viable replacement for Types?"
+    },
+    {
+      "title": "Is it ok to call external services or database inside the entity"
+    },
+    {
+      "title": "Is Learning C++ Through The Qt Framework Really Learning C++"
+    },
+    {
+      "title": "Are C and/or C++ viable/practical options for web development?"
+    },
+    {
+      "title": "Developing a mobile interface for Website"
+    },
+    {
+      "title": "How Do You Estimate Project Hours Using Pivotal Tracker If You Are a Services Firm?"
+    },
+    {
+      "title": "Can you point me to a nontrivial strategy pattern implementation?"
+    },
+    {
+      "title": "Never use Strings in Java?"
+    },
+    {
+      "title": "Is there any material on practical programming in Coq?"
+    },
+    {
+      "title": "WCF and Service Registry"
+    },
+    {
+      "title": "Agile unified process vs. agile lifecycle process"
+    },
+    {
+      "title": "planning the same app for both OSX and iOS"
+    },
+    {
+      "title": "Efficient graph clustering algorithm"
+    },
+    {
+      "title": "Interactive training site for Javascript complete with code challenges"
+    },
+    {
+      "title": "How to find Sub-trees in non-binary tree"
+    },
+    {
+      "title": "Advantage/disadvantage of parameters / return types declaration in languages with type inference"
+    },
+    {
+      "title": "How can I simulate clicks for a mobile browser?"
+    },
+    {
+      "title": "Is DreamWeaver a good tool to write PHP code?"
+    },
+    {
+      "title": "Strategy for building an application to replace a large spreadsheet"
+    },
+    {
+      "title": "Is it a really required skill to program without API documentation?"
+    },
+    {
+      "title": "Is Agile applicable in product development companies as well?"
+    },
+    {
+      "title": "n-layers architecture design, really worth the effort?"
+    },
+    {
+      "title": "Difference between DevOps and Software Configuration Management"
+    },
+    {
+      "title": "Intelligence as a vector quantity"
+    },
+    {
+      "title": "GitHub: Are there external tools for managing issues list vs. project backlog"
+    },
+    {
+      "title": "Mobile Web Security Articles"
+    },
+    {
+      "title": "Where is a good place to start to learn about custom caching in .Net"
+    },
+    {
+      "title": "How to avoid &quot;DO YOU HAZ TEH CODEZ&quot; situations?"
+    },
+    {
+      "title": "How to protect own software from copying"
+    },
+    {
+      "title": "How can I prevent programmers from capturing data entered by users?"
+    },
+    {
+      "title": "Are there any tutorials available like NerdDinner but for Java?"
+    },
+    {
+      "title": "Apps for facilitating live code demos?"
+    },
+    {
+      "title": "Should I intentionally break the build when a bug is found in production?"
+    },
+    {
+      "title": "Right Tools For The Job? One Location vs Multiple?"
+    },
+    {
+      "title": "UserControl inside Placeholder good/bad? + Postback problem"
+    },
+    {
+      "title": "Help me understand how to stream video"
+    },
+    {
+      "title": "How can I transition from database development to programming/software engineering?"
+    },
+    {
+      "title": "Programmers clipboard monitor under Windows"
+    },
+    {
+      "title": "How do you recruit a graduate developer?"
+    },
+    {
+      "title": "How to gauge a person&#39;s ability to write SQL queries?"
+    },
+    {
+      "title": "How do you keep track of large projects?"
+    },
+    {
+      "title": "What is the point of the string.Empty property"
+    },
+    {
+      "title": "Process of developing software?"
+    },
+    {
+      "title": "What&#39;s the best way to learn nature-inspired algorithms?"
+    },
+    {
+      "title": "How should an administrating web application control a WCF service&#39;s entities?"
+    },
+    {
+      "title": "typedefs and #defines"
+    },
+    {
+      "title": "Performance of Scala compared to Java"
+    },
+    {
+      "title": "How do I determine how many numbers are in a floating point number system?"
+    },
+    {
+      "title": "Is it possible to write application-level logic in an XML or plain text format?"
+    },
+    {
+      "title": "What is the difference between routed events and attached events?"
+    },
+    {
+      "title": "How to answer &quot;When will it be done?&quot;"
+    },
+    {
+      "title": "Should SpecFlow be used with BDD as a solo developer?"
+    },
+    {
+      "title": "How to use BPMN and use case and other diagrams together"
+    },
+    {
+      "title": "What is the easiest and cheapest way to distribute apple iOS enterprise app?"
+    },
+    {
+      "title": "How big should OSGi bundles be?"
+    },
+    {
+      "title": "What is the &quot;architecture&quot; that provides functionality to application-level URI interfaces, like chrome:// and Firefox&#39;s about:config, etc?"
+    }
+  ]
+}
