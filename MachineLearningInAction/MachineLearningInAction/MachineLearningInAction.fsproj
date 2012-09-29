@@ -37,9 +37,11 @@
     <Compile Include="Knn.fs" />
     <Compile Include="DecisionTrees.fs" />
     <Compile Include="NaiveBayes.fs" />
+    <Compile Include="LogisticRegression.fs" />
     <None Include="packages.config" />
     <None Include="Chapter3.fsx" />
     <None Include="Chapter4.fsx" />
+    <None Include="Chapter5.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
