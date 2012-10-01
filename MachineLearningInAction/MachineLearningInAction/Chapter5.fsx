@@ -1,8 +1,8 @@
 ﻿#load "LogisticRegression.fs"
+// replace this path with the local path where FSharpChart is located
 #r @"C:\Users\Mathias\Documents\GitHub\Machine-Learning-In-Action\MachineLearningInAction\packages\MSDN.FSharpChart.dll.0.60\lib\MSDN.FSharpChart.dll"
 #r "System.Windows.Forms.DataVisualization"
 open MachineLearning.LogisticRegression
-
 open System.Drawing
 open System.Windows.Forms.DataVisualization
 open MSDN.FSharp.Charting
@@ -22,8 +22,8 @@ let testSet =
 let testLabels = [ 1.0 ; 1.0 ; 1.0; 1.0; 0.0 ; 0.0; 0.0; 0.0 ]
 let dataset = Seq.zip testLabels testSet
 
-// compute weights on 1000 iterations, with alpha = 0.1
-let estimates = simpleTrain dataset 100 0.1
+// compute weights on 10 iterations, with alpha = 0.1
+let estimates = simpleTrain dataset 10 0.1
 let classifier = predict estimates
 
 // display dataset, and "separating line"

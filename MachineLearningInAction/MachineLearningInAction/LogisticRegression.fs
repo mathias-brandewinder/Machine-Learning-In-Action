@@ -22,10 +22,6 @@ module LogisticRegression =
     // Vector scalar product
     let scalar alpha (vector: float list) =
         List.map (fun e -> alpha * e) vector
-    
-    // 2-Norm of Vector (length)
-    let norm (vector: float list) = 
-        vector |> List.sumBy (fun e -> e * e) |> sqrt
 
     // Weights have 1 element more than observations, for constant
     let predict (weights: float list) 
@@ -38,14 +34,6 @@ module LogisticRegression =
               (obs: float list)
               label =
         label - predict weights obs
-
-    let changeRate before after =
-        let numerator = 
-            List.zip before after
-            |> List.map (fun (b, a) -> b - a)
-            |> norm
-        let denominator = norm before
-        numerator / denominator
 
     let update alpha 
                (weights: float list)
@@ -70,9 +58,23 @@ module LogisticRegression =
                 |> descent (iter - 1)
 
         let vars = dataset |> Seq.nth 1 |> snd |> List.length
-        let weights = [ for i in 0 .. vars -> 1.0 ] // 1 more weight for constant
+        let weights = [ for i in 0 .. vars -> 0.0 ] // 1 more weight for constant
 
         descent passes weights
+    
+    // 2-Norm of Vector (length)
+    let norm (vector: float list) = 
+        vector |> List.sumBy (fun e -> e * e) |> sqrt
+
+    // rate of change in the weights vector,
+    // computed as the % change in norm
+    let changeRate before after =
+        let numerator = 
+            List.zip before after
+            |> List.map (fun (b, a) -> b - a)
+            |> norm
+        let denominator = norm before
+        numerator / denominator
 
     // recursively updates weights until the results
     // converges and weights remains within epsilon 
@@ -102,7 +104,7 @@ module LogisticRegression =
                 descent updatedWeights coolerAlpha
 
         let vars = dataset |> Seq.nth 1 |> snd |> List.length
-        let weights = [ for i in 0 .. vars -> 1.0 ] // 1 more weight for constant
+        let weights = [ for i in 0 .. vars -> 0.0 ] // 1 more weight for constant
 
         descent weights 1.0
 
