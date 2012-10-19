@@ -2,12 +2,9 @@
 
 open System
 
-let testData =
-    [ [ 1.0; 2.0 ];
-      [ 3.0; 4.0 ];
-      [ 5.0; 6.0 ] ];
-
-let testLabels = [ 1.0; -1.0; 1.0 ]
+let rng = new Random()
+let testData = [ for i in 1 .. 50 -> [ rng.NextDouble(); rng.NextDouble() ] ]
+let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
 
 let clip min max x =
     if (x > max)
@@ -32,12 +29,16 @@ let predict (data: list<float list>) labels alphas b i =
     |> dot (elementProduct alphas labels)
     |> (+) b
 
-let pickAnother (rng: System.Random) i max = 
-    rng.Next(0, max)
-//    let rec attempt =
-//        let j = rng.Next(0, max)
-//        if j = i then attempt () else j
-//    attempt
+// pick an index other than i in [0..(count-1)]
+let pickAnother (rng: System.Random) i count = 
+    let j = rng.Next(0, count - 1)
+    if j >= i then j + 1 else j
+
+let findLowHigh low high (label1, alpha1) (label2, alpha2) = 
+    if label1 = label2
+    then max low (alpha1 + alpha2 - high), min high (alpha2 - alpha1)
+    else max low (alpha2 - alpha1),        min high (high + alpha2 - alpha1) 
+
          
 let simpleSmo dataset (labels: float list) C tolerance iterations =
     
@@ -47,61 +48,65 @@ let simpleSmo dataset (labels: float list) C tolerance iterations =
     let alphas = [ for i in 1 .. size -> 0.0 ]
 
     let rng = new Random()
+    let lohi = findLowHigh 0.0 C
 
     let update i = 
 
-            let iClass = labels.[i]
-            let iError = (predict dataset labels alphas b i) - iClass
-            let iAlpha = alphas.[i]
+        printfn "%i" i
+        let iClass = labels.[i]
+        let iError = (predict dataset labels alphas b i) - iClass
+        let iAlpha = alphas.[i]
 
-            if (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
-            then
-                let j = pickAnother rng i size
-                let jClass = labels.[j]
-                let jError = (predict dataset labels alphas b j) - jClass
-                let jAlpha = alphas.[j]
+        if (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
+        then
+            let j = pickAnother rng i size
+            printfn "%i" j
+            let jClass = labels.[j]
+            let jError = (predict dataset labels alphas b j) - jClass
+            let jAlpha = alphas.[j]
 
-                let lo, hi = 
-                    if labels.[i] = labels.[j]
-                    then max 0.0 (iAlpha + jAlpha - C), min C (jAlpha - iAlpha)
-                    else max 0.0 (jAlpha - iAlpha),     min C (C + jAlpha - iAlpha) 
+            let lo, hi = lohi (labels.[i], iAlpha) (labels.[j], jAlpha)
                 
-                if lo = hi 
+            if lo = hi 
+            then 
+                printfn "Low = High"
+                b, alphas
+            else
+                let iObs, jObs = dataset.[i], dataset.[j]
+                let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+
+                if eta >= 0.0 
                 then 
-                    printfn "Low = High"
+                    printfn "ETA >= 0"
                     b, alphas
                 else
-                    let iObs, jObs = dataset.[i], dataset.[j]
-                    let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+                    let jAlphaNew = clip (jAlpha - (jClass * (iError - jError) / eta)) lo hi
 
-                    if eta >= 0.0 
-                    then 
-                        printfn "ETA >= 0"
+                    if abs (jAlpha - jAlphaNew) < 0.00001 
+                    then
+                        printfn "j not moving enough"
                         b, alphas
                     else
-                        let jAlphaNew = clip (jAlpha - (jClass * (iError - jError) / eta)) lo hi
+                        let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
 
-                        if abs (jAlpha - jAlphaNew) < 0.00001 
-                        then
-                            printfn "j not moving enough"
-                            b, alphas
-                        else
-                            let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
+                        let b1 = b - iError - iClass * (iAlphaNew - iAlpha) * (dot iObs iObs) - jClass * (jAlphaNew - jAlpha) * (dot iObs jObs)
+                        let b2 = b - jError - iClass * (iAlphaNew - iAlpha) * (dot iObs jObs) - jClass * (jAlphaNew - jAlpha) * (dot jObs jObs)
 
-                            let b1 = b - iError - iClass * (iAlphaNew - iAlpha) * (dot iObs iObs) - jClass * (jAlphaNew - jAlpha) * (dot iObs jObs)
-                            let b2 = b - jError - iClass * (iAlphaNew - iAlpha) * (dot iObs jObs) - jClass * (jAlphaNew - jAlpha) * (dot jObs jObs)
+                        let bNew =
+                            if (iAlphaNew > 0.0 && iAlphaNew < C)
+                            then b1
+                            elif (jAlphaNew > 0.0 && jAlphaNew < C)
+                            then b2
+                            else (b1 + b2) / 2.0
 
-                            let bNew =
-                                if (iAlphaNew > 0.0 && iAlphaNew < C)
-                                then b1
-                                elif (jAlphaNew > 0.0 && jAlphaNew < C)
-                                then b2
-                                else (b1 + b2) / 2.0
-
-                            printfn "Changed %i and %i" i j
-                            b, alphas
-            else b, alphas
+                        printfn "Changed %i and %i" i j
+                        b, alphas
+        else b, alphas
 
     for i in 0 .. (size - 1) do
         let b, a = update i
+        a |> List.iter (fun v -> printf "%f, " v)
+        printf "%f" b
         printfn "Updated"
+
+simpleSmo testData testLabels 5.0 0.1 100
