@@ -39,7 +39,64 @@ let findLowHigh low high (label1, alpha1) (label2, alpha2) =
     then max low (alpha1 + alpha2 - high), min high (alpha2 - alpha1)
     else max low (alpha2 - alpha1),        min high (high + alpha2 - alpha1) 
 
-         
+
+let pivot dataset (labels: float list) C tolerance alphas b i j =
+    
+    printfn "%i %i" i j
+    let lohi = findLowHigh 0.0 C
+
+    let iClass = labels.[i]
+    let iError = (predict dataset labels alphas b i) - iClass
+    let iAlpha = alphas.[i]
+
+    if not (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
+    then
+        printfn "Alpha cannot be changed"
+        alphas, b
+
+    else
+        let jClass = labels.[j]
+        let jError = (predict dataset labels alphas b j) - jClass
+        let jAlpha = alphas.[j]
+
+        let lo, hi = lohi (labels.[i], iAlpha) (labels.[j], jAlpha)
+        if lo = hi 
+        then 
+            printfn "Low = High"
+            alphas, b
+
+        else
+            let iObs, jObs = dataset.[i], dataset.[j]
+            let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+            if eta >= 0.0 
+            then 
+                printfn "ETA >= 0"
+                alphas, b
+
+            else   
+                let jTemp = jAlpha - (jClass * (iError - jError) / eta)
+                printfn "%f" jTemp
+
+                let jAlphaNew = clip lo hi (jAlpha - (jClass * (iError - jError) / eta))
+                let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
+
+                printfn "First: %f -> %f" iAlpha iAlphaNew
+                printfn "Second: %f -> %f" jAlpha jAlphaNew
+
+                let b1 = b - iError - iClass * (iAlphaNew - iAlpha) * (dot iObs iObs) - jClass * (jAlphaNew - jAlpha) * (dot iObs jObs)
+                let b2 = b - jError - iClass * (iAlphaNew - iAlpha) * (dot iObs jObs) - jClass * (jAlphaNew - jAlpha) * (dot jObs jObs)
+
+                let bNew =
+                    if (iAlphaNew > 0.0 && iAlphaNew < C)
+                    then b1
+                    elif (jAlphaNew > 0.0 && jAlphaNew < C)
+                    then b2
+                    else (b1 + b2) / 2.0
+
+                alphas 
+                |> List.mapi (fun index value -> if index = i then iAlphaNew elif index = j then jAlphaNew else value), bNew
+
+
 let simpleSmo dataset (labels: float list) C tolerance iterations =
     
     let size = dataset |> List.length
@@ -50,63 +107,78 @@ let simpleSmo dataset (labels: float list) C tolerance iterations =
     let rng = new Random()
     let lohi = findLowHigh 0.0 C
 
-    let update i = 
-
-        printfn "%i" i
-        let iClass = labels.[i]
-        let iError = (predict dataset labels alphas b i) - iClass
-        let iAlpha = alphas.[i]
-
-        if (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
+    let rec doStuff (alphas, b) index =
+        if index < 50
         then
+            let i = rng.Next(0, size)
             let j = pickAnother rng i size
-            printfn "%i" j
-            let jClass = labels.[j]
-            let jError = (predict dataset labels alphas b j) - jClass
-            let jAlpha = alphas.[j]
+            let updated = pivot dataset labels C tolerance alphas b i j
+            doStuff updated (index + 1) 
+        else
+            alphas, b
 
-            let lo, hi = lohi (labels.[i], iAlpha) (labels.[j], jAlpha)
-                
-            if lo = hi 
-            then 
-                printfn "Low = High"
-                b, alphas
-            else
-                let iObs, jObs = dataset.[i], dataset.[j]
-                let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+    doStuff (alphas, b) 0
 
-                if eta >= 0.0 
-                then 
-                    printfn "ETA >= 0"
-                    b, alphas
-                else
-                    let jAlphaNew = clip (jAlpha - (jClass * (iError - jError) / eta)) lo hi
-
-                    if abs (jAlpha - jAlphaNew) < 0.00001 
-                    then
-                        printfn "j not moving enough"
-                        b, alphas
-                    else
-                        let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
-
-                        let b1 = b - iError - iClass * (iAlphaNew - iAlpha) * (dot iObs iObs) - jClass * (jAlphaNew - jAlpha) * (dot iObs jObs)
-                        let b2 = b - jError - iClass * (iAlphaNew - iAlpha) * (dot iObs jObs) - jClass * (jAlphaNew - jAlpha) * (dot jObs jObs)
-
-                        let bNew =
-                            if (iAlphaNew > 0.0 && iAlphaNew < C)
-                            then b1
-                            elif (jAlphaNew > 0.0 && jAlphaNew < C)
-                            then b2
-                            else (b1 + b2) / 2.0
-
-                        printfn "Changed %i and %i" i j
-                        b, alphas
-        else b, alphas
-
-    for i in 0 .. (size - 1) do
-        let b, a = update i
-        a |> List.iter (fun v -> printf "%f, " v)
-        printf "%f" b
-        printfn "Updated"
+//    let update i = 
+//
+//        printfn "%i" i
+//        let iClass = labels.[i]
+//        let iError = (predict dataset labels alphas b i) - iClass
+//        let iAlpha = alphas.[i]
+//
+//        if (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
+//        then
+//            let j = pickAnother rng i size
+//            printfn "%i" j
+//            let jClass = labels.[j]
+//            let jError = (predict dataset labels alphas b j) - jClass
+//            let jAlpha = alphas.[j]
+//
+//            let lo, hi = lohi (labels.[i], iAlpha) (labels.[j], jAlpha)
+//                
+//            if lo = hi 
+//            then 
+//                printfn "Low = High"
+//                b, alphas
+//            else
+//                let iObs, jObs = dataset.[i], dataset.[j]
+//                let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+//
+//                if eta >= 0.0 
+//                then 
+//                    printfn "ETA >= 0"
+//                    b, alphas
+//                else
+//                    let jAlphaNew = clip (jAlpha - (jClass * (iError - jError) / eta)) lo hi
+//
+//                    if abs (jAlpha - jAlphaNew) < 0.00001 
+//                    then
+//                        printfn "j not moving enough"
+//                        b, alphas
+//                    else
+//                        let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
+//
+//                        let b1 = b - iError - iClass * (iAlphaNew - iAlpha) * (dot iObs iObs) - jClass * (jAlphaNew - jAlpha) * (dot iObs jObs)
+//                        let b2 = b - jError - iClass * (iAlphaNew - iAlpha) * (dot iObs jObs) - jClass * (jAlphaNew - jAlpha) * (dot jObs jObs)
+//
+//                        let bNew =
+//                            if (iAlphaNew > 0.0 && iAlphaNew < C)
+//                            then b1
+//                            elif (jAlphaNew > 0.0 && jAlphaNew < C)
+//                            then b2
+//                            else (b1 + b2) / 2.0
+//
+//                        printfn "Changed %i and %i" i j
+//                        b, alphas
+//        else b, alphas
+//        
+//    Seq.fold (fun state value -> ) (alphas, b)        
+//    for i in 0 .. (size - 1) do
+//        let j = pickAnother rng i size
+//
+//        let b, a = update i
+//        a |> List.iter (fun v -> printf "%f, " v)
+//        printf "%f" b
+//        printfn "Updated"
 
 simpleSmo testData testLabels 5.0 0.1 100
