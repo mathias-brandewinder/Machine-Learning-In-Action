@@ -3,7 +3,7 @@
 open System
 
 let rng = new Random()
-let testData = [ for i in 1 .. 50 -> [ rng.NextDouble(); rng.NextDouble() ] ]
+let testData = [ for i in 1 .. 200 -> [ rng.NextDouble(); rng.NextDouble() ] ]
 let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
 
 let clip (min, max) x =
@@ -39,7 +39,9 @@ let findLowHigh low high (label1, alpha1) (label2, alpha2) =
     then max low (alpha1 + alpha2 - high), min high (alpha2 - alpha1)
     else max low (alpha2 - alpha1),        min high (high + alpha2 - alpha1) 
 
-let pivot dataset (labels: float list) C tolerance alphas b i j =
+type Attempt<'a> = Success of 'a | Failure
+
+let pivot dataset (labels: float list) C tolerance (alphas, b) i j =
     
     printfn "%i %i" i j
     let lohi = findLowHigh 0.0 C
@@ -49,29 +51,22 @@ let pivot dataset (labels: float list) C tolerance alphas b i j =
     let iAlpha = alphas.[i]
 
     if not (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
-    then
-        printfn "Alpha cannot be changed"
-        alphas, b
-
+    then Failure
     else
         let jClass = labels.[j]
         let jError = (predict dataset labels alphas b j) - jClass
         let jAlpha = alphas.[j]
 
         let lo, hi = lohi (labels.[i], iAlpha) (labels.[j], jAlpha)
-        if lo = hi 
-        then 
-            printfn "Low = High"
-            alphas, b
 
+        if lo = hi 
+        then Failure
         else
             let iObs, jObs = dataset.[i], dataset.[j]
             let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+            
             if eta >= 0.0 
-            then 
-                printfn "ETA >= 0"
-                alphas, b
-
+            then Failure
             else   
                 let jTemp = jAlpha - (jClass * (iError - jError) / eta)
                 printfn "%f" jTemp
@@ -91,13 +86,12 @@ let pivot dataset (labels: float list) C tolerance alphas b i j =
                     elif (jAlphaNew > 0.0 && jAlphaNew < C)
                     then b2
                     else (b1 + b2) / 2.0
-
-                alphas 
+                Success(alphas 
                 |> List.mapi (fun index value -> 
                     if index = i 
                     then iAlphaNew 
                     elif index = j then jAlphaNew 
-                    else value), bNew
+                    else value), bNew)
 
 
 let simpleSmo dataset (labels: float list) C tolerance iterations =
@@ -110,15 +104,17 @@ let simpleSmo dataset (labels: float list) C tolerance iterations =
     let rng = new Random()
     let lohi = findLowHigh 0.0 C
 
-    let rec search (alphas, b) noChange =
+    let rec search current noChange =
         if noChange < iterations
         then
             let i = rng.Next(0, size)
             let j = pickAnother rng i size
-            let updated = pivot dataset labels C tolerance alphas b i j
-            search updated (noChange + 1) 
+            let updated = pivot dataset labels C tolerance current i j
+            match updated with
+            | Failure -> search current (noChange + 1)
+            | Success(result) -> search result 0
         else
-            alphas, b
+            current
 
     search (alphas, b) 0
 
