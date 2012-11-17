@@ -2,10 +2,6 @@
 
 open System
 
-let rng = new Random()
-let testData = [ for i in 1 .. 200 -> [ rng.NextDouble(); rng.NextDouble() ] ]
-let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
-
 let clip (min, max) x =
     if (x > max)
     then max
@@ -119,4 +115,29 @@ let simpleSvm dataset (labels: float list) C tolerance iterations =
 
     search (alphas, b) 0 0
 
-simpleSvm testData testLabels 1.0 0.01 100
+
+let weights (alpha: float list) data labels =
+    List.zip3 alpha data labels
+    |> List.map (fun (a, row, l) ->
+        let mult = a * l
+        row |> List.map (fun e -> mult * e))
+    |> List.reduce (fun acc row -> 
+        List.map2 (fun a r -> a + r) acc row )
+        
+// test
+
+let rng = new Random()
+let testData = [ for i in 1 .. 100 -> [ rng.NextDouble(); rng.NextDouble() ] ]
+let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
+
+let estimator = simpleSvm testData testLabels 10.0 0.001 100
+let w = weights (fst estimator) testData testLabels
+let b = snd estimator
+
+let classify row = b + dot w row
+let performance = 
+    testData 
+    |> List.map (fun row -> classify row)
+    |> List.zip testLabels
+    |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
+    |> List.average
