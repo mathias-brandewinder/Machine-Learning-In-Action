@@ -93,29 +93,30 @@ let pivot dataset (labels: float list) C tolerance (alphas, b) i j =
                     elif index = j then jAlphaNew 
                     else value), bNew)
 
+let nextAround size i = (i + 1) % size
 
-let simpleSmo dataset (labels: float list) C tolerance iterations =
+let simpleSvm dataset (labels: float list) C tolerance iterations =
     
-    let size = dataset |> List.length
-    
+    let size = dataset |> List.length   
+     
     let b = 0.0
     let alphas = [ for i in 1 .. size -> 0.0 ]
 
     let rng = new Random()
     let lohi = findLowHigh 0.0 C
-
-    let rec search current noChange =
+    let next i = nextAround size i
+    
+    let rec search current noChange i =
         if noChange < iterations
         then
-            let i = rng.Next(0, size)
             let j = pickAnother rng i size
             let updated = pivot dataset labels C tolerance current i j
             match updated with
-            | Failure -> search current (noChange + 1)
-            | Success(result) -> search result 0
+            | Failure -> search current (noChange + 1) (next i)
+            | Success(result) -> search result 0 (next i)
         else
             current
 
-    search (alphas, b) 0
+    search (alphas, b) 0 0
 
-simpleSmo testData testLabels 5.0 0.1 1000
+simpleSvm testData testLabels 1.0 0.01 100
