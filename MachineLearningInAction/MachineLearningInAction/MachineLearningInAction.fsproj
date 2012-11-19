@@ -38,6 +38,7 @@
     <Compile Include="DecisionTrees.fs" />
     <Compile Include="NaiveBayes.fs" />
     <Compile Include="LogisticRegression.fs" />
+    <Compile Include="SupportVectorMachine.fs" />
     <None Include="packages.config" />
     <None Include="Chapter3.fsx" />
     <None Include="Chapter4.fsx" />

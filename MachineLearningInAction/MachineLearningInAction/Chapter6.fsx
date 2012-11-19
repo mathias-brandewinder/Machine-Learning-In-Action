@@ -1,22 +1,8 @@
-﻿// Support Vector Machine
+﻿#load "SupportVectorMachine.fs"
 
+open MachineLearning.SupportVectorMachine
 open System
-
-let clip (min, max) x =
-    if (x > max)
-    then max
-    elif (x < min)
-    then min
-    else x
-    
-let dot (vec1: float list) 
-        (vec2: float list) =
-    List.zip vec1 vec2
-    |> List.map (fun e -> fst e * snd e)
-    |> List.sum
-
-type Row = { Data: float list; Label: float; Alpha: float }
-
+ 
 let rowError rows b row =
     rows
     |> Seq.filter (fun r -> r.Alpha > 0.0)
@@ -43,10 +29,6 @@ let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
     elif (jAlphaNew > 0.0 && jAlphaNew < C)
     then b2
     else (b1 + b2) / 2.0
-
-type Attempt<'a> = Success of 'a | Failure
-
-type Parameters = { Tolerance: float; C: float }
 
 let pivot (rows: Row list) b parameters i j =
     
@@ -77,8 +59,8 @@ let pivot (rows: Row list) b parameters i j =
             if eta >= 0.0 
             then Failure
             else   
-                let jTemp = jAlpha - (jClass * (iError - jError) / eta)
-                printfn "%f" jTemp
+                //let jTemp = jAlpha - (jClass * (iError - jError) / eta)
+                //printfn "%f" jTemp
 
                 let jAlphaNew = clip (lo, hi) (jAlpha - (jClass * (iError - jError) / eta))
                 let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
