@@ -28,10 +28,10 @@ let pickAnother (rng: System.Random) i count =
     let j = rng.Next(0, count - 1)
     if j >= i then j + 1 else j
 
-let findLowHigh low high (label1, alpha1) (label2, alpha2) = 
-    if label1 = label2
-    then max low (alpha1 + alpha2 - high), min high (alpha2 - alpha1)
-    else max low (alpha2 - alpha1),        min high (high + alpha2 - alpha1) 
+let findLowHigh low high row1 row2 = 
+    if row1.Label = row2.Label
+    then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha - row1.Alpha)
+    else max low (row2.Alpha - row1.Alpha),        min high (high + row2.Alpha - row1.Alpha) 
 
 let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
 
@@ -66,7 +66,7 @@ let pivot (rows: Row list) b parameters i j =
         let jError = rowError rows b rowj
         let jAlpha = rowj.Alpha
 
-        let lo, hi = lohi (rowi.Label, iAlpha) (rowj.Label, jAlpha)
+        let lo, hi = lohi rowi rowj
 
         if lo = hi 
         then Failure
