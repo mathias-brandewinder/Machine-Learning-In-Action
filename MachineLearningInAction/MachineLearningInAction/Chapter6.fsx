@@ -94,15 +94,13 @@ let simpleSvm dataset (labels: float list) C tolerance iterations =
 
 let weights rows =
     rows 
-    |> List.map (fun r -> r.Alpha, r.Data, r.Label)
-    |> List.map (fun (a, row, l) ->
-        let mult = a * l
-        row |> List.map (fun e -> mult * e))
+    |> List.map (fun r ->
+        let mult = r.Alpha * r.Label
+        r.Data |> List.map (fun e -> mult * e))
     |> List.reduce (fun acc row -> 
         List.map2 (fun a r -> a + r) acc row )
         
 // test
-
 let rng = new Random()
 let testData = [ for i in 1 .. 100 -> [ rng.NextDouble(); rng.NextDouble() ] ]
 let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
@@ -113,6 +111,7 @@ let test () =
     let b = snd estimator
 
     let classify row = b + dot w row
+
     let performance = 
         testData 
         |> List.map (fun row -> classify row)
