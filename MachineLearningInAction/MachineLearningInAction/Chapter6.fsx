@@ -15,15 +15,13 @@ let dot (vec1: float list)
     |> List.map (fun e -> fst e * snd e)
     |> List.sum
 
-let elementProduct (alphas: float list) labels =
-    List.zip alphas labels |> List.map (fun (a, l) -> a * l)
+type Row = { Data: float list; Label: float; Alpha: float }
 
-let predict (data: list<float list>) labels alphas b i =
-    let row = data.[i] 
-    data 
-    |> List.map (fun obs -> dot obs row)
-    |> dot (elementProduct alphas labels)
-    |> (+) b
+let rowError rows b row =
+    rows
+    |> Seq.filter (fun r -> r.Alpha > 0.0)
+    |> Seq.fold (fun acc r -> 
+        acc + r.Label * r.Alpha * (dot r.Data row.Data)) (b - row.Label)
 
 // pick an index other than i in [0..(count-1)]
 let pickAnother (rng: System.Random) i count = 
@@ -35,30 +33,45 @@ let findLowHigh low high (label1, alpha1) (label2, alpha2) =
     then max low (alpha1 + alpha2 - high), min high (alpha2 - alpha1)
     else max low (alpha2 - alpha1),        min high (high + alpha2 - alpha1) 
 
+let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
+
+    let b1 = b - iError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowI.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowI.Data rowJ.Data)
+    let b2 = b - jError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowJ.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowJ.Data rowJ.Data)
+
+    if (iAlphaNew > 0.0 && iAlphaNew < C)
+    then b1
+    elif (jAlphaNew > 0.0 && jAlphaNew < C)
+    then b2
+    else (b1 + b2) / 2.0
+
 type Attempt<'a> = Success of 'a | Failure
 
-let pivot dataset (labels: float list) C tolerance (alphas, b) i j =
+type Parameters = { Tolerance: float; C: float }
+
+let pivot (rows: Row list) b parameters i j =
     
     printfn "%i %i" i j
-    let lohi = findLowHigh 0.0 C
+    let lohi = findLowHigh 0.0 parameters.C
+    
+    let rowi = rows.[i]
+    let iClass = rowi.Label
+    let iError = rowError rows b rowi
+    let iAlpha = rowi.Alpha
 
-    let iClass = labels.[i]
-    let iError = (predict dataset labels alphas b i) - iClass
-    let iAlpha = alphas.[i]
-
-    if not (iError * iClass < - tolerance && iAlpha < C) || (iError * iClass > tolerance && iAlpha > 0.0)
+    if not (iError * iClass < - parameters.Tolerance && iAlpha < parameters.C) || (iError * iClass > parameters.Tolerance && iAlpha > 0.0)
     then Failure
     else
-        let jClass = labels.[j]
-        let jError = (predict dataset labels alphas b j) - jClass
-        let jAlpha = alphas.[j]
+        let rowj = rows.[j]
+        let jClass = rowj.Label
+        let jError = rowError rows b rowj
+        let jAlpha = rowj.Alpha
 
-        let lo, hi = lohi (labels.[i], iAlpha) (labels.[j], jAlpha)
+        let lo, hi = lohi (rowi.Label, iAlpha) (rowj.Label, jAlpha)
 
         if lo = hi 
         then Failure
         else
-            let iObs, jObs = dataset.[i], dataset.[j]
+            let iObs, jObs = rowi.Data, rowj.Data
             let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
             
             if eta >= 0.0 
@@ -69,34 +82,33 @@ let pivot dataset (labels: float list) C tolerance (alphas, b) i j =
 
                 let jAlphaNew = clip (lo, hi) (jAlpha - (jClass * (iError - jError) / eta))
                 let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
+                let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
 
                 printfn "First: %f -> %f" iAlpha iAlphaNew
                 printfn "Second: %f -> %f" jAlpha jAlphaNew
+                printfn "B: %f -> %f" b bNew
 
-                let b1 = b - iError - iClass * (iAlphaNew - iAlpha) * (dot iObs iObs) - jClass * (jAlphaNew - jAlpha) * (dot iObs jObs)
-                let b2 = b - jError - iClass * (iAlphaNew - iAlpha) * (dot iObs jObs) - jClass * (jAlphaNew - jAlpha) * (dot jObs jObs)
-
-                let bNew =
-                    if (iAlphaNew > 0.0 && iAlphaNew < C)
-                    then b1
-                    elif (jAlphaNew > 0.0 && jAlphaNew < C)
-                    then b2
-                    else (b1 + b2) / 2.0
-                Success(alphas 
+                Success(rows 
                 |> List.mapi (fun index value -> 
                     if index = i 
-                    then iAlphaNew 
-                    elif index = j then jAlphaNew 
+                    then { Data = value.Data; Label = value.Label; Alpha = iAlphaNew } 
+                    elif index = j 
+                    then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
                     else value), bNew)
 
 let nextAround size i = (i + 1) % size
 
 let simpleSvm dataset (labels: float list) C tolerance iterations =
     
+    let parameters = { Tolerance = tolerance; C = C }
+
     let size = dataset |> List.length   
      
     let b = 0.0
-    let alphas = [ for i in 1 .. size -> 0.0 ]
+
+    let rows = 
+        List.zip dataset labels
+        |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
 
     let rng = new Random()
     let lohi = findLowHigh 0.0 C
@@ -106,18 +118,18 @@ let simpleSvm dataset (labels: float list) C tolerance iterations =
         if noChange < iterations
         then
             let j = pickAnother rng i size
-            let updated = pivot dataset labels C tolerance current i j
+            let updated = pivot (fst current) (snd current) parameters i j
             match updated with
             | Failure -> search current (noChange + 1) (next i)
             | Success(result) -> search result 0 (next i)
         else
             current
 
-    search (alphas, b) 0 0
+    search (rows, b) 0 0
 
-
-let weights (alpha: float list) data labels =
-    List.zip3 alpha data labels
+let weights rows =
+    rows 
+    |> List.map (fun r -> r.Alpha, r.Data, r.Label)
     |> List.map (fun (a, row, l) ->
         let mult = a * l
         row |> List.map (fun e -> mult * e))
@@ -130,14 +142,16 @@ let rng = new Random()
 let testData = [ for i in 1 .. 100 -> [ rng.NextDouble(); rng.NextDouble() ] ]
 let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
 
-let estimator = simpleSvm testData testLabels 10.0 0.001 100
-let w = weights (fst estimator) testData testLabels
-let b = snd estimator
+let test () =
+    let estimator = simpleSvm testData testLabels 1.0 0.001 100
+    let w = weights (fst estimator)
+    let b = snd estimator
 
-let classify row = b + dot w row
-let performance = 
-    testData 
-    |> List.map (fun row -> classify row)
-    |> List.zip testLabels
-    |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
-    |> List.average
+    let classify row = b + dot w row
+    let performance = 
+        testData 
+        |> List.map (fun row -> classify row)
+        |> List.zip testLabels
+        |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
+        |> List.average
+    performance
