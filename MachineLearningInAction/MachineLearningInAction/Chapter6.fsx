@@ -44,8 +44,7 @@ let pivot (rows: Row list) b parameters i j =
         if lo = hi 
         then Failure
         else
-            let iObs, jObs = rowi.Data, rowj.Data
-            let eta = 2.0 * dot iObs jObs - dot iObs iObs - dot jObs jObs
+            let eta = 2.0 * dot rowi.Data rowj.Data - dot rowi.Data rowi.Data - dot rowj.Data rowj.Data
             
             if eta >= 0.0 
             then Failure
