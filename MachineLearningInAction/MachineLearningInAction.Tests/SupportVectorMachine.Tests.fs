@@ -25,3 +25,9 @@ type ``SVM tests`` () =
         clip (min, max) min |> should equal min
         clip (min, max) max |> should equal max
         clip (min, max) 2.0 |> should equal 2.0
+
+    [<Test>]
+    member this.``nextAround verification`` () =
+        let size = 5
+        nextAround size 0 |> should equal 1
+        nextAround size 4 |> should equal 0

@@ -14,11 +14,6 @@ let pickAnother (rng: System.Random) i count =
     let j = rng.Next(0, count - 1)
     if j >= i then j + 1 else j
 
-let findLowHigh low high row1 row2 = 
-    if row1.Label = row2.Label
-    then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha - row1.Alpha)
-    else max low (row2.Alpha - row1.Alpha),        min high (high + row2.Alpha - row1.Alpha) 
-
 let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
 
     let b1 = b - iError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowI.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowI.Data rowJ.Data)
@@ -36,17 +31,13 @@ let pivot (rows: Row list) b parameters i j =
     let lohi = findLowHigh 0.0 parameters.C
     
     let rowi = rows.[i]
-    let iClass = rowi.Label
     let iError = rowError rows b rowi
-    let iAlpha = rowi.Alpha
 
-    if not (iError * iClass < - parameters.Tolerance && iAlpha < parameters.C) || (iError * iClass > parameters.Tolerance && iAlpha > 0.0)
+    if not (iError * rowi.Label < - parameters.Tolerance && rowi.Alpha < parameters.C) || (iError * rowi.Label > parameters.Tolerance && rowi.Alpha > 0.0)
     then Failure
     else
         let rowj = rows.[j]
-        let jClass = rowj.Label
         let jError = rowError rows b rowj
-        let jAlpha = rowj.Alpha
 
         let lo, hi = lohi rowi rowj
 
@@ -59,15 +50,12 @@ let pivot (rows: Row list) b parameters i j =
             if eta >= 0.0 
             then Failure
             else   
-                //let jTemp = jAlpha - (jClass * (iError - jError) / eta)
-                //printfn "%f" jTemp
-
-                let jAlphaNew = clip (lo, hi) (jAlpha - (jClass * (iError - jError) / eta))
-                let iAlphaNew = iAlpha + (iClass * jClass * (jAlpha - jAlphaNew))
+                let jAlphaNew = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
+                let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
                 let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
 
-                printfn "First: %f -> %f" iAlpha iAlphaNew
-                printfn "Second: %f -> %f" jAlpha jAlphaNew
+                printfn "First: %f -> %f" rowi.Alpha iAlphaNew
+                printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
                 printfn "B: %f -> %f" b bNew
 
                 Success(rows 
@@ -78,14 +66,10 @@ let pivot (rows: Row list) b parameters i j =
                     then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
                     else value), bNew)
 
-let nextAround size i = (i + 1) % size
-
 let simpleSvm dataset (labels: float list) C tolerance iterations =
     
     let parameters = { Tolerance = tolerance; C = C }
-
-    let size = dataset |> List.length   
-     
+    let size = dataset |> List.length        
     let b = 0.0
 
     let rows = 
