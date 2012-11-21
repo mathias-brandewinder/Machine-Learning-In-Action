@@ -30,3 +30,10 @@ module SupportVectorMachine =
     
     // next index "around the clock"
     let nextAround size i = (i + 1) % size
+
+    // compute error on row, given current alphas
+    let rowError rows b row =
+        rows
+        |> Seq.filter (fun r -> r.Alpha > 0.0)
+        |> Seq.fold (fun acc r -> 
+            acc + r.Label * r.Alpha * (dot r.Data row.Data)) (b - row.Label)

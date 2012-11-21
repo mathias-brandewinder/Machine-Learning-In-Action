@@ -3,12 +3,6 @@
 open MachineLearning.SupportVectorMachine
 open System
  
-let rowError rows b row =
-    rows
-    |> Seq.filter (fun r -> r.Alpha > 0.0)
-    |> Seq.fold (fun acc r -> 
-        acc + r.Label * r.Alpha * (dot r.Data row.Data)) (b - row.Label)
-
 // pick an index other than i in [0..(count-1)]
 let pickAnother (rng: System.Random) i count = 
     let j = rng.Next(0, count - 1)
