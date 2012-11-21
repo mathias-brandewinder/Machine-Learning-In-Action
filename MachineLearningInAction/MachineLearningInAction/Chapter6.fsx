@@ -22,7 +22,6 @@ let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
 let pivot (rows: Row list) b parameters i j =
     
     printfn "%i %i" i j
-    let lohi = findLowHigh 0.0 parameters.C
     
     let rowi = rows.[i]
     let iError = rowError rows b rowi
@@ -33,7 +32,7 @@ let pivot (rows: Row list) b parameters i j =
         let rowj = rows.[j]
         let jError = rowError rows b rowj
 
-        let lo, hi = lohi rowi rowj
+        let lo, hi = findLowHigh 0.0 parameters.C rowi rowj
 
         if lo = hi 
         then Failure
@@ -70,7 +69,6 @@ let simpleSvm dataset (labels: float list) C tolerance iterations =
         |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
 
     let rng = new Random()
-    let lohi = findLowHigh 0.0 C
     let next i = nextAround size i
     
     let rec search current noChange i =
