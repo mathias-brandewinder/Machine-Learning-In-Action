@@ -1,7 +1,12 @@
 ﻿#load "SupportVectorMachine.fs"
+#r @"C:\Users\Mathias\Documents\GitHub\Machine-Learning-In-Action\MachineLearningInAction\packages\MSDN.FSharpChart.dll.0.60\lib\MSDN.FSharpChart.dll"
+#r "System.Windows.Forms.DataVisualization"
 
 open MachineLearning.SupportVectorMachine
 open System
+open System.Drawing
+open System.Windows.Forms.DataVisualization
+open MSDN.FSharp.Charting
  
 // pick an index other than i in [0..(count-1)]
 let pickAnother (rng: System.Random) i count = 
@@ -30,8 +35,6 @@ let pivot (rows: Row list) b parameters i j =
     then Failure
     else
         let rowj = rows.[j]
-        let jError = rowError rows b rowj
-
         let lo, hi = findLowHigh 0.0 parameters.C rowi rowj
 
         if lo = hi 
@@ -42,6 +45,8 @@ let pivot (rows: Row list) b parameters i j =
             if eta >= 0.0 
             then Failure
             else   
+                let jError = rowError rows b rowj
+
                 let jAlphaNew = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
                 let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
                 let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
@@ -94,8 +99,8 @@ let weights rows =
         
 // test
 let rng = new Random()
-let testData = [ for i in 1 .. 100 -> [ rng.NextDouble(); rng.NextDouble() ] ]
-let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 0.5) then 1.0 else -1.0)
+let testData = [ for i in 1 .. 1000 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
+let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
 let test () =
     let estimator = simpleSvm testData testLabels 1.0 0.001 100
@@ -111,3 +116,33 @@ let test () =
         |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
         |> List.average
     performance
+
+let display (dataSet: (float * float) seq) (labels: int seq) =
+    let byLabel = Seq.zip labels dataSet |> Seq.toArray
+    let uniqueLabels = Seq.distinct labels
+    FSharpChart.Combine 
+        [ // separate points by class and scatterplot them
+          for label in uniqueLabels ->
+               let data = 
+                    Array.filter (fun e -> label = fst e) byLabel
+                    |> Array.map snd
+               FSharpChart.Point(data) :> ChartTypes.GenericChart
+               |> FSharpChart.WithSeries.Marker(Size=10)
+        ]
+    |> FSharpChart.Create    
+
+let testPlot =
+    let estimator = simpleSvm testData testLabels 5.0 0.001 500
+    let labels = 
+        estimator 
+        |> (fst) 
+        |> Seq.map (fun row -> 
+            if row.Alpha > 0.0 then 0
+            else
+                if row.Label < 0.0 then 1
+                else 2)
+    let data = 
+        estimator 
+        |> (fst) 
+        |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
+    display data labels
