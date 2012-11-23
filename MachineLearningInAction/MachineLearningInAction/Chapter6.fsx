@@ -13,57 +13,6 @@ let pickAnother (rng: System.Random) i count =
     let j = rng.Next(0, count - 1)
     if j >= i then j + 1 else j
 
-let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
-
-    let b1 = b - iError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowI.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowI.Data rowJ.Data)
-    let b2 = b - jError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowJ.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowJ.Data rowJ.Data)
-
-    if (iAlphaNew > 0.0 && iAlphaNew < C)
-    then b1
-    elif (jAlphaNew > 0.0 && jAlphaNew < C)
-    then b2
-    else (b1 + b2) / 2.0
-
-// Attempt to update support vectors i and j
-let pivot (rows: Row list) b parameters i j =
-    
-    printfn "%i %i" i j
-    
-    let rowi = rows.[i]
-    let iError = rowError rows b rowi
-    
-    if not (canChange parameters rowi iError)
-    then Failure
-    else
-        let rowj = rows.[j]
-        let lo, hi = findLowHigh 0.0 parameters.C rowi rowj
-
-        if lo = hi 
-        then Failure
-        else
-            let eta = 2.0 * dot rowi.Data rowj.Data - dot rowi.Data rowi.Data - dot rowj.Data rowj.Data
-            
-            if eta >= 0.0 
-            then Failure
-            else   
-                let jError = rowError rows b rowj
-
-                let jAlphaNew = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
-                let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
-                let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
-
-                printfn "First: %f -> %f" rowi.Alpha iAlphaNew
-                printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-                printfn "B: %f -> %f" b bNew
-
-                Success(rows 
-                |> List.mapi (fun index value -> 
-                    if index = i 
-                    then { Data = value.Data; Label = value.Label; Alpha = iAlphaNew } 
-                    elif index = j 
-                    then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
-                    else value), bNew)
-
 let simpleSvm dataset (labels: float list) parameters =
     
     let size = dataset |> List.length        
