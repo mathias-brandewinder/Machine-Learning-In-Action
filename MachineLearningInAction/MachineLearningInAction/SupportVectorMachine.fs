@@ -9,6 +9,9 @@ module SupportVectorMachine =
 
     type Attempt<'a> = Success of 'a | Failure
 
+    // limit for what is considered too small a change
+    let smallChange = 0.00001
+
     // Product of vectors
     let dot (vec1: float list) 
             (vec2: float list) =
@@ -83,17 +86,21 @@ module SupportVectorMachine =
                     let jError = rowError rows b rowj
 
                     let jAlphaNew = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
-                    let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
-                    let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
 
-                    printfn "First: %f -> %f" rowi.Alpha iAlphaNew
-                    printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-                    printfn "B: %f -> %f" b bNew
+                    if (abs (jAlphaNew - rowj.Alpha) < smallChange)
+                    then Failure
+                    else
+                        let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
+                        let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
 
-                    Success(rows 
-                    |> List.mapi (fun index value -> 
-                        if index = i 
-                        then { Data = value.Data; Label = value.Label; Alpha = iAlphaNew } 
-                        elif index = j 
-                        then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
-                        else value), bNew)
+                        printfn "First: %f -> %f" rowi.Alpha iAlphaNew
+                        printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
+                        printfn "B: %f -> %f" b bNew
+
+                        Success(rows 
+                        |> List.mapi (fun index value -> 
+                            if index = i 
+                            then { Data = value.Data; Label = value.Label; Alpha = iAlphaNew } 
+                            elif index = j 
+                            then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
+                            else value), bNew)

@@ -52,7 +52,7 @@ let rng = new Random()
 
 // tight dataset: there is no margin between 2 groups
 let tightData = 
-    [ for i in 1 .. 100 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
+    [ for i in 1 .. 500 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
 let tightLabels = 
     tightData |> List.map (fun el -> 
         if (el |> List.sum >= 100.0) then 1.0 else -1.0)
@@ -113,7 +113,7 @@ let plot (data: float list list) (labels: float list) parameters =
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
     scatterplot data labels
 
-let parameters = { C = 5.0; Tolerance = 0.01; Depth = 50 }
+let parameters = { C = 5.0; Tolerance = 0.01; Depth = 500 }
 test tightData tightLabels parameters
 test looseData looseLabels parameters
 plot tightData tightLabels parameters
