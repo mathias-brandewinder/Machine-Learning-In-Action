@@ -26,6 +26,7 @@ module SupportVectorMachine =
         then min
         else x
 
+    // identify bounds of acceptable Alpha changes
     let findLowHigh low high row1 row2 = 
         if row1.Label = row2.Label
         then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha + row1.Alpha)
@@ -106,3 +107,37 @@ module SupportVectorMachine =
                                 then { value with Alpha = jAlphaNew }
                                 else value)
                         Success(updatedRows, updatedB) 
+
+    // pick an index other than i in [0..(count-1)]
+    let pickAnother (rng: System.Random) i count = 
+        let j = rng.Next(0, count - 1)
+        if j >= i then j + 1 else j
+
+    // Naive support vector machine estimation:
+    // iterate over the observations and attempt
+    // pivot with another random row, 
+    // until we have Depth consecutive pivot failures  
+    let simpleSvm dataset (labels: float list) parameters =
+    
+        let size = dataset |> List.length        
+        let b = 0.0
+
+        let rows = 
+            List.zip dataset labels
+            |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
+
+        let rng = new Random()
+        let next i = nextAround size i
+    
+        let rec search current noChange i =
+            if noChange < parameters.Depth
+            then
+                let j = pickAnother rng i size
+                let updated = pivot (fst current) (snd current) parameters i j
+                match updated with
+                | Failure -> search current (noChange + 1) (next i)
+                | Success(result) -> search result 0 (next i)
+            else
+                current
+
+        search (rows, b) 0 0

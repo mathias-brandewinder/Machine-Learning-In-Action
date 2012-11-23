@@ -8,35 +8,6 @@ open System.Drawing
 open System.Windows.Forms.DataVisualization
 open MSDN.FSharp.Charting
  
-// pick an index other than i in [0..(count-1)]
-let pickAnother (rng: System.Random) i count = 
-    let j = rng.Next(0, count - 1)
-    if j >= i then j + 1 else j
-
-let simpleSvm dataset (labels: float list) parameters =
-    
-    let size = dataset |> List.length        
-    let b = 0.0
-
-    let rows = 
-        List.zip dataset labels
-        |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
-
-    let rng = new Random()
-    let next i = nextAround size i
-    
-    let rec search current noChange i =
-        if noChange < parameters.Depth
-        then
-            let j = pickAnother rng i size
-            let updated = pivot (fst current) (snd current) parameters i j
-            match updated with
-            | Failure -> search current (noChange + 1) (next i)
-            | Success(result) -> search result 0 (next i)
-        else
-            current
-
-    search (rows, b) 0 0
 
 let weights rows =
     rows 
