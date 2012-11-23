@@ -24,14 +24,15 @@ let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
     then b2
     else (b1 + b2) / 2.0
 
+// Attempt to update support vectors i and j
 let pivot (rows: Row list) b parameters i j =
     
     printfn "%i %i" i j
     
     let rowi = rows.[i]
     let iError = rowError rows b rowi
-
-    if not (iError * rowi.Label < - parameters.Tolerance && rowi.Alpha < parameters.C) || (iError * rowi.Label > parameters.Tolerance && rowi.Alpha > 0.0)
+    
+    if not (canChange parameters rowi iError)
     then Failure
     else
         let rowj = rows.[j]

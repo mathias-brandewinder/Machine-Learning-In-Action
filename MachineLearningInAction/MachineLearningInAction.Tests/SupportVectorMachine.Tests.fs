@@ -92,3 +92,15 @@ type ``SVM tests`` () =
         let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 1.0 }
         let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
         hi |> should equal 3.0
+
+    // need to improve this, this is dreadful
+    [<TestCase(1.0, -10.0, 0.1, 5.0, 42.0, Result = true)>] // condition 1
+    [<TestCase(-1.0, 10.0, 0.1, 5.0, 42.0, Result = true)>] // condition 1
+    [<TestCase(-1.0, -10.0, 0.1, 5.0, 42.0, Result = true)>] // condition 2
+    [<TestCase(1.0, 10.0, 0.1, 5.0, 42.0, Result = true)>] // condition 2
+    [<TestCase(1.0, -10.0, 0.1, 42.0, 42.0, Result = false)>]
+    [<TestCase(1.0, -10.0, 0.1, 43.0, 42.0, Result = false)>]
+    member this.``validate canChange`` (label, error, tol, alpha, c) =
+        let row = { Data = [ ]; Label =  label; Alpha = alpha }
+        let parameters = { C = c; Tolerance = tol; Depth = 0 }
+        canChange parameters row error

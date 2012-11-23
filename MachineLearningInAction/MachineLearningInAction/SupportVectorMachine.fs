@@ -37,3 +37,12 @@ module SupportVectorMachine =
         |> Seq.filter (fun r -> r.Alpha > 0.0)
         |> Seq.fold (fun acc r -> 
             acc + r.Label * r.Alpha * (dot r.Data row.Data)) (b - row.Label)
+
+    // check whether alpha can be modified for row,
+    // given error and parameter C
+    let canChange parameters row error =
+        if (error * row.Label < - parameters.Tolerance && row.Alpha < parameters.C)
+        then true
+        elif (error * row.Label > parameters.Tolerance && row.Alpha > 0.0)
+        then true
+        else false
