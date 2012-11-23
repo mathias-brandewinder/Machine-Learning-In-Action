@@ -91,16 +91,18 @@ module SupportVectorMachine =
                     then Failure
                     else
                         let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
-                        let bNew = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
+                        let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
 
                         printfn "First: %f -> %f" rowi.Alpha iAlphaNew
                         printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-                        printfn "B: %f -> %f" b bNew
+                        printfn "B: %f -> %f" b updatedB
 
-                        Success(rows 
-                        |> List.mapi (fun index value -> 
-                            if index = i 
-                            then { Data = value.Data; Label = value.Label; Alpha = iAlphaNew } 
-                            elif index = j 
-                            then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
-                            else value), bNew)
+                        let updatedRows =
+                            rows 
+                            |> List.mapi (fun index value -> 
+                                if index = i 
+                                then { value with Alpha = iAlphaNew } 
+                                elif index = j 
+                                then { value with Alpha = jAlphaNew }
+                                else value)
+                        Success(updatedRows, updatedB) 
