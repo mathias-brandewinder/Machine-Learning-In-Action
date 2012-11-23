@@ -46,5 +46,49 @@ type ``SVM tests`` () =
         rowError rows b row3 |> should equal -44.5
 
     [<Test>]
-    member this.``findLowHigh verification`` () =
-        
+    member this.``findLowHigh: verify low bound, same labels`` () =
+        let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
+        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        lo |> should equal 0.0
+
+        let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
+        let (lo, hi) = findLowHigh 0.0 1.0 row1 row2
+        lo |> should equal 2.0
+
+    [<Test>]
+    member this.``findLowHigh: verify high bound, same labels`` () =
+        let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
+        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        hi |> should equal 3.0
+
+        let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
+        let (lo, hi) = findLowHigh 0.0 1.0 row1 row2
+        hi |> should equal 1.0
+
+    [<Test>]
+    member this.``findLowHigh: verify low bound, different label`` () =
+        let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 2.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 1.0 }
+        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        lo |> should equal 0.0
+
+        let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 1.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 2.0 }
+        let (lo, hi) = findLowHigh 0.0 1.0 row1 row2
+        lo |> should equal 1.0
+
+    [<Test>]
+    member this.``findLowHigh: verify high bound, different labels`` () =
+        let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 1.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 2.0 }
+        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        hi |> should equal 4.0
+
+        let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 2.0 }
+        let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 1.0 }
+        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        hi |> should equal 3.0

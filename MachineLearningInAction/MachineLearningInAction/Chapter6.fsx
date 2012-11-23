@@ -99,11 +99,11 @@ let weights rows =
         
 // test
 let rng = new Random()
-let testData = [ for i in 1 .. 1000 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
+let testData = [ for i in 1 .. 100 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
 let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
 let test () =
-    let estimator = simpleSvm testData testLabels 1.0 0.001 100
+    let estimator = simpleSvm testData testLabels 5.0 0.001 20
     let w = weights (fst estimator)
     let b = snd estimator
 
@@ -132,7 +132,7 @@ let display (dataSet: (float * float) seq) (labels: int seq) =
     |> FSharpChart.Create    
 
 let testPlot =
-    let estimator = simpleSvm testData testLabels 5.0 0.001 500
+    let estimator = simpleSvm testData testLabels 5.0 0.001 50
     let labels = 
         estimator 
         |> (fst) 

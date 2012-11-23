@@ -25,7 +25,7 @@ module SupportVectorMachine =
 
     let findLowHigh low high row1 row2 = 
         if row1.Label = row2.Label
-        then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha - row1.Alpha)
+        then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha + row1.Alpha)
         else max low (row2.Alpha - row1.Alpha),        min high (high + row2.Alpha - row1.Alpha) 
     
     // next index "around the clock"
