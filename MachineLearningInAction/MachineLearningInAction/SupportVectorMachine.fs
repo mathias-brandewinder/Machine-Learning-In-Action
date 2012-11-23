@@ -5,7 +5,7 @@ module SupportVectorMachine =
     // an observation, its label, and current alpha estimate
     type Row = { Data: float list; Label: float; Alpha: float }
     // SVM algorithm input parameters
-    type Parameters = { Tolerance: float; C: float }
+    type Parameters = { Tolerance: float; C: float; Depth: int }
 
     type Attempt<'a> = Success of 'a | Failure
 

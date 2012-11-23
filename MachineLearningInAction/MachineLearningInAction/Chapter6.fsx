@@ -63,9 +63,8 @@ let pivot (rows: Row list) b parameters i j =
                     then { Data = value.Data; Label = value.Label; Alpha = jAlphaNew }
                     else value), bNew)
 
-let simpleSvm dataset (labels: float list) C tolerance iterations =
+let simpleSvm dataset (labels: float list) parameters =
     
-    let parameters = { Tolerance = tolerance; C = C }
     let size = dataset |> List.length        
     let b = 0.0
 
@@ -77,7 +76,7 @@ let simpleSvm dataset (labels: float list) C tolerance iterations =
     let next i = nextAround size i
     
     let rec search current noChange i =
-        if noChange < iterations
+        if noChange < parameters.Depth
         then
             let j = pickAnother rng i size
             let updated = pivot (fst current) (snd current) parameters i j
@@ -91,33 +90,35 @@ let simpleSvm dataset (labels: float list) C tolerance iterations =
 
 let weights rows =
     rows 
-    |> List.map (fun r ->
+    |> Seq.filter (fun r -> r.Alpha > 0.0)
+    |> Seq.map (fun r ->
         let mult = r.Alpha * r.Label
         r.Data |> List.map (fun e -> mult * e))
-    |> List.reduce (fun acc row -> 
+    |> Seq.reduce (fun acc row -> 
         List.map2 (fun a r -> a + r) acc row )
         
-// test
+// demo
 let rng = new Random()
-let testData = [ for i in 1 .. 100 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
-let testLabels = testData |> List.map (fun el -> if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
-let test () =
-    let estimator = simpleSvm testData testLabels 5.0 0.001 20
-    let w = weights (fst estimator)
-    let b = snd estimator
+// tight dataset: there is no margin between 2 groups
+let tightData = 
+    [ for i in 1 .. 100 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
+let tightLabels = 
+    tightData |> List.map (fun el -> 
+        if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
-    let classify row = b + dot w row
+// loose dataset: there is empty "gap" between 2 groups
+let looseData = 
+    tightData 
+    |> List.filter (fun e -> 
+        let tot = List.sum e
+        tot > 110.0 || tot < 90.0)
+let looseLabels = 
+    looseData |> List.map (fun el -> 
+        if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
-    let performance = 
-        testData 
-        |> List.map (fun row -> classify row)
-        |> List.zip testLabels
-        |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
-        |> List.average
-    performance
-
-let display (dataSet: (float * float) seq) (labels: int seq) =
+// create an X,Y scatterplot, with different formatting for each label 
+let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
     let byLabel = Seq.zip labels dataSet |> Seq.toArray
     let uniqueLabels = Seq.distinct labels
     FSharpChart.Combine 
@@ -131,8 +132,23 @@ let display (dataSet: (float * float) seq) (labels: int seq) =
         ]
     |> FSharpChart.Create    
 
-let testPlot =
-    let estimator = simpleSvm testData testLabels 5.0 0.001 50
+let test (data: float list list) (labels: float list) parameters =
+    let estimator = simpleSvm data labels parameters
+    let w = weights (fst estimator)
+    let b = snd estimator
+
+    let classify row = b + dot w row
+
+    let performance = 
+        data 
+        |> List.map (fun row -> classify row)
+        |> List.zip labels
+        |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
+        |> List.average
+    performance
+
+let plot (data: float list list) (labels: float list) parameters =
+    let estimator = simpleSvm data labels parameters
     let labels = 
         estimator 
         |> (fst) 
@@ -145,4 +161,10 @@ let testPlot =
         estimator 
         |> (fst) 
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
-    display data labels
+    scatterplot data labels
+
+let parameters = { C = 5.0; Tolerance = 0.01; Depth = 50 }
+test tightData tightLabels parameters
+test looseData looseLabels parameters
+plot tightData tightLabels parameters
+plot looseData looseLabels parameters
