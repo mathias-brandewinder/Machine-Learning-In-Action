@@ -43,8 +43,8 @@ let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
     |> FSharpChart.Create    
 
 // plot raw datasets
-scatterplot (tightData|> List.map (fun e -> e.[0], e.[1])) tightLabels
-scatterplot (looseData|> List.map (fun e -> e.[0], e.[1])) looseLabels
+scatterplot (tightData |> List.map (fun e -> e.[0], e.[1])) tightLabels
+scatterplot (looseData |> List.map (fun e -> e.[0], e.[1])) looseLabels
 
 let test (data: float list list) (labels: float list) parameters =
     let classify = classifier data labels parameters
@@ -71,9 +71,11 @@ let plot (data: float list list) (labels: float list) parameters =
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
     scatterplot data labels
 
-let parameters = { C = 5.0; Tolerance = 0.01; Depth = 500 }
+let parameters = { C = 1.0; Tolerance = 0.01; Depth = 500 }
+
 test tightData tightLabels parameters
 test looseData looseLabels parameters
+
 plot tightData tightLabels parameters
 plot looseData looseLabels parameters
 
@@ -106,3 +108,17 @@ let plotLine (data: float list list) (labels: float list) parameters =
 
 plotLine tightData tightLabels parameters
 plotLine looseData looseLabels parameters
+
+// noisy dataset: a percentage of observations is mis-labeled
+let misclassified = 0.05
+let noisyData = tightData
+let noisyLabels = 
+    tightLabels |> List.map (fun l -> 
+        if (rng.NextDouble() > 1.0 - misclassified) then -l else l)
+
+let ezParameters = { C = 1.0; Tolerance = 0.1; Depth = 25 }
+
+scatterplot (noisyData |> List.map (fun e -> e.[0], e.[1])) noisyLabels
+plot noisyData noisyLabels ezParameters
+test noisyData noisyLabels ezParameters
+plotLine noisyData noisyLabels ezParameters
