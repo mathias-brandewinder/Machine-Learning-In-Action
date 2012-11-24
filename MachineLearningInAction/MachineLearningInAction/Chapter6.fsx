@@ -71,7 +71,7 @@ let plot (data: float list list) (labels: float list) parameters =
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
     scatterplot data labels
 
-let parameters = { C = 5.0; Tolerance = 0.001; Depth = 500 }
+let parameters = { C = 0.6; Tolerance = 0.001; Depth = 500 }
 
 test tightData tightLabels parameters
 test looseData looseLabels parameters
@@ -110,18 +110,16 @@ plotLine tightData tightLabels parameters
 plotLine looseData looseLabels parameters
 
 // noisy dataset: a percentage of observations is mis-labeled
-let misclassified = 0.01
+let misclassified = 0.05
 let noisyData = tightData
 let noisyLabels = 
     tightLabels |> List.map (fun l -> 
         if (rng.NextDouble() > 1.0 - misclassified) then -l else l)
 
-let ezParameters = { C = 1.0; Tolerance = 0.1; Depth = 50 }
-
 scatterplot (noisyData |> List.map (fun e -> e.[0], e.[1])) noisyLabels
-plot noisyData noisyLabels ezParameters
-test noisyData noisyLabels ezParameters
-plotLine noisyData noisyLabels ezParameters
+plot noisyData noisyLabels parameters
+test noisyData noisyLabels parameters
+plotLine noisyData noisyLabels parameters
 
 // larger set (1000 observations, 10 dimensions)
 let largeData = 
