@@ -76,3 +76,33 @@ test tightData tightLabels parameters
 test looseData looseLabels parameters
 plot tightData tightLabels parameters
 plot looseData looseLabels parameters
+
+// display dataset, and "separating line"
+let separator (dataSet: (float * float) seq) (labels: 'a seq) (line: float -> float) =
+    let byLabel = Seq.zip labels dataSet |> Seq.toArray
+    let uniqueLabels = Seq.distinct labels
+    FSharpChart.Combine 
+        [ // separate points by class and scatterplot them
+          for label in uniqueLabels ->
+               let data = 
+                    Array.filter (fun e -> label = fst e) byLabel
+                    |> Array.map snd
+               FSharpChart.Point(data) :> ChartTypes.GenericChart
+               |> FSharpChart.WithSeries.Marker(Size=10)
+          // plot line between left- and right-most points
+          let x = Seq.map fst dataSet
+          let xMin, xMax = Seq.min x, Seq.max x           
+          let lineData = [ (xMin, line xMin); (xMax, line xMax)]
+          yield FSharpChart.Line (lineData)  :> ChartTypes.GenericChart
+        ]
+    |> FSharpChart.Create 
+
+let plotLine (data: float list list) (labels: float list) parameters =
+    let estimator = simpleSvm data labels parameters
+    let w = weights (fst estimator)
+    let b = snd estimator
+    let line x = - b / w.[1] - x * w.[0] / w.[1]
+    separator (data |> Seq.map (fun e -> e.[0], e.[1])) labels line
+
+plotLine tightData tightLabels parameters
+plotLine looseData looseLabels parameters
