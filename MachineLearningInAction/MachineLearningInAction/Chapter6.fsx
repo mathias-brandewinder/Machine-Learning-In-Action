@@ -110,15 +110,29 @@ plotLine tightData tightLabels parameters
 plotLine looseData looseLabels parameters
 
 // noisy dataset: a percentage of observations is mis-labeled
-let misclassified = 0.05
+let misclassified = 0.01
 let noisyData = tightData
 let noisyLabels = 
     tightLabels |> List.map (fun l -> 
         if (rng.NextDouble() > 1.0 - misclassified) then -l else l)
 
-let ezParameters = { C = 1.0; Tolerance = 0.1; Depth = 25 }
+let ezParameters = { C = 1.0; Tolerance = 0.1; Depth = 50 }
 
 scatterplot (noisyData |> List.map (fun e -> e.[0], e.[1])) noisyLabels
 plot noisyData noisyLabels ezParameters
 test noisyData noisyLabels ezParameters
 plotLine noisyData noisyLabels ezParameters
+
+// larger set (1000 observations, 10 dimensions)
+let largeData = 
+    [ for i in 1 .. 1000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] ]
+let largeLabels = 
+    largeData |> List.map (fun x -> 
+        if (x |> List.sum >= 500.0) then 1.0 else -1.0)
+
+largeLabels 
+    |> List.filter (fun l -> l = 1.0) 
+    |> List.length 
+    |> printfn "Number in group 1: %i"
+
+test largeData largeLabels parameters
