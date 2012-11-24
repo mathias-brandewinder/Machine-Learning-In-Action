@@ -1,5 +1,5 @@
 ﻿#load "SupportVectorMachine.fs"
-#r @"C:\Users\Mathias\Documents\GitHub\Machine-Learning-In-Action\MachineLearningInAction\packages\MSDN.FSharpChart.dll.0.60\lib\MSDN.FSharpChart.dll"
+#r @"..\..\MachineLearningInAction\packages\MSDN.FSharpChart.dll.0.60\lib\MSDN.FSharpChart.dll"
 #r "System.Windows.Forms.DataVisualization"
 
 open MachineLearning.SupportVectorMachine
