@@ -42,6 +42,10 @@ let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
         ]
     |> FSharpChart.Create    
 
+// plot raw datasets
+scatterplot (tightData|> List.map (fun e -> e.[0], e.[1])) tightLabels
+scatterplot (looseData|> List.map (fun e -> e.[0], e.[1])) looseLabels
+
 let test (data: float list list) (labels: float list) parameters =
     let classify = classifier data labels parameters
     let performance = 
