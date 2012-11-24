@@ -67,7 +67,7 @@ module SupportVectorMachine =
     // Attempt to update support vectors i and j
     let pivot (rows: Row list) b parameters i j =
     
-        printfn "%i %i" i j
+        // printfn "%i %i" i j
     
         let rowi = rows.[i]
         let iError = rowError rows b rowi
@@ -96,9 +96,9 @@ module SupportVectorMachine =
                         let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
                         let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
 
-                        printfn "First: %f -> %f" rowi.Alpha iAlphaNew
-                        printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-                        printfn "B: %f -> %f" b updatedB
+                        // printfn "First: %f -> %f" rowi.Alpha iAlphaNew
+                        // printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
+                        // printfn "B: %f -> %f" b updatedB
 
                         let updatedRows =
                             rows 
