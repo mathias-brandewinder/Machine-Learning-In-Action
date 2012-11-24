@@ -2,6 +2,8 @@
 
 module SupportVectorMachine =
 
+    open System
+
     // an observation, its label, and current alpha estimate
     type Row = { Data: float list; Label: float; Alpha: float }
     // SVM algorithm input parameters
@@ -141,3 +143,19 @@ module SupportVectorMachine =
                 current
 
         search (rows, b) 0 0
+
+    // Compute the weights, using rows returned from SVM
+    let weights rows =
+        rows 
+        |> Seq.filter (fun r -> r.Alpha > 0.0)
+        |> Seq.map (fun r ->
+            let mult = r.Alpha * r.Label
+            r.Data |> List.map (fun e -> mult * e))
+        |> Seq.reduce (fun acc row -> 
+            List.map2 (fun a r -> a + r) acc row )
+        
+    let classifier (data: float list list) (labels: float list) parameters =
+        let estimator = simpleSvm data labels parameters
+        let w = weights (fst estimator)
+        let b = snd estimator
+        fun obs -> b + dot w obs

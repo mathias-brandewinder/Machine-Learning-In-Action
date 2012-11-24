@@ -8,17 +8,6 @@ open System.Drawing
 open System.Windows.Forms.DataVisualization
 open MSDN.FSharp.Charting
  
-
-let weights rows =
-    rows 
-    |> Seq.filter (fun r -> r.Alpha > 0.0)
-    |> Seq.map (fun r ->
-        let mult = r.Alpha * r.Label
-        r.Data |> List.map (fun e -> mult * e))
-    |> Seq.reduce (fun acc row -> 
-        List.map2 (fun a r -> a + r) acc row )
-        
-// demo
 let rng = new Random()
 
 // tight dataset: there is no margin between 2 groups
@@ -54,19 +43,14 @@ let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
     |> FSharpChart.Create    
 
 let test (data: float list list) (labels: float list) parameters =
-    let estimator = simpleSvm data labels parameters
-    let w = weights (fst estimator)
-    let b = snd estimator
-
-    let classify row = b + dot w row
-
+    let classify = classifier data labels parameters
     let performance = 
-        data 
+        data
         |> List.map (fun row -> classify row)
         |> List.zip labels
         |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
         |> List.average
-    performance
+    printfn "Proportion correctly classified: %f" performance
 
 let plot (data: float list list) (labels: float list) parameters =
     let estimator = simpleSvm data labels parameters
@@ -75,9 +59,8 @@ let plot (data: float list list) (labels: float list) parameters =
         |> (fst) 
         |> Seq.map (fun row -> 
             if row.Alpha > 0.0 then 0
-            else
-                if row.Label < 0.0 then 1
-                else 2)
+            elif row.Label < 0.0 then 1
+            else 2)
     let data = 
         estimator 
         |> (fst) 
