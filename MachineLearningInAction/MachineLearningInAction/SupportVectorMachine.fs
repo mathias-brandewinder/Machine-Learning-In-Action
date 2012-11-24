@@ -53,10 +53,13 @@ module SupportVectorMachine =
         then true
         else false
 
-    let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
+    let f row1 row2 alpha1 alpha2 =
+        row1.Label * (alpha1 - row1.Alpha) * (dot row1.Data row2.Data) + 
+        row2.Label * (alpha2 - row2.Alpha) * (dot row1.Data row2.Data)
 
-        let b1 = b - iError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowI.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowI.Data rowJ.Data)
-        let b2 = b - jError - rowI.Label * (iAlphaNew - rowI.Alpha) * (dot rowI.Data rowJ.Data) - rowJ.Label * (jAlphaNew - rowJ.Alpha) * (dot rowJ.Data rowJ.Data)
+    let updateB b rowI rowJ iAlphaNew jAlphaNew iError jError C =
+        let b1 = b - iError - f rowI rowJ iAlphaNew jAlphaNew 
+        let b2 = b - jError - f rowJ rowI jAlphaNew iAlphaNew 
 
         if (0.0 < iAlphaNew && iAlphaNew < C)
         then b1
@@ -144,7 +147,7 @@ module SupportVectorMachine =
 
         search (rows, b) 0 0
 
-    // Compute the weights, using rows returned from SVM
+    // Compute the weights, using rows returned from SVM:
     let weights rows =
         rows 
         |> Seq.filter (fun r -> r.Alpha > 0.0)
@@ -153,7 +156,10 @@ module SupportVectorMachine =
             r.Data |> List.map (fun e -> mult * e))
         |> Seq.reduce (fun acc row -> 
             List.map2 (fun a r -> a + r) acc row )
-        
+    
+    // compute the Support Vectors for the given data,
+    // and returns a function that uses the results
+    // to classify any observation vector.    
     let classifier (data: float list list) (labels: float list) parameters =
         let estimator = simpleSvm data labels parameters
         let w = weights (fst estimator)

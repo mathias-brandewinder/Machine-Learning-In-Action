@@ -71,7 +71,7 @@ let plot (data: float list list) (labels: float list) parameters =
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
     scatterplot data labels
 
-let parameters = { C = 1.0; Tolerance = 0.01; Depth = 500 }
+let parameters = { C = 5.0; Tolerance = 0.001; Depth = 500 }
 
 test tightData tightLabels parameters
 test looseData looseLabels parameters
