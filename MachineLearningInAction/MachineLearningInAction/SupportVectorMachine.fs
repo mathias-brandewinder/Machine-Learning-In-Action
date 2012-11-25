@@ -5,7 +5,7 @@ module SupportVectorMachine =
     open System
 
     // an observation, its label, and current alpha estimate
-    type Row = { Data: float list; Label: float; Alpha: float }
+    type SupportVector = { Data: float list; Label: float; Alpha: float }
     // SVM algorithm input parameters
     type Parameters = { Tolerance: float; C: float; Depth: int }
 
@@ -68,7 +68,7 @@ module SupportVectorMachine =
         else (b1 + b2) / 2.0
 
     // Attempt to update support vectors i and j
-    let pivot (rows: Row list) b parameters i j =
+    let pivot (rows: SupportVector list) b parameters i j =
     
         // printfn "%i %i" i j
     
@@ -122,7 +122,7 @@ module SupportVectorMachine =
     // iterate over the observations and attempt
     // pivot with another random row, 
     // until we have Depth consecutive pivot failures  
-    let simpleSvm dataset (labels: float list) parameters =
+    let simpleSvm dataset labels parameters =
     
         let size = dataset |> List.length        
         let b = 0.0
