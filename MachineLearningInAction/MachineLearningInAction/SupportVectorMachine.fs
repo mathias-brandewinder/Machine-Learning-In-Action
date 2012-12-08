@@ -8,8 +8,14 @@ module SupportVectorMachine =
     type SupportVector = { Data: float list; Label: float; Alpha: float }
     // SVM algorithm input parameters
     type Parameters = { Tolerance: float; C: float; Depth: int }
-
-    type Attempt<'a> = Success of 'a | Failure
+    // http://en.wikibooks.org/wiki/F_Sharp_Programming/Computation_Expressions
+    type MaybeBuilder() =
+        member this.Bind(x, f) =
+            match x with
+            | Some(x) -> f(x)
+            | _       -> None
+        member this.Delay(f) = f()
+        member this.Return(x) = Some x
 
     // limit for what is considered too small a change
     let smallChange = 0.00001
@@ -34,6 +40,10 @@ module SupportVectorMachine =
         then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha + row1.Alpha)
         else max low (row2.Alpha - row1.Alpha),        min high (high + row2.Alpha - row1.Alpha) 
     
+    let changeBounds low high row1 row2 =
+        let l, h = findLowHigh low high row1 row2
+        if h > l then Some(l, h) else None
+
     // next index "around the clock"
     let nextAround size i = (i + 1) % size
 
@@ -67,51 +77,46 @@ module SupportVectorMachine =
         then b2
         else (b1 + b2) / 2.0
 
+    let computeEta rowi rowj =
+        let eta = 2.0 * dot rowi.Data rowj.Data - dot rowi.Data rowi.Data - dot rowj.Data rowj.Data
+        if eta >= 0.0 then None else Some(eta)
+
+    let maybe = MaybeBuilder()
+
     // Attempt to update support vectors i and j
     let pivot (rows: SupportVector list) b parameters i j =
-    
-        // printfn "%i %i" i j
-    
-        let rowi = rows.[i]
-        let iError = rowError rows b rowi
-    
-        if not (canChange parameters rowi iError)
-        then Failure
-        else
-            let rowj = rows.[j]
-            let lo, hi = findLowHigh 0.0 parameters.C rowi rowj
-
-            if lo = hi 
-            then Failure
-            else
-                let eta = 2.0 * dot rowi.Data rowj.Data - dot rowi.Data rowi.Data - dot rowj.Data rowj.Data
+        maybe { 
+            let rowi = rows.[i]
+            let iError = rowError rows b rowi
             
-                if eta >= 0.0 
-                then Failure
-                else   
-                    let jError = rowError rows b rowj
+            let! rowj = if (canChange parameters rowi iError) then Some(rows.[j]) else None
 
-                    let jAlphaNew = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
+            let! lo, hi = changeBounds 0.0 parameters.C rowi rowj
 
-                    if (abs (jAlphaNew - rowj.Alpha) < smallChange)
-                    then Failure
-                    else
-                        let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
-                        let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
+            let! eta = computeEta rowi rowj
+            
+            let jError = rowError rows b rowj
 
-                        // printfn "First: %f -> %f" rowi.Alpha iAlphaNew
-                        // printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-                        // printfn "B: %f -> %f" b updatedB
+            let! jAlphaNew = 
+                let candidate = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
+                if (abs (candidate - rowj.Alpha) < smallChange) then None else Some(candidate)
 
-                        let updatedRows =
-                            rows 
-                            |> List.mapi (fun index value -> 
-                                if index = i 
-                                then { value with Alpha = iAlphaNew } 
-                                elif index = j 
-                                then { value with Alpha = jAlphaNew }
-                                else value)
-                        Success(updatedRows, updatedB) 
+            let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
+            let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
+
+            // printfn "First: %f -> %f" rowi.Alpha iAlphaNew
+            // printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
+            // printfn "B: %f -> %f" b updatedB
+
+            let updatedRows =
+                rows 
+                |> List.mapi (fun index value -> 
+                    if index = i 
+                    then { value with Alpha = iAlphaNew } 
+                    elif index = j 
+                    then { value with Alpha = jAlphaNew }
+                    else value)
+            return (updatedRows, updatedB) }
 
     // pick an index other than i in [0..(count-1)]
     let pickAnother (rng: System.Random) i count = 
@@ -140,8 +145,8 @@ module SupportVectorMachine =
                 let j = pickAnother rng i size
                 let updated = pivot (fst current) (snd current) parameters i j
                 match updated with
-                | Failure -> search current (noChange + 1) (next i)
-                | Success(result) -> search result 0 (next i)
+                | None -> search current (noChange + 1) (next i)
+                | Some(result) -> search result 0 (next i)
             else
                 current
 
