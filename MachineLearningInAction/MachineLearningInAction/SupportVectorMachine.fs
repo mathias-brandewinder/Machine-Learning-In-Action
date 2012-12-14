@@ -152,6 +152,47 @@ module SupportVectorMachine =
 
         search (rows, b) 0 0
 
+    type Loop = Full | Subset
+
+    let smoPivot = pivot
+
+    // Sequential Minimal Optimization
+    let smo dataset labels parameters = 
+        // data preparation
+        let size = dataset |> List.length        
+        let b = 0.0
+
+        let rows = 
+            List.zip dataset labels
+            |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
+        let rng = new Random()
+        
+        // search routine
+        let rec search (current: SupportVector list) b loop =
+            let pivots =
+                match loop with
+                | Full   -> [ 0 .. size - 1 ]
+                | Subset -> 
+                    seq { 0 .. size - 1 } 
+                    |> Seq.filter (fun i -> current.[i].Alpha > 0.0 || current.[i].Alpha < parameters.C ) 
+                    |> Seq.toList
+            let changes = 0
+            let updated =
+                Seq.fold (fun (svs, b, chs) index -> 
+                    let j = pickAnother rng index size // TEMPORARY: NOT CORRECT
+                    match (smoPivot svs b parameters index j) with
+                    | None               -> (svs, b, chs)
+                    | Some((res1, res2)) -> (res1, res2, chs + 1)) (current, b, changes) pivots
+            let (vcs, b, chs) = updated
+            printfn "Changes: %i" chs
+            
+            if (chs = 0)
+            then (vcs, b)
+            else search vcs b (match loop with | Full -> Subset | Subset -> Full)
+
+        // run search
+        search rows b Full
+
     // Compute the weights, using rows returned from SVM:
     let weights rows =
         rows 
@@ -167,6 +208,13 @@ module SupportVectorMachine =
     // to classify any observation vector.    
     let classifier (data: float list list) (labels: float list) parameters =
         let estimator = simpleSvm data labels parameters
+        let w = weights (fst estimator)
+        let b = snd estimator
+        fun obs -> b + dot w obs
+
+    // OBVIOUS DUPLICATION
+    let smoClassifier (data: float list list) (labels: float list) parameters =
+        let estimator = smo data labels parameters
         let w = weights (fst estimator)
         let b = snd estimator
         fun obs -> b + dot w obs

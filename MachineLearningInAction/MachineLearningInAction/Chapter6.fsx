@@ -56,8 +56,23 @@ let test (data: float list list) (labels: float list) parameters =
         |> List.average
     printfn "Proportion correctly classified: %f" performance
 
+//let plot (data: float list list) (labels: float list) parameters =
+//    let estimator = simpleSvm data labels parameters
+//    let labels = 
+//        estimator 
+//        |> (fst) 
+//        |> Seq.map (fun row -> 
+//            if row.Alpha > 0.0 then 0
+//            elif row.Label < 0.0 then 1
+//            else 2)
+//    let data = 
+//        estimator 
+//        |> (fst) 
+//        |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
+//    scatterplot data labels
+
 let plot (data: float list list) (labels: float list) parameters =
-    let estimator = simpleSvm data labels parameters
+    let estimator = smo data labels parameters
     let labels = 
         estimator 
         |> (fst) 
