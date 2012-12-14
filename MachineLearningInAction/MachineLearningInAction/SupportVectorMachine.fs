@@ -155,8 +155,54 @@ module SupportVectorMachine =
         search (rows, b) 0 0
 
     type Loop = Full | Subset
+    let isValid row = false
 
-    let smoPivot = pivot
+    let selectCandidate (rows: SupportVector list) b rng i =
+        let candidates = 
+            rows
+            |> List.filter isValid
+        if List.length candidates > 0
+        then 
+            let rowi = rows.[i]
+            let errori = rowError rows b rowi
+            List.mapi (fun i r -> i, abs (errori - rowError rows b r)) candidates
+            |> List.maxBy (fun (i, e) -> e)
+            |> fst
+        else pickAnother rng i (List.length rows)
+
+    let smoPivot (rows: SupportVector list) b parameters i j =
+        maybe { 
+            let rowi = rows.[i]
+            let iError = rowError rows b rowi
+            
+            let! rowj = if (canChange parameters rowi iError) then Some(rows.[j]) else None
+
+            let! lo, hi = changeBounds 0.0 parameters.C rowi rowj
+
+            let! eta = computeEta rowi rowj
+            
+            let jError = rowError rows b rowj
+
+            let! jAlphaNew = 
+                let candidate = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
+                if (abs (candidate - rowj.Alpha) < smallChange) then None else Some(candidate)
+
+            let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
+            let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
+
+            // printfn "First: %f -> %f" rowi.Alpha iAlphaNew
+            // printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
+            // printfn "B: %f -> %f" b updatedB
+
+            let updatedRows =
+                rows 
+                |> List.mapi (fun index value -> 
+                    if index = i 
+                    then { value with Alpha = iAlphaNew } 
+                    elif index = j 
+                    then { value with Alpha = jAlphaNew }
+                    else value)
+            return (updatedRows, updatedB) }
 
     // Sequential Minimal Optimization
     let smo dataset labels parameters = 
@@ -181,7 +227,7 @@ module SupportVectorMachine =
             let changes = 0
             let updated =
                 Seq.fold (fun (svs, b, chs) index -> 
-                    let j = pickAnother rng index size // TEMPORARY: NOT CORRECT
+                    let j = selectCandidate svs b rng index //pickAnother rng index size // TEMPORARY: NOT CORRECT
                     match (smoPivot svs b parameters index j) with
                     | None               -> (svs, b, chs)
                     | Some((res1, res2)) -> (res1, res2, chs + 1)) (current, b, changes) pivots
