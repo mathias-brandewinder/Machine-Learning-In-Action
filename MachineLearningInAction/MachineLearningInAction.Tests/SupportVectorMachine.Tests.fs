@@ -104,3 +104,11 @@ type ``SVM tests`` () =
         let row = { Data = [ ]; Label =  label; Alpha = alpha }
         let parameters = { C = c; Tolerance = tol; Depth = 0 }
         canChange parameters row error
+
+    [<TestCase(0.0, 2.0, Result = true)>] // alpha = 0 is bound
+    [<TestCase(2.0, 2.0, Result = true)>] // alpha = C is bound
+    [<TestCase(1.0, 2.0, Result = false)>] // 0 < alpha < C is not bound
+    member this.``validate supportVector isBound`` (alpha, c) =
+        let row = { Data = [ ]; Label =  1.0; Alpha = alpha }
+        let parameters = { C = c; Tolerance = 0.0; Depth = 0 }
+        isBound parameters row

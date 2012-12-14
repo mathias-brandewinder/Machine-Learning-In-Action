@@ -34,6 +34,8 @@ module SupportVectorMachine =
         then min
         else x
 
+    let isBound parameters sv = sv.Alpha <= 0.0 || sv.Alpha >= parameters.C
+
     // identify bounds of acceptable Alpha changes
     let findLowHigh low high row1 row2 = 
         if row1.Label = row2.Label
@@ -174,7 +176,7 @@ module SupportVectorMachine =
                 | Full   -> [ 0 .. size - 1 ]
                 | Subset -> 
                     seq { 0 .. size - 1 } 
-                    |> Seq.filter (fun i -> current.[i].Alpha > 0.0 || current.[i].Alpha < parameters.C ) 
+                    |> Seq.filter (fun i -> not (isBound parameters current.[i]))
                     |> Seq.toList
             let changes = 0
             let updated =
