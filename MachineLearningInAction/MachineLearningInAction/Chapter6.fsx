@@ -12,19 +12,19 @@ let rng = new Random()
 
 // tight dataset: there is no margin between 2 groups
 let tightData = 
-    [ for i in 1 .. 1000 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
+    [| for i in 1 .. 500 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
 let tightLabels = 
-    tightData |> List.map (fun el -> 
+    tightData |> Array.map (fun el -> 
         if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
 // loose dataset: there is empty "gap" between 2 groups
 let looseData = 
     tightData 
-    |> List.filter (fun e -> 
+    |> Array.filter (fun e -> 
         let tot = List.sum e
         tot > 110.0 || tot < 90.0)
 let looseLabels = 
-    looseData |> List.map (fun el -> 
+    looseData |> Array.map (fun el -> 
         if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
 // create an X,Y scatterplot, with different formatting for each label 
@@ -43,20 +43,20 @@ let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
     |> FSharpChart.Create    
 
 // plot raw datasets
-scatterplot (tightData |> List.map (fun e -> e.[0], e.[1])) tightLabels
-scatterplot (looseData |> List.map (fun e -> e.[0], e.[1])) looseLabels
+scatterplot (tightData |> Array.map (fun e -> e.[0], e.[1])) tightLabels
+scatterplot (looseData |> Array.map (fun e -> e.[0], e.[1])) looseLabels
 
-let test (data: float list list) (labels: float list) parameters =
+let test (data: float list []) (labels: float []) parameters =
     let classify = smoClassifier data labels parameters
     let performance = 
         data
-        |> List.map (fun row -> classify row)
-        |> List.zip labels
-        |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
-        |> List.average
+        |> Array.map (fun row -> classify row)
+        |> Array.zip labels
+        |> Array.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
+        |> Array.average
     printfn "Proportion correctly classified: %f" performance
 
-let plot (data: float list list) (labels: float list) parameters =
+let plot (data: float list []) (labels: float []) parameters =
     let estimator = smo data labels parameters
     let labels = 
         estimator 
@@ -99,7 +99,7 @@ let separator (dataSet: (float * float) seq) (labels: 'a seq) (line: float -> fl
         ]
     |> FSharpChart.Create 
 
-let plotLine (data: float list list) (labels: float list) parameters =
+let plotLine (data: float list []) (labels: float []) parameters =
     let estimator = smo data labels parameters
     let w = weights (fst estimator)
     let b = snd estimator
@@ -110,27 +110,27 @@ plotLine tightData tightLabels parameters
 plotLine looseData looseLabels parameters
 
 // noisy dataset: a percentage of observations is mis-labeled
-let misclassified = 0.01
+let misclassified = 0.05
 let noisyData = tightData
 let noisyLabels = 
-    tightLabels |> List.map (fun l -> 
+    tightLabels |> Array.map (fun l -> 
         if (rng.NextDouble() > 1.0 - misclassified) then -l else l)
 
-scatterplot (noisyData |> List.map (fun e -> e.[0], e.[1])) noisyLabels
+scatterplot (noisyData |> Array.map (fun e -> e.[0], e.[1])) noisyLabels
 plot noisyData noisyLabels parameters
 test noisyData noisyLabels parameters
 plotLine noisyData noisyLabels parameters
 
 // larger set (1000 observations, 10 dimensions)
 let largeData = 
-    [ for i in 1 .. 1000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] ]
+    [| for i in 1 .. 10000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] |]
 let largeLabels = 
-    largeData |> List.map (fun x -> 
+    largeData |> Array.map (fun x -> 
         if (x |> List.sum >= 500.0) then 1.0 else -1.0)
 
 largeLabels 
-    |> List.filter (fun l -> l = 1.0) 
-    |> List.length 
+    |> Array.filter (fun l -> l = 1.0) 
+    |> Array.length 
     |> printfn "Number in group 1: %i"
 
 test largeData largeLabels parameters

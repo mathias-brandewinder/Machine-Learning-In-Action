@@ -97,7 +97,7 @@ module SupportVectorMachine =
         | Subset -> Full
     
     // find a suitable second vector to pivot with vector i 
-    let identifyCandidate (rows: SupportVector list) b (rng: Random) parameters i =
+    let identifyCandidate (rows: SupportVector []) b (rng: Random) parameters i =
 
         let rowi = rows.[i]
         let iError = rowError rows b rowi
@@ -116,12 +116,12 @@ module SupportVectorMachine =
                     |> Seq.maxBy (fun (i, sv, e) -> abs (iError - e))
                 Some((i, rowi, iError), (j, rowj, jError))
             else
-                let j = pickAnother rng i (List.length rows)
+                let j = pickAnother rng i (Array.length rows)
                 let rowj = rows.[j]
                 let jError = rowError rows b rowj
                 Some((i, rowi, iError), (j, rowj, jError))
 
-    let pivotPair (rows: SupportVector list) b parameters sv1 sv2 =
+    let pivotPair (rows: SupportVector []) b parameters sv1 sv2 =
         let (i, rowi, iError) = sv1
         let (j, rowj, jError) = sv2
         maybe { 
@@ -141,7 +141,7 @@ module SupportVectorMachine =
 //
             let updatedRows =
                 rows 
-                |> List.mapi (fun index value -> 
+                |> Array.mapi (fun index value -> 
                     if index = i 
                     then { value with Alpha = iAlphaNew } 
                     elif index = j 
@@ -152,17 +152,17 @@ module SupportVectorMachine =
     // Sequential Minimal Optimization
     let smo dataset labels parameters = 
         // data preparation
-        let size = dataset |> List.length        
+        let size = dataset |> Array.length        
         let b = 0.0
 
         let rows = 
-            List.zip dataset labels
-            |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
+            Array.zip dataset labels
+            |> Array.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
         let rng = new Random()
         let iter = 0
 
         // search routine
-        let rec search (current: SupportVector list) b it loop =
+        let rec search (current: SupportVector []) b it loop =
             let pivots =
                 match loop with
                 | Full   -> seq { 0 .. size - 1 }
@@ -201,7 +201,7 @@ module SupportVectorMachine =
         |> Seq.reduce (fun acc row -> 
             List.map2 (fun a r -> a + r) acc row )
     
-    let smoClassifier (data: float list list) (labels: float list) parameters =
+    let smoClassifier (data: float list []) (labels: float []) parameters =
         let estimator = smo data labels parameters
         let w = weights (fst estimator)
         let b = snd estimator
