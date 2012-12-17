@@ -85,115 +85,60 @@ module SupportVectorMachine =
 
     let maybe = MaybeBuilder()
 
-    // Attempt to update support vectors i and j
-    let pivot (rows: SupportVector list) b parameters i j =
-        maybe { 
-            let rowi = rows.[i]
-            let iError = rowError rows b rowi
-            
-            let! rowj = if (canChange parameters rowi iError) then Some(rows.[j]) else None
-
-            let! lo, hi = changeBounds 0.0 parameters.C rowi rowj
-
-            let! eta = computeEta rowi rowj
-            
-            let jError = rowError rows b rowj
-
-            let! jAlphaNew = 
-                let candidate = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
-                if (abs (candidate - rowj.Alpha) < smallChange) then None else Some(candidate)
-
-            let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
-            let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
-
-            // printfn "First: %f -> %f" rowi.Alpha iAlphaNew
-            // printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-            // printfn "B: %f -> %f" b updatedB
-
-            let updatedRows =
-                rows 
-                |> List.mapi (fun index value -> 
-                    if index = i 
-                    then { value with Alpha = iAlphaNew } 
-                    elif index = j 
-                    then { value with Alpha = jAlphaNew }
-                    else value)
-            return (updatedRows, updatedB) }
-
     // pick an index other than i in [0..(count-1)]
     let pickAnother (rng: System.Random) i count = 
         let j = rng.Next(0, count - 1)
         if j >= i then j + 1 else j
 
-    // Naive support vector machine estimation:
-    // iterate over the observations and attempt
-    // pivot with another random row, 
-    // until we have Depth consecutive pivot failures  
-    let simpleSvm dataset labels parameters =
-    
-        let size = dataset |> List.length        
-        let b = 0.0
-
-        let rows = 
-            List.zip dataset labels
-            |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
-
-        let rng = new Random()
-        let next i = nextAround size i
-    
-        let rec search current noChange i =
-            if noChange < parameters.Depth
-            then
-                let j = pickAnother rng i size
-                let updated = pivot (fst current) (snd current) parameters i j
-                match updated with
-                | None -> search current (noChange + 1) (next i)
-                | Some(result) -> search result 0 (next i)
-            else
-                current
-
-        search (rows, b) 0 0
-
     type Loop = Full | Subset
-    let isValid row = false
+    let switch loop = 
+        match loop with 
+        | Full   -> Subset 
+        | Subset -> Full
+    
+    // find a suitable second vector to pivot with vector i 
+    let identifyCandidate (rows: SupportVector list) b (rng: Random) parameters i =
 
-    let selectCandidate (rows: SupportVector list) b rng i =
-        let candidates = 
-            rows
-            |> List.filter isValid
-        if List.length candidates > 0
-        then 
-            let rowi = rows.[i]
-            let errori = rowError rows b rowi
-            List.mapi (fun i r -> i, abs (errori - rowError rows b r)) candidates
-            |> List.maxBy (fun (i, e) -> e)
-            |> fst
-        else pickAnother rng i (List.length rows)
+        let rowi = rows.[i]
+        let iError = rowError rows b rowi
 
-    let smoPivot (rows: SupportVector list) b parameters i j =
+        match (canChange parameters rowi iError) with
+        | false -> None
+        | true  ->
+            let candidates =
+                Seq.mapi (fun i sv -> (i, sv)) rows
+                |> Seq.filter (fun (i, sv) -> not (isBound parameters sv))
+            if (Seq.length candidates > 1)
+            then
+                let (j, rowj, jError) =
+                    candidates
+                    |> Seq.map (fun (i, sv) -> (i, sv, rowError rows b sv))
+                    |> Seq.maxBy (fun (i, sv, e) -> abs (iError - e))
+                Some((i, rowi, iError), (j, rowj, jError))
+            else
+                let j = pickAnother rng i (List.length rows)
+                let rowj = rows.[j]
+                let jError = rowError rows b rowj
+                Some((i, rowi, iError), (j, rowj, jError))
+
+    let pivotPair (rows: SupportVector list) b parameters sv1 sv2 =
+        let (i, rowi, iError) = sv1
+        let (j, rowj, jError) = sv2
         maybe { 
-            let rowi = rows.[i]
-            let iError = rowError rows b rowi
-            
-            let! rowj = if (canChange parameters rowi iError) then Some(rows.[j]) else None
-
             let! lo, hi = changeBounds 0.0 parameters.C rowi rowj
-
             let! eta = computeEta rowi rowj
             
-            let jError = rowError rows b rowj
-
             let! jAlphaNew = 
                 let candidate = clip (lo, hi) (rowj.Alpha - (rowj.Label * (iError - jError) / eta))
                 if (abs (candidate - rowj.Alpha) < smallChange) then None else Some(candidate)
 
             let iAlphaNew = rowi.Alpha + (rowi.Label * rowj.Label * (rowj.Alpha - jAlphaNew))
             let updatedB = updateB b rowi rowj iAlphaNew jAlphaNew iError jError parameters.C
-
-            // printfn "First: %f -> %f" rowi.Alpha iAlphaNew
-            // printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
-            // printfn "B: %f -> %f" b updatedB
-
+//            printfn "Pivoted %i and %i" i j
+//            printfn "First: %f -> %f" rowi.Alpha iAlphaNew
+//            printfn "Second: %f -> %f" rowj.Alpha jAlphaNew
+//            printfn "B: %f -> %f" b updatedB
+//
             let updatedRows =
                 rows 
                 |> List.mapi (fun index value -> 
@@ -214,32 +159,37 @@ module SupportVectorMachine =
             List.zip dataset labels
             |> List.map (fun (d, l) -> { Data = d; Label = l; Alpha = 0.0 })
         let rng = new Random()
-        
+        let iter = 0
+
         // search routine
-        let rec search (current: SupportVector list) b loop =
+        let rec search (current: SupportVector list) b it loop =
             let pivots =
                 match loop with
-                | Full   -> [ 0 .. size - 1 ]
+                | Full   -> seq { 0 .. size - 1 }
                 | Subset -> 
                     seq { 0 .. size - 1 } 
                     |> Seq.filter (fun i -> not (isBound parameters current.[i]))
-                    |> Seq.toList
             let changes = 0
             let updated =
                 Seq.fold (fun (svs, b, chs) index -> 
-                    let j = selectCandidate svs b rng index //pickAnother rng index size // TEMPORARY: NOT CORRECT
-                    match (smoPivot svs b parameters index j) with
-                    | None               -> (svs, b, chs)
-                    | Some((res1, res2)) -> (res1, res2, chs + 1)) (current, b, changes) pivots
+                    match (identifyCandidate svs b rng parameters index) with
+                    | None           -> (svs, b, chs)
+                    | Some(sv1, sv2) -> 
+                        match (pivotPair svs b parameters sv1 sv2) with
+                        | None             -> (svs, b, chs)
+                        | Some(res1, res2) -> (res1, res2, chs + 1))
+                        (current, b, changes) pivots
+
             let (vcs, b, chs) = updated
-            printfn "Changes: %i" chs
             
-            if (chs = 0)
+            if (chs = 0 && loop = Subset)
             then (vcs, b)
-            else search vcs b (match loop with | Full -> Subset | Subset -> Full)
+            elif (it > parameters.Depth)
+            then (vcs, b)
+            else search vcs b (it + 1) (switch loop)
 
         // run search
-        search rows b Full
+        search rows b 0 Full
 
     // Compute the weights, using rows returned from SVM:
     let weights rows =
@@ -251,16 +201,6 @@ module SupportVectorMachine =
         |> Seq.reduce (fun acc row -> 
             List.map2 (fun a r -> a + r) acc row )
     
-    // compute the Support Vectors for the given data,
-    // and returns a function that uses the results
-    // to classify any observation vector.    
-    let classifier (data: float list list) (labels: float list) parameters =
-        let estimator = simpleSvm data labels parameters
-        let w = weights (fst estimator)
-        let b = snd estimator
-        fun obs -> b + dot w obs
-
-    // OBVIOUS DUPLICATION
     let smoClassifier (data: float list list) (labels: float list) parameters =
         let estimator = smo data labels parameters
         let w = weights (fst estimator)

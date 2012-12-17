@@ -12,7 +12,7 @@ let rng = new Random()
 
 // tight dataset: there is no margin between 2 groups
 let tightData = 
-    [ for i in 1 .. 500 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
+    [ for i in 1 .. 1000 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] ]
 let tightLabels = 
     tightData |> List.map (fun el -> 
         if (el |> List.sum >= 100.0) then 1.0 else -1.0)
@@ -47,7 +47,7 @@ scatterplot (tightData |> List.map (fun e -> e.[0], e.[1])) tightLabels
 scatterplot (looseData |> List.map (fun e -> e.[0], e.[1])) looseLabels
 
 let test (data: float list list) (labels: float list) parameters =
-    let classify = classifier data labels parameters
+    let classify = smoClassifier data labels parameters
     let performance = 
         data
         |> List.map (fun row -> classify row)
@@ -55,21 +55,6 @@ let test (data: float list list) (labels: float list) parameters =
         |> List.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
         |> List.average
     printfn "Proportion correctly classified: %f" performance
-
-//let plot (data: float list list) (labels: float list) parameters =
-//    let estimator = simpleSvm data labels parameters
-//    let labels = 
-//        estimator 
-//        |> (fst) 
-//        |> Seq.map (fun row -> 
-//            if row.Alpha > 0.0 then 0
-//            elif row.Label < 0.0 then 1
-//            else 2)
-//    let data = 
-//        estimator 
-//        |> (fst) 
-//        |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
-//    scatterplot data labels
 
 let plot (data: float list list) (labels: float list) parameters =
     let estimator = smo data labels parameters
@@ -86,7 +71,7 @@ let plot (data: float list list) (labels: float list) parameters =
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
     scatterplot data labels
 
-let parameters = { C = 0.6; Tolerance = 0.001; Depth = 500 }
+let parameters = { C = 0.6; Tolerance = 0.001; Depth = 50 }
 
 test tightData tightLabels parameters
 test looseData looseLabels parameters
@@ -115,7 +100,7 @@ let separator (dataSet: (float * float) seq) (labels: 'a seq) (line: float -> fl
     |> FSharpChart.Create 
 
 let plotLine (data: float list list) (labels: float list) parameters =
-    let estimator = simpleSvm data labels parameters
+    let estimator = smo data labels parameters
     let w = weights (fst estimator)
     let b = snd estimator
     let line x = - b / w.[1] - x * w.[0] / w.[1]
@@ -125,7 +110,7 @@ plotLine tightData tightLabels parameters
 plotLine looseData looseLabels parameters
 
 // noisy dataset: a percentage of observations is mis-labeled
-let misclassified = 0.05
+let misclassified = 0.01
 let noisyData = tightData
 let noisyLabels = 
     tightLabels |> List.map (fun l -> 
