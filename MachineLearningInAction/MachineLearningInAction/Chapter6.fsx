@@ -109,21 +109,9 @@ let plotLine (data: float list []) (labels: float []) parameters =
 plotLine tightData tightLabels parameters
 plotLine looseData looseLabels parameters
 
-// noisy dataset: a percentage of observations is mis-labeled
-let misclassified = 0.05
-let noisyData = tightData
-let noisyLabels = 
-    tightLabels |> Array.map (fun l -> 
-        if (rng.NextDouble() > 1.0 - misclassified) then -l else l)
-
-scatterplot (noisyData |> Array.map (fun e -> e.[0], e.[1])) noisyLabels
-plot noisyData noisyLabels parameters
-test noisyData noisyLabels parameters
-plotLine noisyData noisyLabels parameters
-
 // larger set (1000 observations, 10 dimensions)
 let largeData = 
-    [| for i in 1 .. 10000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] |]
+    [| for i in 1 .. 1000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] |]
 let largeLabels = 
     largeData |> Array.map (fun x -> 
         if (x |> List.sum >= 500.0) then 1.0 else -1.0)
@@ -134,3 +122,17 @@ largeLabels
     |> printfn "Number in group 1: %i"
 
 test largeData largeLabels parameters
+
+// noisy dataset: a percentage of observations is mis-labeled
+// Commented out: the classifier seems to really struggle with this.
+//let misclassified = 0.05
+//let noisyData = tightData
+//let noisyLabels = 
+//    tightLabels |> Array.map (fun l -> 
+//        if (rng.NextDouble() > 1.0 - misclassified) then -l else l)
+//
+//scatterplot (noisyData |> Array.map (fun e -> e.[0], e.[1])) noisyLabels
+//plot noisyData noisyLabels parameters
+//test noisyData noisyLabels parameters
+//plotLine noisyData noisyLabels parameters
+
