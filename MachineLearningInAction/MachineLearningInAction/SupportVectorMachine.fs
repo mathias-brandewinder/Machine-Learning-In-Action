@@ -4,7 +4,7 @@ module SupportVectorMachine =
 
     open System
 
-    // an observation, its label, and current alpha estimate
+    // An observation, its label, and current alpha estimate
     type SupportVector = { Data: float list; Label: float; Alpha: float }
     // SVM algorithm input parameters
     type Parameters = { Tolerance: float; C: float; Depth: int }
@@ -17,7 +17,7 @@ module SupportVectorMachine =
         member this.Delay(f) = f()
         member this.Return(x) = Some x
 
-    // limit for what is considered too small a change
+    // Limit for what is considered too small a change
     let smallChange = 0.00001
 
     // Product of vectors
@@ -34,36 +34,31 @@ module SupportVectorMachine =
         then min
         else x
 
+    // Identify whether a support vector is bound
     let isBound parameters sv = sv.Alpha <= 0.0 || sv.Alpha >= parameters.C
 
-    // identify bounds of acceptable Alpha changes
-    let findLowHigh low high row1 row2 = 
-        if row1.Label = row2.Label
-        then max low (row1.Alpha + row2.Alpha - high), min high (row2.Alpha + row1.Alpha)
-        else max low (row2.Alpha - row1.Alpha),        min high (high + row2.Alpha - row1.Alpha) 
+    // Identify bounds of acceptable Alpha changes
+    let findLowHigh (low, high) sv1 sv2 = 
+        if sv1.Label = sv2.Label
+        then max low (sv1.Alpha + sv2.Alpha - high), min high (sv2.Alpha + sv1.Alpha)
+        else max low (sv2.Alpha - sv1.Alpha),        min high (high + sv2.Alpha - sv1.Alpha) 
     
-    let changeBounds low high row1 row2 =
-        let l, h = findLowHigh low high row1 row2
+    let changeBounds (low, high) sv1 sv2 =
+        let l, h = findLowHigh (low, high) sv1 sv2
         if h > l then Some(l, h) else None
 
-    // next index "around the clock"
-    let nextAround size i = (i + 1) % size
-
-    // compute error on row, given current alphas
-    let rowError rows b row =
+    // Compute error on support vector, given current alphas
+    let rowError (rows, b) sv =
         rows
         |> Seq.filter (fun r -> r.Alpha > 0.0)
         |> Seq.fold (fun acc r -> 
-            acc + r.Label * r.Alpha * (dot r.Data row.Data)) (b - row.Label)
+            acc + r.Label * r.Alpha * (dot r.Data sv.Data)) (b - sv.Label)
 
-    // check whether alpha can be modified for row,
-    // given error and parameter C
-    let canChange parameters row error =
-        if (error * row.Label < - parameters.Tolerance && row.Alpha < parameters.C)
-        then true
-        elif (error * row.Label > parameters.Tolerance && row.Alpha > 0.0)
-        then true
-        else false
+    // Check whether alpha can be modified for support vector,
+    // given current prediction error and parameter C
+    let canChange parameters sv error =
+        (error * sv.Label < - parameters.Tolerance && sv.Alpha < parameters.C)
+        || (error * sv.Label > parameters.Tolerance && sv.Alpha > 0.0)
 
     let f row1 row2 alpha1 alpha2 =
         row1.Label * (alpha1 - row1.Alpha) * (dot row1.Data row2.Data) + 
@@ -79,28 +74,29 @@ module SupportVectorMachine =
         then b2
         else (b1 + b2) / 2.0
 
-    let computeEta rowi rowj =
-        let eta = 2.0 * dot rowi.Data rowj.Data - dot rowi.Data rowi.Data - dot rowj.Data rowj.Data
+    let computeEta sv1 sv2 =
+        let eta = 2.0 * dot sv1.Data sv2.Data - dot sv1.Data sv1.Data - dot sv2.Data sv2.Data
         if eta >= 0.0 then None else Some(eta)
 
     let maybe = MaybeBuilder()
 
-    // pick an index other than i in [0..(count-1)]
+    // Pick a random index other than i in [0..(count-1)]
     let pickAnother (rng: System.Random) i count = 
         let j = rng.Next(0, count - 1)
         if j >= i then j + 1 else j
 
+    // Describes the two algorithm loop types
     type Loop = Full | Subset
     let switch loop = 
         match loop with 
         | Full   -> Subset 
         | Subset -> Full
     
-    // find a suitable second vector to pivot with vector i 
+    // Find a suitable second vector to pivot with support vector i 
     let identifyCandidate (rows: SupportVector []) b (rng: Random) parameters i =
 
         let rowi = rows.[i]
-        let iError = rowError rows b rowi
+        let iError = rowError (rows, b) rowi
 
         match (canChange parameters rowi iError) with
         | false -> None
@@ -112,20 +108,20 @@ module SupportVectorMachine =
             then
                 let (j, rowj, jError) =
                     candidates
-                    |> Seq.map (fun (i, sv) -> (i, sv, rowError rows b sv))
+                    |> Seq.map (fun (i, sv) -> (i, sv, rowError (rows, b) sv))
                     |> Seq.maxBy (fun (i, sv, e) -> abs (iError - e))
                 Some((i, rowi, iError), (j, rowj, jError))
             else
                 let j = pickAnother rng i (Array.length rows)
                 let rowj = rows.[j]
-                let jError = rowError rows b rowj
+                let jError = rowError (rows, b) rowj
                 Some((i, rowi, iError), (j, rowj, jError))
 
     let pivotPair (rows: SupportVector []) b parameters sv1 sv2 =
         let (i, rowi, iError) = sv1
         let (j, rowj, jError) = sv2
         maybe { 
-            let! lo, hi = changeBounds 0.0 parameters.C rowi rowj
+            let! lo, hi = changeBounds (0.0, parameters.C) rowi rowj
             let! eta = computeEta rowi rowj
             
             let! jAlphaNew = 

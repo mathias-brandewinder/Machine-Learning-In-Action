@@ -27,12 +27,6 @@ type ``SVM tests`` () =
         clip (min, max) 2.0 |> should equal 2.0
 
     [<Test>]
-    member this.``nextAround verification`` () =
-        let size = 5
-        nextAround size 0 |> should equal 1
-        nextAround size 4 |> should equal 0
-
-    [<Test>]
     member this.``rowError verification`` () =
         let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0;  Alpha = 0.5 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 0.0 }
@@ -43,54 +37,54 @@ type ``SVM tests`` () =
         // b + 0.5 * 1.0 * row1.row3 + -1.0 * 1.0 * row3.row3
         // 7.0 + 0.5 * 17.0 - 1.0 * 61.0 = 66.5
         // 7.0 + 8.5 - 61.0 = -45.5
-        rowError rows b row3 |> should equal -44.5
+        rowError (rows, b) row3 |> should equal -44.5
 
     [<Test>]
     member this.``findLowHigh: verify low bound, same labels`` () =
         let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
-        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 4.0) row1 row2
         lo |> should equal 0.0
 
         let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
-        let (lo, hi) = findLowHigh 0.0 1.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 1.0) row1 row2
         lo |> should equal 2.0
 
     [<Test>]
     member this.``findLowHigh: verify high bound, same labels`` () =
         let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
-        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 4.0) row1 row2
         hi |> should equal 3.0
 
         let row1 = { Data = [ 1.0; 2.0 ]; Label = 1.0; Alpha = 1.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = 1.0; Alpha = 2.0 }
-        let (lo, hi) = findLowHigh 0.0 1.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 1.0) row1 row2
         hi |> should equal 1.0
 
     [<Test>]
     member this.``findLowHigh: verify low bound, different label`` () =
         let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 2.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 1.0 }
-        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 4.0) row1 row2
         lo |> should equal 0.0
 
         let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 1.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 2.0 }
-        let (lo, hi) = findLowHigh 0.0 1.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 1.0) row1 row2
         lo |> should equal 1.0
 
     [<Test>]
     member this.``findLowHigh: verify high bound, different labels`` () =
         let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 1.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 2.0 }
-        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 4.0) row1 row2
         hi |> should equal 4.0
 
         let row1 = { Data = [ 1.0; 2.0 ]; Label =  1.0; Alpha = 2.0 }
         let row2 = { Data = [ 3.0; 4.0 ]; Label = -1.0; Alpha = 1.0 }
-        let (lo, hi) = findLowHigh 0.0 4.0 row1 row2
+        let (lo, hi) = findLowHigh (0.0, 4.0) row1 row2
         hi |> should equal 3.0
 
     // need to improve this, this is dreadful
