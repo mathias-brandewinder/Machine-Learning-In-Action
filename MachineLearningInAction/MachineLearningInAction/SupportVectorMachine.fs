@@ -28,6 +28,14 @@ module SupportVectorMachine =
         List.fold2 (fun acc v1 v2 -> 
             acc + v1 * v2) 0.0 vec1 vec2
 
+    let radialBias sigma2 
+                   (vec1: float list) 
+                   (vec2: float list) =
+        let bias d = exp (-d/sigma2)
+        List.fold2 (fun acc v1 v2 -> 
+            acc + v1 * v2) 0.0 vec1 vec2
+            |> bias
+
     // Clip a value x that is out of the min/max bounds
     let clip (min, max) x =
         if (x > max)
@@ -200,9 +208,13 @@ module SupportVectorMachine =
         |> Seq.reduce (fun acc row -> 
             List.map2 (fun a r -> a + r) acc row )
     
-    let smoClassifier (data: float list []) (labels: float []) kernel parameters =
-        let estimator = smo data labels kernel parameters
-        let w = weights (fst estimator)
-        let b = snd estimator
+    let classifier (data: float list []) (labels: float []) (kernel: Kernel) estimator =
         // Classifier function
-        fun obs -> b + kernel w obs
+        fun obs ->         
+            let (rows, b) = estimator
+            rows
+            |> Seq.filter (fun r -> r.Alpha > 0.0)
+            |> Seq.fold (fun acc r -> 
+                acc + r.Label * r.Alpha * (kernel r.Data obs)) b
+
+

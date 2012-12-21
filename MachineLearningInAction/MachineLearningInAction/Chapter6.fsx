@@ -9,16 +9,17 @@ open System.Windows.Forms.DataVisualization
 open MSDN.FSharp.Charting
  
 let rng = new Random()
-let linearKernel = dot
 
-// tight dataset: there is no margin between 2 groups
+// Test datasets
+
+// tight dataset, linearly separable: there is no margin between 2 groups
 let tightData = 
-    [| for i in 1 .. 500 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
+    [| for i in 1 .. 200 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
 let tightLabels = 
     tightData |> Array.map (fun el -> 
         if (el |> List.sum >= 100.0) then 1.0 else -1.0)
 
-// loose dataset: there is empty "gap" between 2 groups
+// loose dataset, linearly separable: there is empty "gap" between 2 groups
 let looseData = 
     tightData 
     |> Array.filter (fun e -> 
@@ -27,6 +28,29 @@ let looseData =
 let looseLabels = 
     looseData |> Array.map (fun el -> 
         if (el |> List.sum >= 100.0) then 1.0 else -1.0)
+
+// larger linearly separable dataset (1000 observations, 10 dimensions)
+let largeData = 
+    [| for i in 1 .. 1000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] |]
+let largeLabels = 
+    largeData |> Array.map (fun x -> 
+        if (x |> List.sum >= 500.0) then 1.0 else -1.0)
+
+// Non-linearly separable dataset (discus of radius 30, centered on (40, 60))
+let circleData = 
+    [| for i in 1 .. 1000 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
+let center = [ 40.0; 60.0 ]
+let dist (coord1: float list) coord2 = 
+    List.map2 (fun c1 c2 -> (c1-c2)*(c1-c2)) coord1 coord2
+    |> List.sum
+    |> sqrt
+let circleLabels = 
+    circleData 
+        |> Array.map (fun data -> dist data center)
+        |> Array.map (fun dist -> if dist >= 30.0 then 1.0 else -1.0)
+
+
+// ******** Evaluation utilities ********
 
 // create an X,Y scatterplot, with different formatting for each label 
 let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
@@ -41,24 +65,10 @@ let scatterplot (dataSet: (float * float) seq) (labels: 'a seq) =
                FSharpChart.Point(data) :> ChartTypes.GenericChart
                |> FSharpChart.WithSeries.Marker(Size=10)
         ]
-    |> FSharpChart.Create    
+    |> FSharpChart.Create
 
-// plot raw datasets
-scatterplot (tightData |> Array.map (fun e -> e.[0], e.[1])) tightLabels
-scatterplot (looseData |> Array.map (fun e -> e.[0], e.[1])) looseLabels
-
-let test (data: float list []) (labels: float []) parameters =
-    let classify = smoClassifier data labels linearKernel parameters
-    let performance = 
-        data
-        |> Array.map (fun row -> classify row)
-        |> Array.zip labels
-        |> Array.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
-        |> Array.average
-    printfn "Proportion correctly classified: %f" performance
-
-let plot (data: float list []) (labels: float []) parameters =
-    let estimator = smo data labels linearKernel parameters
+// Visualize support vectors selected from dataset
+let visualizeSupports (data: float list []) (labels: float []) estimator =
     let labels = 
         estimator 
         |> (fst) 
@@ -71,14 +81,6 @@ let plot (data: float list []) (labels: float []) parameters =
         |> (fst) 
         |> Seq.map (fun row -> (row.Data.[0], row.Data.[1]))
     scatterplot data labels
-
-let parameters = { C = 0.6; Tolerance = 0.001; Depth = 50 }
-
-test tightData tightLabels parameters
-test looseData looseLabels parameters
-
-plot tightData tightLabels parameters
-plot looseData looseLabels parameters
 
 // display dataset, and "separating line"
 let separator (dataSet: (float * float) seq) (labels: 'a seq) (line: float -> float) =
@@ -100,45 +102,79 @@ let separator (dataSet: (float * float) seq) (labels: 'a seq) (line: float -> fl
         ]
     |> FSharpChart.Create 
 
-let plotLine (data: float list []) (labels: float []) parameters =
-    let estimator = smo data labels linearKernel parameters
+let plotLine (data: float list []) (labels: float []) estimator =
     let w = weights (fst estimator)
     let b = snd estimator
     let line x = - b / w.[1] - x * w.[0] / w.[1]
     separator (data |> Seq.map (fun e -> e.[0], e.[1])) labels line
 
-plotLine tightData tightLabels parameters
-plotLine looseData looseLabels parameters
+// Proportion of correctly classified
+let quality (data: float list []) (labels: float []) classify =
+    let performance = 
+        data
+        |> Array.map (fun row -> classify row)
+        |> Array.zip labels
+        |> Array.map (fun (a, b) -> if a * b > 0.0 then 1.0 else 0.0)
+        |> Array.average
+    printfn "Proportion correctly classified: %f" performance
 
-// larger set (1000 observations, 10 dimensions)
-let largeData = 
-    [| for i in 1 .. 1000 -> [ for d in 1 .. 10 -> rng.NextDouble() * 100.0 ] |]
-let largeLabels = 
-    largeData |> Array.map (fun x -> 
-        if (x |> List.sum >= 500.0) then 1.0 else -1.0)
+// Validate on samples
 
-largeLabels 
-    |> Array.filter (fun l -> l = 1.0) 
-    |> Array.length 
-    |> printfn "Number in group 1: %i"
-
-test largeData largeLabels parameters
-
-
-// Test case for non-linear data
-let circleData = 
-    [| for i in 1 .. 500 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
-let dist (coord1: float list) coord2 = 
-    List.map2 (fun c1 c2 -> (c1-c2)*(c1-c2)) coord1 coord2
-    |> List.sum
-    |> sqrt
-let center = [ 40.0; 60.0 ]
-let circleLabels = 
-    circleData 
-        |> Array.map (fun data -> dist data center)
-        |> Array.map (fun dist -> if dist >= 30.0 then 1.0 else -1.0)
-
+// plot raw datasets
+scatterplot (tightData |> Array.map (fun e -> e.[0], e.[1])) tightLabels
+scatterplot (looseData |> Array.map (fun e -> e.[0], e.[1])) looseLabels
 scatterplot (circleData |> Array.map (fun data -> data.[0], data.[1])) circleLabels
+
+// identify support vectors
+
+let parameters = { C = 0.6; Tolerance = 0.001; Depth = 50 }
+let linearKernel = dot
+
+let tightEstimator = smo tightData tightLabels linearKernel parameters
+let looseEstimator = smo looseData looseLabels linearKernel parameters
+
+visualizeSupports tightData tightLabels tightEstimator
+visualizeSupports looseData looseLabels looseEstimator
+
+plotLine tightData tightLabels tightEstimator
+plotLine looseData looseLabels looseEstimator
+
+let tightClassifier = classifier tightData tightLabels linearKernel tightEstimator
+let looseClassifier = classifier looseData looseLabels linearKernel looseEstimator
+
+quality tightData tightLabels tightClassifier
+quality looseData looseLabels looseClassifier
+
+let biasKernel = radialBias 10.0
+let circleEstimator = smo circleData circleLabels biasKernel parameters
+
+visualizeSupports circleData circleLabels circleEstimator
+
+let circleClassifier = classifier circleData circleLabels biasKernel circleEstimator
+
+quality circleData circleLabels circleClassifier
+
+// kernel calibration
+
+for k in [ 0.01; 0.1; 1.0; 10.0; 100.0; 1000.0; 10000.0 ] do
+    let ker = radialBias k
+    let circleEstimator = smo circleData circleLabels ker parameters
+    let circleClassifier = classifier circleData circleLabels ker circleEstimator
+    quality circleData circleLabels circleClassifier
+
+
+
+//plotLine tightData tightLabels parameters
+//plotLine looseData looseLabels parameters
+//
+//
+//largeLabels 
+//    |> Array.filter (fun l -> l = 1.0) 
+//    |> Array.length 
+//    |> printfn "Number in group 1: %i"
+//
+//test largeData largeLabels parameters
+//
 
 
 // noisy dataset: a percentage of observations is mis-labeled
