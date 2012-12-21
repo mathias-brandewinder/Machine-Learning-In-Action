@@ -9,6 +9,7 @@ open System.Windows.Forms.DataVisualization
 open MSDN.FSharp.Charting
  
 let rng = new Random()
+let linearKernel = dot
 
 // tight dataset: there is no margin between 2 groups
 let tightData = 
@@ -47,7 +48,7 @@ scatterplot (tightData |> Array.map (fun e -> e.[0], e.[1])) tightLabels
 scatterplot (looseData |> Array.map (fun e -> e.[0], e.[1])) looseLabels
 
 let test (data: float list []) (labels: float []) parameters =
-    let classify = smoClassifier data labels parameters
+    let classify = smoClassifier data labels linearKernel parameters
     let performance = 
         data
         |> Array.map (fun row -> classify row)
@@ -57,7 +58,7 @@ let test (data: float list []) (labels: float []) parameters =
     printfn "Proportion correctly classified: %f" performance
 
 let plot (data: float list []) (labels: float []) parameters =
-    let estimator = smo data labels parameters
+    let estimator = smo data labels linearKernel parameters
     let labels = 
         estimator 
         |> (fst) 
@@ -100,7 +101,7 @@ let separator (dataSet: (float * float) seq) (labels: 'a seq) (line: float -> fl
     |> FSharpChart.Create 
 
 let plotLine (data: float list []) (labels: float []) parameters =
-    let estimator = smo data labels parameters
+    let estimator = smo data labels linearKernel parameters
     let w = weights (fst estimator)
     let b = snd estimator
     let line x = - b / w.[1] - x * w.[0] / w.[1]
