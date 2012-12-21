@@ -123,6 +123,23 @@ largeLabels
 
 test largeData largeLabels parameters
 
+
+// Test case for non-linear data
+let circleData = 
+    [| for i in 1 .. 500 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
+let dist (coord1: float list) coord2 = 
+    List.map2 (fun c1 c2 -> (c1-c2)*(c1-c2)) coord1 coord2
+    |> List.sum
+    |> sqrt
+let center = [ 40.0; 60.0 ]
+let circleLabels = 
+    circleData 
+        |> Array.map (fun data -> dist data center)
+        |> Array.map (fun dist -> if dist >= 30.0 then 1.0 else -1.0)
+
+scatterplot (circleData |> Array.map (fun data -> data.[0], data.[1])) circleLabels
+
+
 // noisy dataset: a percentage of observations is mis-labeled
 // Commented out: the classifier seems to really struggle with this.
 //let misclassified = 0.05
