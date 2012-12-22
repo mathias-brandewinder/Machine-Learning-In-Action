@@ -145,7 +145,7 @@ let looseClassifier = classifier looseData looseLabels linearKernel looseEstimat
 quality tightData tightLabels tightClassifier
 quality looseData looseLabels looseClassifier
 
-let biasKernel = radialBias 30.0
+let biasKernel = radialBias 500.0
 let circleEstimator = smo circleData circleLabels biasKernel parameters
 
 visualizeSupports circleData circleLabels circleEstimator
@@ -156,26 +156,21 @@ quality circleData circleLabels circleClassifier
 
 // kernel calibration
 
-for k in [ 0.01; 0.1; 1.0; 10.0; 100.0; 1000.0; 10000.0 ] do
-    let ker = radialBias k
-    let circleEstimator = smo circleData circleLabels ker parameters
-    let circleClassifier = classifier circleData circleLabels ker circleEstimator
+for sig2 in [ 0.01; 0.1; 1.0; 10.0; 100.0; 1000.0; 10000.0 ] do
+    printfn "Sigma2: %f ----------" sig2
+    let kernel = radialBias sig2
+    let circleEstimator = smo circleData circleLabels kernel parameters
+    let circleClassifier = classifier circleData circleLabels kernel circleEstimator
     quality circleData circleLabels circleClassifier
+    circleEstimator |> fst |> Seq.filter (fun x -> x.Alpha > 0.0) |> Seq.length |> printfn "Supports: %i"
 
-
-
-//plotLine tightData tightLabels parameters
-//plotLine looseData looseLabels parameters
-//
-//
-//largeLabels 
-//    |> Array.filter (fun l -> l = 1.0) 
-//    |> Array.length 
-//    |> printfn "Number in group 1: %i"
-//
-//test largeData largeLabels parameters
-//
-
+largeLabels 
+    |> Array.filter (fun l -> l = 1.0) 
+    |> Array.length 
+    |> printfn "Number in group 1: %i"
+let largeEstimator = smo largeData largeLabels linearKernel parameters
+let largeClassifier = classifier largeData largeLabels linearKernel largeEstimator
+quality largeData largeLabels largeClassifier
 
 // noisy dataset: a percentage of observations is mis-labeled
 // Commented out: the classifier seems to really struggle with this.

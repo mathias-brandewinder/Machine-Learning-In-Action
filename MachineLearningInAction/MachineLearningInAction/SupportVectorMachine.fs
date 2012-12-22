@@ -27,14 +27,18 @@ module SupportVectorMachine =
             (vec2: float list) =
         List.fold2 (fun acc v1 v2 -> 
             acc + v1 * v2) 0.0 vec1 vec2
-
+    // distance between vectors
+    let dist (vec1: float list) 
+             (vec2: float list) =
+        List.fold2 (fun acc v1 v2 -> 
+            acc + (v1 - v2) ** 2.0) 0.0 vec1 vec2
+    // radial bias function
+    let rbf sig2 x = exp ( - x / sig2 )
+    // radial bias kernel
     let radialBias sigma2 
                    (vec1: float list) 
                    (vec2: float list) =
-        let bias d = exp (-d/sigma2)
-        List.fold2 (fun acc v1 v2 -> 
-            acc + (v1 - v2) ** 2.0) 0.0 vec1 vec2
-            |> bias
+        rbf sigma2 (dist vec1 vec2)
 
     // Clip a value x that is out of the min/max bounds
     let clip (min, max) x =
