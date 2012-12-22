@@ -38,7 +38,7 @@ let largeLabels =
 
 // Non-linearly separable dataset (discus of radius 30, centered on (40, 60))
 let circleData = 
-    [| for i in 1 .. 1000 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
+    [| for i in 1 .. 200 -> [ rng.NextDouble() * 100.0; rng.NextDouble() * 100.0 ] |]
 let center = [ 40.0; 60.0 ]
 let dist (coord1: float list) coord2 = 
     List.map2 (fun c1 c2 -> (c1-c2)*(c1-c2)) coord1 coord2
@@ -145,7 +145,7 @@ let looseClassifier = classifier looseData looseLabels linearKernel looseEstimat
 quality tightData tightLabels tightClassifier
 quality looseData looseLabels looseClassifier
 
-let biasKernel = radialBias 10.0
+let biasKernel = radialBias 30.0
 let circleEstimator = smo circleData circleLabels biasKernel parameters
 
 visualizeSupports circleData circleLabels circleEstimator

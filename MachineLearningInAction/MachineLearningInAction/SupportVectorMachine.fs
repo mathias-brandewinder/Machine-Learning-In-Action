@@ -33,7 +33,7 @@ module SupportVectorMachine =
                    (vec2: float list) =
         let bias d = exp (-d/sigma2)
         List.fold2 (fun acc v1 v2 -> 
-            acc + v1 * v2) 0.0 vec1 vec2
+            acc + (v1 - v2) ** 2.0) 0.0 vec1 vec2
             |> bias
 
     // Clip a value x that is out of the min/max bounds
