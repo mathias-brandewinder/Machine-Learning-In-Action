@@ -35,10 +35,10 @@ module SupportVectorMachine =
     // radial bias function
     let rbf sig2 x = exp ( - x / sig2 )
     // radial bias kernel
-    let radialBias sigma2 
+    let radialBias sigma 
                    (vec1: float list) 
                    (vec2: float list) =
-        rbf sigma2 (dist vec1 vec2)
+        rbf (sigma * sigma) (dist vec1 vec2)
 
     // Clip a value x that is out of the min/max bounds
     let clip (min, max) x =
