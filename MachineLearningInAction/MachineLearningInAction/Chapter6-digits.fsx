@@ -1,0 +1,92 @@
+﻿#load "SupportVectorMachine.fs"
+
+open System.IO
+open System.Net
+open MachineLearning.SupportVectorMachine
+
+// retrieve data from UC Irvine Machine Learning repository
+let url = "http://archive.ics.uci.edu/ml/machine-learning-databases/semeion/semeion.data"
+let request = WebRequest.Create(url)
+let response = request.GetResponse()
+
+let stream = response.GetResponseStream()
+let reader = new StreamReader(stream)
+let data = reader.ReadToEnd()
+reader.Close()
+stream.Close()
+
+// prepare data
+
+let parse (line: string) =
+    let parsed = line.Split(' ') 
+    let observation = 
+        parsed
+        |> Seq.take 256
+        |> Seq.map (fun s -> (float)s)
+        |> Seq.toArray
+    let label =
+        parsed
+        |> Seq.skip 256
+        |> Seq.findIndex (fun e -> (int)e = 1)
+    observation, label
+
+let render observation =
+    printfn " "
+    List.iteri (fun i pix ->
+        if i % 16 = 0 then printfn "" |> ignore
+        if pix > 0.0 then printf "■" else printf " ") observation
+
+// classifier: 7s vs. rest of the world
+
+let dataset, labels = 
+    data.Split((char)10)
+    |> Array.filter (fun l -> l.Length > 0) // lazy, because of last line
+    |> Array.map parse
+    |> Array.map (fun (data, l) -> 
+        data |> Array.toList, if l = 7 then 1.0 else -1.0 )
+    |> Array.unzip
+
+let parameters = { C = 5.0; Tolerance = 0.001; Depth = 500 }
+let rbfKernel = radialBias 10.0
+
+// split dataset into training vs. valiation
+let sampleSize = 600
+let trainingSet = dataset.[ 0 .. (sampleSize - 1)]
+let trainingLbl = labels.[ 0 .. (sampleSize - 1)]
+let validateSet = dataset.[ sampleSize .. ]
+let validateLbl = labels.[ sampleSize .. ]
+
+printfn "Training classifier"
+let model = smo trainingSet trainingLbl rbfKernel parameters
+let classify = classifier rbfKernel model
+
+// Compute average correctly classified
+let quality sample =
+    sample
+    |> Array.map (fun (d, l) -> if (classify d) * l > 0.0 then 1.0 else 0.0)
+    |> Array.average
+    |> printfn "Proportion correctly classified: %f"
+
+// split dataset by label and compute quality for each group
+let evaluate (dataset, labels) =
+    let group1, group2 =
+        Array.zip dataset labels
+        |> Array.partition (fun (d, l) -> l > 0.0)
+    quality group1
+    quality group2
+
+// verify training sample classification
+printfn "Classification in training set"
+evaluate (trainingSet, trainingLbl)
+
+// validate on remaining sample
+printfn "Classification in validation set"
+evaluate (validateSet, validateLbl)
+
+Array.sub (Array.zip dataset labels) 0 (sampleSize - 1)
+|> Array.iter (fun (d, l) -> 
+    printfn ""    
+    printfn "******************************************"
+    let predicted = if (classify d) > 0.0 then 1.0 else -1.0
+    printfn "Class %f, classified as %f" l predicted
+    render d)
