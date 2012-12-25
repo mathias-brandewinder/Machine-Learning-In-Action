@@ -133,7 +133,7 @@ scatterplot (tightData |> Array.map (fun e -> e.[0], e.[1])) tightLabels
 let tightEstimator = smo tightData tightLabels linearKernel parameters
 visualizeSupports tightData tightLabels tightEstimator
 visualizeSeparatingLine tightData tightLabels tightEstimator
-let tightClassifier = classifier tightData tightLabels linearKernel tightEstimator
+let tightClassifier = classifier linearKernel tightEstimator
 quality tightData tightLabels tightClassifier
 
 // loose dataset
@@ -142,7 +142,7 @@ scatterplot (looseData |> Array.map (fun e -> e.[0], e.[1])) looseLabels
 let looseEstimator = smo looseData looseLabels linearKernel parameters
 visualizeSupports looseData looseLabels looseEstimator
 visualizeSeparatingLine looseData looseLabels looseEstimator
-let looseClassifier = classifier looseData looseLabels linearKernel looseEstimator
+let looseClassifier = classifier linearKernel looseEstimator
 quality looseData looseLabels looseClassifier
 
 // circular dataset
@@ -151,7 +151,7 @@ let biasKernel = radialBias 30.0
 printfn "Circular dataset"
 let circleEstimator = smo circleData circleLabels biasKernel parameters
 visualizeSupports circleData circleLabels circleEstimator
-let circleClassifier = classifier circleData circleLabels biasKernel circleEstimator
+let circleClassifier = classifier biasKernel circleEstimator
 quality circleData circleLabels circleClassifier
 
 // kernel calibration
@@ -161,14 +161,14 @@ for i in [ 3.0 .. 1.0 .. 9.0 ] do
     printfn "Sigma2: %f ----------" sig2
     let kernel = radialBias sig2
     let circleEstimator = smo circleData circleLabels kernel parameters
-    let circleClassifier = classifier circleData circleLabels kernel circleEstimator
+    let circleClassifier = classifier kernel circleEstimator
     quality circleData circleLabels circleClassifier
     circleEstimator |> fst |> Seq.filter (fun x -> x.Alpha > 0.0) |> Seq.length |> printfn "Supports: %i"
 
 // large dataset
 printfn "Large dataset"
 let largeEstimator = smo largeData largeLabels linearKernel parameters
-let largeClassifier = classifier largeData largeLabels linearKernel largeEstimator
+let largeClassifier = classifier linearKernel largeEstimator
 quality largeData largeLabels largeClassifier
 
 // noisy dataset: a percentage of observations is mis-labeled

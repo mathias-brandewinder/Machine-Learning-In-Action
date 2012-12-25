@@ -212,13 +212,13 @@ module SupportVectorMachine =
         |> Seq.reduce (fun acc row -> 
             List.map2 (fun a r -> a + r) acc row )
     
-    let classifier (data: float list []) (labels: float []) (kernel: Kernel) estimator =
+    let classifier (kernel: Kernel) estimator =
         // Classifier function
         fun obs ->         
-            let (rows, b) = estimator
-            rows
-            |> Seq.filter (fun r -> r.Alpha > 0.0)
-            |> Seq.fold (fun acc r -> 
-                acc + r.Label * r.Alpha * (kernel r.Data obs)) b
+            let (svs, b) = estimator
+            svs
+            |> Seq.filter (fun sv -> sv.Alpha > 0.0)
+            |> Seq.fold (fun acc sv -> 
+                acc + sv.Label * sv.Alpha * (kernel sv.Data obs)) b
 
 
