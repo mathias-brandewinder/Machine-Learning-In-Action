@@ -166,7 +166,7 @@ module SupportVectorMachine =
             return (updatedSvs, b') }
 
     // Sequential Minimal Optimization
-    let smo dataset labels kernel parameters = 
+    let smo dataset labels (kernel: Kernel) parameters = 
         // Data preparation
         let size = dataset |> Array.length        
         let initialSVs = 

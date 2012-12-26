@@ -25,7 +25,7 @@ let parse (line: string) =
         parsed
         |> Seq.take 256
         |> Seq.map (fun s -> (float)s)
-        |> Seq.toArray
+        |> Seq.toList
     let label =
         parsed
         |> Seq.skip 256
@@ -46,7 +46,7 @@ let dataset, labels =
     |> Array.filter (fun l -> l.Length > 0) // because of last line
     |> Array.map parse
     |> Array.map (fun (data, l) -> 
-        data |> Array.toList, if l = 7 then 1.0 else -1.0 )
+        data, if l = 7 then 1.0 else -1.0 )
     |> Array.unzip
 
 let parameters = { C = 5.0; Tolerance = 0.001; Depth = 20 }
@@ -104,10 +104,10 @@ for c in [ 0.1; 1.0; 10.0 ] do
         evaluate classify (validateSet, validateLbl)
         
         printfn "Done"
-
         
-// display the 200 first observations and their classification
-Array.sub (Array.zip dataset labels) 0 199
+// display the 200 first validation observations 
+// and their classification
+Array.sub (Array.zip dataset labels) sampleSize (sampleSize + 199)
 |> Array.iter (fun (d, l) -> 
     printfn ""    
     printfn "******************************************"
