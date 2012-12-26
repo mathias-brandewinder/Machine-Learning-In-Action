@@ -68,10 +68,8 @@ let main =
         quality classifier group2
 
     // calibration (Careful,takes a while)
-    //for c in [ 0.1; 1.0; 10.0 ] do
-    for c in [ 10.0 ] do
-    //    for s in [ 0.1; 1.0; 10.0 ] do
-        for s in [ 1.0; 10.0 ] do
+    for c in [ 0.1; 1.0; 10.0 ] do
+        for s in [ 0.1; 1.0; 10.0 ] do
             let parameters = { C = c; Tolerance = 0.001; Depth = 10 }
             let rbfKernel = radialBias s
 
