@@ -120,7 +120,6 @@ let circleLabels =
 // Validate on samples
 
 // plot raw datasets
-scatterplot (circleData |> Array.map (fun data -> data.[0], data.[1])) circleLabels
 
 // identify support vectors
 
@@ -149,21 +148,11 @@ quality looseData looseLabels looseClassifier
 let biasKernel = radialBias 30.0
 
 printfn "Circular dataset"
+scatterplot (circleData |> Array.map (fun data -> data.[0], data.[1])) circleLabels
 let circleEstimator = smo circleData circleLabels biasKernel parameters
 visualizeSupports circleData circleLabels circleEstimator
 let circleClassifier = classifier biasKernel circleEstimator
 quality circleData circleLabels circleClassifier
-
-// kernel calibration
-
-for i in [ 3.0 .. 1.0 .. 9.0 ] do
-    let sig2 = 2.0 ** i
-    printfn "Sigma2: %f ----------" sig2
-    let kernel = radialBias sig2
-    let circleEstimator = smo circleData circleLabels kernel parameters
-    let circleClassifier = classifier kernel circleEstimator
-    quality circleData circleLabels circleClassifier
-    circleEstimator |> fst |> Seq.filter (fun x -> x.Alpha > 0.0) |> Seq.length |> printfn "Supports: %i"
 
 // large dataset
 printfn "Large dataset"

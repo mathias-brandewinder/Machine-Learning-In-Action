@@ -17,6 +17,8 @@ stream.Close()
 
 // prepare data
 
+// a line in the dataset is 16 x 16 = 256 pixels,
+// followed by 10 digits, 1 denoting the number
 let parse (line: string) =
     let parsed = line.Split(' ') 
     let observation = 
@@ -30,6 +32,7 @@ let parse (line: string) =
         |> Seq.findIndex (fun e -> (int)e = 1)
     observation, label
 
+// renders a scanned digit as "ASCII-art"
 let render observation =
     printfn " "
     List.iteri (fun i pix ->
@@ -40,13 +43,13 @@ let render observation =
 
 let dataset, labels = 
     data.Split((char)10)
-    |> Array.filter (fun l -> l.Length > 0) // lazy, because of last line
+    |> Array.filter (fun l -> l.Length > 0) // because of last line
     |> Array.map parse
     |> Array.map (fun (data, l) -> 
         data |> Array.toList, if l = 7 then 1.0 else -1.0 )
     |> Array.unzip
 
-let parameters = { C = 5.0; Tolerance = 0.001; Depth = 500 }
+let parameters = { C = 5.0; Tolerance = 0.001; Depth = 20 }
 let rbfKernel = radialBias 10.0
 
 // split dataset into training vs. valiation
@@ -61,29 +64,50 @@ let model = smo trainingSet trainingLbl rbfKernel parameters
 let classify = classifier rbfKernel model
 
 // Compute average correctly classified
-let quality sample =
+let quality classifier sample =
     sample
-    |> Array.map (fun (d, l) -> if (classify d) * l > 0.0 then 1.0 else 0.0)
+    |> Array.map (fun (d, l) -> if (classifier d) * l > 0.0 then 1.0 else 0.0)
     |> Array.average
     |> printfn "Proportion correctly classified: %f"
 
 // split dataset by label and compute quality for each group
-let evaluate (dataset, labels) =
+let evaluate classifier (dataset, labels) =
     let group1, group2 =
         Array.zip dataset labels
         |> Array.partition (fun (d, l) -> l > 0.0)
-    quality group1
-    quality group2
+    quality classifier group1
+    quality classifier group2
 
 // verify training sample classification
 printfn "Classification in training set"
-evaluate (trainingSet, trainingLbl)
+evaluate classify (trainingSet, trainingLbl)
 
 // validate on remaining sample
 printfn "Classification in validation set"
-evaluate (validateSet, validateLbl)
+evaluate classify (validateSet, validateLbl)
 
-Array.sub (Array.zip dataset labels) 0 (sampleSize - 1)
+// calibration (Careful,takes a while)
+for c in [ 0.1; 1.0; 10.0 ] do
+    for s in [ 0.1; 1.0; 10.0 ] do
+        let parameters = { C = c; Tolerance = 0.001; Depth = 10 }
+        let rbfKernel = radialBias s
+
+        printfn "Model with C = %f, s = %f" c s
+        let model = smo trainingSet trainingLbl rbfKernel parameters
+        let classify = classifier rbfKernel model
+
+        printfn "Classification in training set"
+        evaluate classify (trainingSet, trainingLbl)
+
+        // validate on remaining sample
+        printfn "Classification in validation set"
+        evaluate classify (validateSet, validateLbl)
+        
+        printfn "Done"
+
+        
+// display the 200 first observations and their classification
+Array.sub (Array.zip dataset labels) 0 199
 |> Array.iter (fun (d, l) -> 
     printfn ""    
     printfn "******************************************"
