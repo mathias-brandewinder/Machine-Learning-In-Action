@@ -1,4 +1,7 @@
-﻿open System
+﻿#load "AdaBoost.fs"
+open MachineLearning.AdaBoost
+
+open System
 
 let dataset, classLabels = 
     [| [| 1.0; 2.1 |];
@@ -13,11 +16,10 @@ let stumpClassify dimension threshold (observation: float []) =
     then 1.0
     else -1.0
 
-let weightedError (observation: float[]) label weight classifier =
-    let prediction = classifier observation
-    if prediction = label then 0.0 else weight
+let weightedError (ex: Example) weight classifier =
+    if classifier(ex.Observation) = ex.Label then 0.0 else weight
 
-let buildStump (dataset:float[][]) classLabels weights =
+let buildStump (sample: Example []) weights =
     seq {
         let numSteps = 10.0
         let dimensions = dataset.[0].Length
@@ -28,22 +30,11 @@ let buildStump (dataset:float[][]) classLabels weights =
             for threshold in min .. stepSize .. max do
                 let stump = stumpClassify dim threshold
                 let error =
-                    Array.zip3 dataset classLabels weights
-                    |> Array.map (fun (obs, lbl, w) -> 
-                        weightedError obs lbl w stump)
+                    Array.map2 (fun example w -> 
+                        weightedError example w stump) sample weights
                     |> Array.sum
                 yield dim, threshold, error }
     |> Seq.minBy (fun (dim, thresh, err) -> err)
-
-let weights = [| 0.2; 0.2; 0.2; 0.2; 0.2 |]
-buildStump dataset classLabels weights
-
-type Observation = { Data: float []; Label: float }
-type WeakLearner = { Alpha: float; Classifier: float [] -> float }
-
-let normalize (weights: float []) = 
-    let total = weights |> Array.sum 
-    Array.map (fun w -> w / total) weights
 
 let classify model observation = 
     let aggregate = List.sumBy (fun st -> 
@@ -54,13 +45,13 @@ let classify model observation =
 
 let train dataset labels iterations errorLimit =
     // Prepare data
-    let sample = Array.map2 (fun data lbl -> 
-        { Data = data; Label = lbl } ) dataset labels
+    let sample = Array.map2 (fun obs lbl -> 
+        { Observation = obs; Label = lbl } ) dataset labels
 
     // Recursively create new stumps and observation weights
     let rec update iter stumps weights =
         // Create best classifier given current weights
-        let dim, thresh, err = buildStump dataset labels weights
+        let dim, thresh, err = buildStump sample weights
         printfn "Error: %f" err
         let stump = stumpClassify dim thresh
         let alpha = 0.5 * log ((1.0 - err) / err)
@@ -69,7 +60,7 @@ let train dataset labels iterations errorLimit =
         // Update weights based on new classifier performance
         let weights' = 
             Array.map2 (fun obs weight -> 
-                match stump obs.Data = obs.Label with
+                match stump obs.Observation = obs.Label with
                 | true  -> weight * exp (-alpha)
                 | false -> weight * exp alpha) sample weights
             |> normalize
@@ -83,7 +74,7 @@ let train dataset labels iterations errorLimit =
         | true  ->
             // compute aggregate error
             let errorRate = Array.averageBy (fun obs -> 
-                if ((classify stumps' obs.Data) = obs.Label) then 0.0 else 1.0) sample
+                if ((classify stumps' obs.Observation) = obs.Label) then 0.0 else 1.0) sample
             printfn "Error rate: %f" errorRate
             match errorRate > errorLimit with
             | false -> stumps'

@@ -37,6 +37,7 @@
     <Compile Include="DecisionTrees.Tests.fs" />
     <Compile Include="NaiveBayesTests.fs" />
     <Compile Include="SupportVectorMachine.Tests.fs" />
+    <Compile Include="AdaBoost.Tests.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

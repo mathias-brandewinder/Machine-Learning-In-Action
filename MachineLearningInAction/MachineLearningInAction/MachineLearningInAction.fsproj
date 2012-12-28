@@ -39,6 +39,7 @@
     <Compile Include="NaiveBayes.fs" />
     <Compile Include="LogisticRegression.fs" />
     <Compile Include="SupportVectorMachine.fs" />
+    <Compile Include="AdaBoost.fs" />
     <None Include="packages.config" />
     <None Include="Chapter3.fsx" />
     <None Include="Chapter4.fsx" />
