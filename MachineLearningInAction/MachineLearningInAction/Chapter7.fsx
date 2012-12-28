@@ -9,7 +9,7 @@ let dataset, classLabels =
     [| 1.0; 1.0; -1.0; -1.0; 1.0 |]
 
 let stumpClassify dimension threshold (observation: float []) =
-    if observation.[dimension] >= threshold
+    if observation.[dimension] >= threshold // need to pass op: > and < are valid
     then 1.0
     else -1.0
 
@@ -38,36 +38,63 @@ let buildStump (dataset:float[][]) classLabels weights =
 let weights = [| 0.2; 0.2; 0.2; 0.2; 0.2 |]
 buildStump dataset classLabels weights
 
+type Observation = { Data: float []; Label: float }
 type WeakLearner = { Alpha: float; Classifier: float [] -> float }
 
 let normalize (weights: float []) = 
     let total = weights |> Array.sum 
     Array.map (fun w -> w / total) weights
 
-let train dataset labels =
+let classify model observation = 
+    let aggregate = List.sumBy (fun st -> 
+        st.Alpha * st.Classifier observation) model
+    match aggregate > 0.0 with 
+    | true  ->  1.0
+    | false -> -1.0
 
-    let rec update iter stumps w =
+let train dataset labels iterations errorLimit =
+    // Prepare data
+    let sample = Array.map2 (fun data lbl -> 
+        { Data = data; Label = lbl } ) dataset labels
 
-        let dim, thresh, err = buildStump dataset labels w
+    // Recursively create new stumps and observation weights
+    let rec update iter stumps weights =
+        // Create best classifier given current weights
+        let dim, thresh, err = buildStump dataset labels weights
         printfn "Error: %f" err
         let stump = stumpClassify dim thresh
         let alpha = 0.5 * log ((1.0 - err) / err)
         let learner = { Alpha = alpha; Classifier = stump }
 
-        let w' = 
-            Array.zip3 dataset labels w
-            |> Array.map (fun (obs, lbl, w) -> 
-                match stump obs = lbl with
-                | true  -> w * exp (-alpha)
-                | false -> w * exp alpha)
+        // Update weights based on new classifier performance
+        let weights' = 
+            Array.map2 (fun obs weight -> 
+                match stump obs.Data = obs.Label with
+                | true  -> weight * exp (-alpha)
+                | false -> weight * exp alpha) sample weights
             |> normalize
+
+        // Append new stump to the stumps list
         let stumps' = learner :: stumps
 
-        match iter > 0 with
+        // Search termination
+        match iter < iterations with
         | false -> stumps'
-        | true  -> update (iter - 1) stumps' w'
+        | true  ->
+            // compute aggregate error
+            let errorRate = Array.averageBy (fun obs -> 
+                if ((classify stumps' obs.Data) = obs.Label) then 0.0 else 1.0) sample
+            printfn "Error rate: %f" errorRate
+            match errorRate > errorLimit with
+            | false -> stumps'
+            | true  -> update (iter + 1) stumps' weights'
 
     let size = Array.length dataset
     let weights = [| for i in 1 .. size -> 1.0 / (float)size |]
 
-    update 10 [] weights
+    update 0 [] weights
+
+let model = train dataset classLabels 5 0.05
+let classifier = classify model
+Array.zip dataset classLabels 
+|> Array.iter (fun (d, l) -> printfn "Real %f Pred %f" l (classifier d)) 
