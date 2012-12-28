@@ -3,13 +3,6 @@ open MachineLearning.AdaBoost
 
 open System
 
-let dataset, classLabels = 
-    [| [| 1.0; 2.1 |];
-       [| 2.0; 1.1 |];
-       [| 1.3; 1.0 |];
-       [| 1.0; 1.0 |];
-       [| 2.0; 1.0 |] |], 
-    [| 1.0; 1.0; -1.0; -1.0; 1.0 |]
 
 let stumpClassify dimension threshold (observation: float []) =
     if observation.[dimension] >= threshold // need to pass op: > and < are valid
@@ -22,9 +15,9 @@ let weightedError (ex: Example) weight classifier =
 let buildStump (sample: Example []) weights =
     seq {
         let numSteps = 10.0
-        let dimensions = dataset.[0].Length
+        let dimensions = sample.[0].Observation.Length
         for dim in 0 .. dimensions - 1 do
-            let column = dataset |> Array.map(fun obs -> obs.[dim])
+            let column = sample |> Array.map(fun obs -> obs.Observation.[dim])
             let min, max = Array.min column, Array.max column
             let stepSize = (max - min) / numSteps
             for threshold in min .. stepSize .. max do
@@ -83,9 +76,62 @@ let train dataset labels iterations errorLimit =
     let size = Array.length dataset
     let weights = [| for i in 1 .. size -> 1.0 / (float)size |]
 
-    update 0 [] weights
+    // Initiate recursive update and create classifier from stumps
+    let model = update 0 [] weights
+    classify model
 
-let model = train dataset classLabels 5 0.05
-let classifier = classify model
-Array.zip dataset classLabels 
-|> Array.iter (fun (d, l) -> printfn "Real %f Pred %f" l (classifier d)) 
+//// Example from the book
+//let dataset, classLabels = 
+//    [| [| 1.0; 2.1 |];
+//       [| 2.0; 1.1 |];
+//       [| 1.3; 1.0 |];
+//       [| 1.0; 1.0 |];
+//       [| 2.0; 1.0 |] |], 
+//    [| 1.0; 1.0; -1.0; -1.0; 1.0 |]
+//
+//let classifier = train dataset classLabels 5 0.05
+//Array.zip dataset classLabels 
+//|> Array.iter (fun (d, l) -> printfn "Real %f Pred %f" l (classifier d))
+
+// Wine classification
+// http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data
+
+open System.IO
+open System.Net
+
+// retrieve data from UC Irvine Machine Learning repository
+let url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data"
+let request = WebRequest.Create(url)
+let response = request.GetResponse()
+
+let stream = response.GetResponseStream()
+let reader = new StreamReader(stream)
+let data = reader.ReadToEnd()
+reader.Close()
+stream.Close()
+
+let parse (line: string) =
+    let parsed = line.Split(',') 
+    let observation = 
+        parsed
+        |> Seq.skip 1
+        |> Seq.map (float)
+        |> Seq.toArray
+    let label =
+        parsed
+        |> Seq.head
+        |> (int)
+    observation, label
+
+// classifier: 1s vs. rest of the world
+let dataset, labels = 
+    data.Split((char)10)
+    |> Array.filter (fun l -> l.Length > 0) // because of last line
+    |> Array.map parse
+    |> Array.map (fun (data, l) -> 
+        data, if l = 1 then 1.0 else -1.0 )
+    |> Array.unzip
+
+let wineClassifier = train dataset labels 10 0.01
+Array.zip dataset labels 
+|> Array.iter (fun (d, l) -> printfn "Real %f Pred %f" l (wineClassifier d))
