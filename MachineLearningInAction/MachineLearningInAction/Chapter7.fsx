@@ -3,9 +3,8 @@ open MachineLearning.AdaBoost
 
 open System
 
-
-let stumpClassify dimension threshold (observation: float []) =
-    if observation.[dimension] >= threshold // need to pass op: > and < are valid
+let stumpClassify dimension threshold op (observation: float []) =
+    if op observation.[dimension] threshold // need to pass op: > and < are valid
     then 1.0
     else -1.0
 
@@ -21,13 +20,14 @@ let buildStump (sample: Example []) weights =
             let min, max = Array.min column, Array.max column
             let stepSize = (max - min) / numSteps
             for threshold in min .. stepSize .. max do
-                let stump = stumpClassify dim threshold
-                let error =
-                    Array.map2 (fun example w -> 
-                        weightedError example w stump) sample weights
-                    |> Array.sum
-                yield dim, threshold, error }
-    |> Seq.minBy (fun (dim, thresh, err) -> err)
+                for op in [ (<); (>) ] do
+                    let stump = stumpClassify dim threshold op
+                    let error =
+                        Array.map2 (fun example w -> 
+                            weightedError example w stump) sample weights
+                        |> Array.sum
+                    yield stump, error }
+    |> Seq.minBy (fun (stump, err) -> err)
 
 let classify model observation = 
     let aggregate = List.sumBy (fun st -> 
@@ -44,9 +44,8 @@ let train dataset labels iterations errorLimit =
     // Recursively create new stumps and observation weights
     let rec update iter stumps weights =
         // Create best classifier given current weights
-        let dim, thresh, err = buildStump sample weights
+        let stump, err = buildStump sample weights
         printfn "Error: %f" err
-        let stump = stumpClassify dim thresh
         let alpha = 0.5 * log ((1.0 - err) / err)
         let learner = { Alpha = alpha; Classifier = stump }
 
