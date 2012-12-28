@@ -45,6 +45,7 @@
     <None Include="Chapter5.fsx" />
     <None Include="Chapter6.fsx" />
     <None Include="Chapter6-digits.fsx" />
+    <None Include="Chapter7.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
