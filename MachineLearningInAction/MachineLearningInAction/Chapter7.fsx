@@ -55,21 +55,36 @@ let dataset, labels =
         data, if l = 1 then 1.0 else -1.0 )
     |> Array.unzip
 
+// Break sample into training and validation samples
+// First separate sample by label / class
 let group1, group2 =   
     Array.zip dataset labels
     |> Array.partition (fun e -> snd e = 1.0)
 
+// Pick half of each group for training
 let size1 = Array.length group1 / 2
 let size2 = Array.length group2 / 2
 
 let trainingSet, trainingLabels = 
     Array.append group1.[ 0 .. size1 ] group2.[ 0 .. size2 ]
     |> Array.unzip
-
+// ... and keep the rest for validation
 let validation = 
     Array.append group1.[ size1 + 1 .. ] group2.[ size2 + 1 .. ]
 
+// Train our classifier
 let wineClassifier = train trainingSet trainingLabels 20 10.0 0.01
 
+// Performance on training set
+Array.zip trainingSet trainingLabels
+|> Array.averageBy (fun (obs, lbl) -> if (wineClassifier obs) = lbl then 1.0 else 0.0)
+|> printfn "Proportion correctly classified: %f"
+
+// Performance on validation set
 validation 
-|> Array.iter (fun (d, l) -> printfn "Real %f Pred %f" l (wineClassifier d))
+|> Array.averageBy (fun (obs, lbl) -> if (wineClassifier obs) = lbl then 1.0 else 0.0)
+|> printfn "Proportion correctly classified: %f"
+
+// View details on validation set
+validation 
+|> Array.iter (fun (obs, lbl) ->  printfn "Real %f Pred %f" lbl (wineClassifier obs))

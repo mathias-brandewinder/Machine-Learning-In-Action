@@ -1,4 +1,5 @@
-﻿namespace MachineLearning
+﻿// See Chapter7.fsx for an example of usage
+namespace MachineLearning
 
 module AdaBoost =
 
@@ -58,6 +59,11 @@ module AdaBoost =
         Seq.averageBy (fun obs -> 
             if (classify model obs.Observation = obs.Label) then 0.0 else 1.0) sample
 
+    // Train the classifier on the data, using Decision Stumps,
+    // (http://en.wikipedia.org/wiki/Decision_stump)
+    // iterations is the maximum iterations, numSteps the "granularity"
+    // of the threshold search (ex. 10.0 = 10 values between min and max),
+    // and targetError the desired error percentage of the classifier.
     let train dataset labels iterations numSteps targetError =
         // Prepare data
         let sample = Array.map2 (fun obs lbl -> 
@@ -96,5 +102,5 @@ module AdaBoost =
         let size = Array.length dataset
         let weights = [| for i in 1 .. size -> 1.0 / (float)size |]
 
-        let model = update 0 [] weights
-        classify model
+        let model = update 0 [] weights // run recursive search
+        classify model // the Classifier function
