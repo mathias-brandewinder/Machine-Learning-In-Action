@@ -42,7 +42,7 @@ module SupportVectorMachine =
     let dist (vec1: float list) 
              (vec2: float list) =
         List.fold2 (fun acc v1 v2 -> 
-            acc + (v1 - v2) ** 2.0) 0.0 vec1 vec2
+            acc + (v1 - v2) * (v1 - v2)) 0.0 vec1 vec2
 
     // radial bias function
     let rbf sig2 x = exp ( - x / sig2 )
