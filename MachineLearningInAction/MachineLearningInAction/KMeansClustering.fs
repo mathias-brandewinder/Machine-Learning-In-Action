@@ -87,4 +87,8 @@ module KMeansClustering =
             else (centroids, next)
 
         let initialCentroids = factory dataset k
-        update (initialCentroids, None)
+        let centroids = update (initialCentroids, None) |> fst |> Seq.toList        
+        let classifier = fun datapoint -> 
+            centroids 
+            |> List.minBy (fun centroid -> dist centroid datapoint)
+        centroids, classifier

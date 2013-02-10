@@ -12,8 +12,13 @@ let data = [
             Array.map (fun x -> x + 5. * (rng.NextDouble() - 0.5)) centroid ]
 
 let factory = randomCentroids<float[]> rng
-let search = kmeans euclidean factory avgCentroid data 3
-let identifiedCentroids = fst search |> Seq.toList
+let identifiedCentroids, classifier = kmeans euclidean factory avgCentroid data 3
+printfn "Centroids identified"
+identifiedCentroids 
+|> List.iter (fun c -> 
+    printfn ""
+    printf "Centroid: "
+    Array.iter (fun x -> printf "%.2f " x) c)
 
 // Just for quicks, I wondered if I could cluster strings
 
@@ -66,15 +71,17 @@ let wordCentroid (current: string) (sample: string seq) =
 // http://www.learnthat.org/word_lists/view/13077
 // http://www.learnthat.org/word_lists/view/12932
 let words = [ 
-    "AUTOGRAPH"; "GRAPHOLOGY"; "SEISMOGRAPH"; "TELEGRAPHIC"; "PARAGRAPH"; "CALLIGRAPHY"; "CRYPTOGRAPHY";
-    "DESCRIBE"; "DESCRIPTION"; "SCRIBE"; "TYPESCRIPT"; "SCRIBBLE"; "TRANSCRIPTION"; "POSTSCRIPT";
-    "ANAGRAM"; "CRYPTOGRAM"; "GRAMMAR"; "GRAMMARIAN"; "MONOGRAM"; "AEROGRAM"; "GRAMMATICAL" ]
+    "AUTOBIOGRAPHER"; "AUTOBIOGRAPHICAL"; "AUTOBIOGRAPHY"; "AUTOGRAPH"; "BIBLIOGRAPHIC"; "BIBLIOGRAPHY"; "CALLIGRAPHY"; "CARTOGRAPHY"; "CRYPTOGRAPHY"; "GRAPH"; "HISTORIOGRAPHY"; "PARAGRAPH"; "SEISMOGRAPH"; "STENOGRAPHER"; "TELEGRAPH"; "TELEGRAPHIC"; "BIBLIOGRAPHICAL"; "STEREOGRAPH"; 
+    "DESCRIBABLE"; "DESCRIBE"; "DESCRIBER"; "DESCRIPTION"; "DESCRIPTIVE"; "INDESCRIBABLE"; "INSCRIBE"; "INSCRIPTION"; "POSTSCRIPT"; "PRESCRIBE"; "PRESCRIPTION"; "PRESCRIPTIVE"; "SCRIBAL"; "SCRIBBLE"; "SCRIBE"; "SCRIBBLER"; "SCRIPT"; "SCRIPTURE"; "SCRIPTWRITER"; "SUPERSCRIPT"; "TRANSCRIBE"; "TYPESCRIPT"; "TRANSCRIPTION"; "DESCRIPTOR";
+    "ANAGRAM"; "CABLEGRAM"; "CRYPTOGRAM"; "GRAMMAR"; "GRAMMARIAN"; "GRAMMATICAL"; "MONOGRAM"; "RADIOGRAM"; "TELEGRAM"; "UNGRAMMATICAL"; "AEROGRAM" ]
 
 let wordDistance w1 w2 = wagnerFischerLazy w1 w2 |> (float)
 let wordFactory = randomCentroids<string> rng
 
-let clusterize = kmeans wordDistance wordFactory wordCentroid words 3
-let clusters = fst clusterize |> Seq.toArray
-clusters |> Array.iter (fun w -> printfn "%s" w)
-let assignment = snd clusterize |> Seq.toArray
-words |> List.iteri (fun i w -> printfn "%s, %s, %f" w clusters.[fst assignment.[i]] (snd assignment.[i]))
+let identifiedWords, wordClassifier = kmeans wordDistance wordFactory wordCentroid words 3
+
+printfn ""
+printfn "Words identified"
+identifiedWords |> List.iter (fun w -> printfn "%s" w)
+printfn "Classification of sample words"
+words |> List.iter (fun w -> printfn "%s -> %s" w (wordClassifier w))
