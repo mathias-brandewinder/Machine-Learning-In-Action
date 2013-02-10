@@ -38,6 +38,7 @@
     <Compile Include="NaiveBayesTests.fs" />
     <Compile Include="SupportVectorMachine.Tests.fs" />
     <Compile Include="AdaBoost.Tests.fs" />
+    <Compile Include="KMeansClustering.Tests.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
