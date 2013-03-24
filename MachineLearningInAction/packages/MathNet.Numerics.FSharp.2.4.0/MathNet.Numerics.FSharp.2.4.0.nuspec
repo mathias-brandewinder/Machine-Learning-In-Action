@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>MathNet.Numerics.FSharp</id>
+    <version>2.4.0</version>
+    <title>Math.NET Numerics for F#</title>
+    <authors>Marcus Cuda, Christoph Ruegg, Jurgen Van Gael</authors>
+    <owners>Marcus Cuda, Christoph Ruegg, Jurgen Van Gael</owners>
+    <licenseUrl>http://mathnetnumerics.codeplex.com/license</licenseUrl>
+    <projectUrl>http://numerics.mathdotnet.com/</projectUrl>
+    <iconUrl>http://www.mathdotnet.com/images/MathNet128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>F# Modules for Math.NET Numerics, the numerical foundation of the Math.NET project, aiming to provide methods and algorithms for numerical computations in science, engineering and every day use. Numerics is the result of merging dnAnalytics with Math.NET Iridium and is intended to replace both. Also includes a portable build supporting .Net 4.5, SL5 and .NET for Windows Store apps.</description>
+    <summary>F# Modules for Math.NET Numerics, providing methods and algorithms for numerical computations in science, engineering and every day use. Supports F# 3.0 with .Net 4 and higher, SL5 and .NET for Windows Store apps.</summary>
+    <releaseNotes>Dropped zlib dependency;
+Modified Bessel &amp; Struve special functions;
+Linear Algebra performance improvements;
+F# BigRational and Complex from PowerPack;
+Statistics kurtosis formula corrected.
+Minor changes and fixes.</releaseNotes>
+    <copyright />
+    <language />
+    <tags>math numeric statistics probability integration interpolation linear algebra matrix fft</tags>
+    <dependencies>
+      <dependency id="MathNet.Numerics" version="2.4.0" />
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Numerics" targetFramework="" />
+    </frameworkAssemblies>
+    <references>
+      <reference file="MathNet.Numerics.FSharp.dll" />
+    </references>
+  </metadata>
+</package>
