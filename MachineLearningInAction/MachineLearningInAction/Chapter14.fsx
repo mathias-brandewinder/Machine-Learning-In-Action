@@ -88,6 +88,16 @@ printfn "Reconstructed matrix from SVD decomposition"
 let reconstructed = U * S * Vt
 pretty reconstructed
 
+// Can we interpret the SVD decomposition? Let's see.
+
+// Each row maps to a User, 
+// each column to an extracted Category
+let userToCategory = U * S |> pretty
+
+// Each row maps to an extracted Category, 
+// each column to a Dish
+let categoryToDish = S * Vt |> pretty
+
 // We can use SVD as a data compression mechanism
 // by retaining only the n first singular values
 
