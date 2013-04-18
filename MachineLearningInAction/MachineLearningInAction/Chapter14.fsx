@@ -5,6 +5,7 @@
 
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.LinearAlgebra.Double
+open MathNet.Numerics.Statistics
 
 type Rating = { UserId: int; DishId: int; Rating: int }
 
@@ -135,6 +136,10 @@ let euclideanSimilarity (v1: Generic.Vector<float>) v2 =
     1. / (1. + (v1 - v2).Norm(2.))
 let cosineSimilarity (v1: Generic.Vector<float>) v2 =
     v1.DotProduct(v2) / (v1.Norm(2.) * v2.Norm(2.))
+let pearsonSimilarity (v1: Generic.Vector<float>) v2 =
+    if v1.Count > 2 
+    then 0.5 + 0.5 * Correlation.Pearson(v1, v2)
+    else 1.
 
 // Let's check if that works
 // Retrieve the first 2 dishes from the data matrix
@@ -145,6 +150,8 @@ printfn "Euclidean similarity, Dish 1 and Dish 1: %f" (euclideanSimilarity dish0
 printfn "Euclidean similarity, Dish 1 and Dish 2: %f" (euclideanSimilarity dish0 dish1)
 printfn "Cosine similarity, Dish 1 and Dish 1: %f" (cosineSimilarity dish0 dish0)
 printfn "Cosine similarity, Dish 1 and Dish 2: %f" (cosineSimilarity dish0 dish1)
+printfn "Pearson similarity, Dish 1 and Dish 1: %f" (pearsonSimilarity dish0 dish0)
+printfn "Pearson similarity, Dish 1 and Dish 2: %f" (pearsonSimilarity dish0 dish1)
 
 // Naive recommendation
 
@@ -165,6 +172,7 @@ let nonZeroes (v1:Generic.Vector<float>) (v2:Generic.Vector<float>) =
             |> Array.unzip
         Some(DenseVector(v1'), DenseVector(v2'))
 
+// Retrieve rating of a dish and similarity with another dish
 let weightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>) (userId:int) (sim:similarity) =
     if unrated.[userId] > 0. then None // we have a rating already
     else
@@ -176,31 +184,46 @@ let weightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>)
             | None -> None
             | Some(u, v) -> Some(rating, sim u v)
 
+// compute weighted average of a sequence of (value, weight)
+let weightedAverage (data: float * float seq) = 
+    let weightedTotal, totalWeights = Seq.fold (fun (R,S) (r, s) -> (R + r * s, S + s)) (0., 0.) data
+    if (totalWeights <= 0.) 
+    then None 
+    else Some(weightedTotal/totalWeights)
+    
+// Compute estimated rating for a dish not yet rated by user
+let estimatedRating (data:Generic.Matrix<float>) (userId:int) (dishId:int) (sim:similarity) =
+    let dish = data.Column(dishId)
+    match (dish.[userId] > 0.) with
+    | true -> None // dish has been rated already
+    | false -> 
+        let size = data.ColumnCount
+        let ratings =
+            [ 0 .. (size - 1) ]
+            |> List.map (fun col -> (weightedRating dish (data.Column(col)) userId sim))
+            |> List.choose id
+        match ratings with
+        | [] -> None
+        | data -> weightedAverage data
+
 let recommend (data:Generic.Matrix<float>) (userId:int) (sim:similarity) =
     let size = data.ColumnCount
     [ 0 .. (size - 1) ] 
-    |> List.map (fun col ->
-        let dish = data.Column(col)
-        if dish.[userId] = 0. then None
-        else
-            let ratings = 
-                [ 0 .. (size - 1) ]
-                |> List.map (fun col -> weightedRating dish (data.Column(col)) userId sim)
-                |> List.choose id
-            ratings |> List.iter (fun r -> printfn "%A" r)
-            match ratings with
-            | [] -> None
-            | list -> 
-                let x, y =
-                    list
-                    |> List.fold (fun (R, S) (r, s) -> 
-                        printfn "r %f s %f" r s
-                        (R + r * s, S + s)) (0., 0.)
-                printfn "%A %A" x y
-                Some (x/y))
+    |> List.map (fun dishId -> dishId, estimatedRating data userId dishId sim)
+    |> List.filter (fun (dishId, rating) -> rating.IsSome)
+    |> List.map (fun (dishId, rating) -> (dishId, rating.Value))
+    |> List.sortBy (fun (dishId, rating) -> - rating)
                         
 let v0 = data.Column(0)
 let v1 = data.Column(1)
 let v2 = data.Column(2)
 
-let test = [ 0 .. 10 ] |> List.map (fun i -> weightedRating v1 v2 i cosineSimilarity)
+[ 0 .. 10 ]
+|> List.iter (fun userId ->
+    printfn "User %i" userId
+    [ 0 .. 10 ]
+    |> List.iter (fun dishId ->
+        let r1 = estimatedRating data userId dishId euclideanSimilarity
+        let r2 = estimatedRating data userId dishId cosineSimilarity
+        printfn "... dish %i: eucl %A cos %A" dishId r1 r2)
+)
