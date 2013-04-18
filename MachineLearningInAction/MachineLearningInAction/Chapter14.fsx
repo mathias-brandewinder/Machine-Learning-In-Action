@@ -146,3 +146,61 @@ printfn "Euclidean similarity, Dish 1 and Dish 2: %f" (euclideanSimilarity dish0
 printfn "Cosine similarity, Dish 1 and Dish 1: %f" (cosineSimilarity dish0 dish0)
 printfn "Cosine similarity, Dish 1 and Dish 2: %f" (cosineSimilarity dish0 dish1)
 
+// Naive recommendation
+
+// reduce 2 vectors to their non-zero pairs
+let nonZeroes (v1:Generic.Vector<float>) (v2:Generic.Vector<float>) =
+    let size = v1.Count
+    let overlap =
+        [ 0 .. (size - 1) ] 
+        |> List.fold (fun acc i -> 
+            if v1.[i] > 0. && v2.[i] > 0. 
+            then (v1.[i], v2.[i])::acc else acc) []
+    match overlap with
+    | [] -> None
+    | x  -> 
+        let v1', v2' =
+            x
+            |> List.toArray
+            |> Array.unzip
+        Some(DenseVector(v1'), DenseVector(v2'))
+
+let weightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>) (userId:int) (sim:similarity) =
+    if unrated.[userId] > 0. then None // we have a rating already
+    else
+        let rating = rated.[userId]
+        if rating = 0. then None // we have no rating to use
+        else
+            let overlap = nonZeroes unrated rated
+            match overlap with
+            | None -> None
+            | Some(u, v) -> Some(rating, sim u v)
+
+let recommend (data:Generic.Matrix<float>) (userId:int) (sim:similarity) =
+    let size = data.ColumnCount
+    [ 0 .. (size - 1) ] 
+    |> List.map (fun col ->
+        let dish = data.Column(col)
+        if dish.[userId] = 0. then None
+        else
+            let ratings = 
+                [ 0 .. (size - 1) ]
+                |> List.map (fun col -> weightedRating dish (data.Column(col)) userId sim)
+                |> List.choose id
+            ratings |> List.iter (fun r -> printfn "%A" r)
+            match ratings with
+            | [] -> None
+            | list -> 
+                let x, y =
+                    list
+                    |> List.fold (fun (R, S) (r, s) -> 
+                        printfn "r %f s %f" r s
+                        (R + r * s, S + s)) (0., 0.)
+                printfn "%A %A" x y
+                Some (x/y))
+                        
+let v0 = data.Column(0)
+let v1 = data.Column(1)
+let v2 = data.Column(2)
+
+let test = [ 0 .. 10 ] |> List.map (fun i -> weightedRating v1 v2 i cosineSimilarity)
