@@ -185,7 +185,7 @@ let weightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>)
             | Some(u, v) -> Some(rating, sim u v)
 
 // compute weighted average of a sequence of (value, weight)
-let weightedAverage (data: float * float seq) = 
+let weightedAverage (data: (float * float) seq) = 
     let weightedTotal, totalWeights = Seq.fold (fun (R,S) (r, s) -> (R + r * s, S + s)) (0., 0.) data
     if (totalWeights <= 0.) 
     then None 
@@ -227,3 +227,43 @@ let v2 = data.Column(2)
         let r2 = estimatedRating data userId dishId cosineSimilarity
         printfn "... dish %i: eucl %A cos %A" dishId r1 r2)
 )
+
+
+
+// create synthetic data
+
+let person1 = [| 5.; 4.; 1.; 1.; 2.; 1.; 1.; 5. |]
+let person2 = [| 1.; 1.; 4.; 5.; 1.; 5.; 4.; 1. |]
+let person3 = [| 4.; 5.; 4.; 1.; 1.; 2.; 2.; 1. |] 
+let person4 = [| 1.; 1.; 1.; 1.; 1.; 1.; 1.; 5. |] 
+let person5 = [| 1.; 1.; 5.; 4.; 5.; 1.; 1.; 1. |] 
+
+let templates = [|
+    person1;
+    person2;
+    person3;
+    person4;
+    person5 |]
+
+let rng = new System.Random()
+let density = 0.2
+
+let createPerson (template:float[]) =
+    template 
+    |> Array.map (fun x -> if rng.NextDouble() < density then x else 0.)
+
+let rows2 = 1000
+let cols2 = 8
+
+let syntheticData = DenseMatrix(rows2, cols2)
+
+let ts = [| for row in 0 .. (rows2 - 1) -> rng.Next(0, 5) |]
+
+for row in 0 .. (rows2 - 1) do
+    let template = templates.[ts.[row]]
+    let fake = createPerson template
+    for col in 0 .. (cols2 - 1) do
+        syntheticData.[row, col] <- fake.[col]
+
+let svd2 = syntheticData.Svd(true)
+//let U, sigmas, Vt = svd.U(), svd.S(), svd.VT()
