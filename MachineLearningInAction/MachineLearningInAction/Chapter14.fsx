@@ -190,9 +190,12 @@ let weightedAverage (data: (float * float) seq) =
     if (totalWeights <= 0.) 
     then None 
     else Some(weightedTotal/totalWeights)
-    
+
+/// data, row, col, similarity    
+type Estimator = Generic.Matrix<float> -> int -> int -> float option
+
 // Compute estimated rating for a dish not yet rated by user
-let estimatedRating (data:Generic.Matrix<float>) (userId:int) (dishId:int) (sim:similarity) =
+let estimatedRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId:int) =
     let dish = data.Column(dishId)
     match (dish.[userId] > 0.) with
     | true -> None // dish has been rated already
@@ -206,10 +209,10 @@ let estimatedRating (data:Generic.Matrix<float>) (userId:int) (dishId:int) (sim:
         | [] -> None
         | data -> weightedAverage data
 
-let recommend (data:Generic.Matrix<float>) (userId:int) (sim:similarity) =
+let recommend (data:Generic.Matrix<float>) (userId:int) (estimatedRating:Estimator) =
     let size = data.ColumnCount
     [ 0 .. (size - 1) ] 
-    |> List.map (fun dishId -> dishId, estimatedRating data userId dishId sim)
+    |> List.map (fun dishId -> dishId, estimatedRating data userId dishId)
     |> List.filter (fun (dishId, rating) -> rating.IsSome)
     |> List.map (fun (dishId, rating) -> (dishId, rating.Value))
     |> List.sortBy (fun (dishId, rating) -> - rating)
@@ -218,16 +221,20 @@ let v0 = data.Column(0)
 let v1 = data.Column(1)
 let v2 = data.Column(2)
 
+let euclideanEstimator = estimatedRating euclideanSimilarity
+let cosineEstimator = estimatedRating cosineSimilarity
+let pearsonEstimator = estimatedRating pearsonSimilarity
+
 [ 0 .. 10 ]
 |> List.iter (fun userId ->
     printfn "User %i" userId
     [ 0 .. 10 ]
     |> List.iter (fun dishId ->
-        let r1 = estimatedRating data userId dishId euclideanSimilarity
-        let r2 = estimatedRating data userId dishId cosineSimilarity
-        printfn "... dish %i: eucl %A cos %A" dishId r1 r2)
+        let r1 = euclideanEstimator data userId dishId
+        let r2 = cosineEstimator data userId dishId
+        let r3 = pearsonEstimator data userId dishId
+        printfn "... dish %i: eucl %.2A cos %.2A pear %.2A" dishId r1 r2 r3)
 )
-
 
 
 // create synthetic data
