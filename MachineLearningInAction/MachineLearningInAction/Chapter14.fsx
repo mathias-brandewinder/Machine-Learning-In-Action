@@ -209,6 +209,46 @@ let estimatedRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (
         | [] -> None
         | data -> weightedAverage data
 
+// Energy level
+let nrj = 0.9
+let valuesForEnergy (min:float) (sigmas:Generic.Vector<float>) =
+    let totalEnergy = sigmas.DotProduct(sigmas)
+    let rec search i accEnergy =
+        let x = sigmas.[i]
+        let energy = x * x
+        let percent = (accEnergy + energy)/totalEnergy
+        match (percent >= min) with
+        | true -> i
+        | false -> search (i + 1) (accEnergy + energy)
+    search 0 0.
+
+let svdRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId:int) =
+    let dish = data.Column(dishId)
+    match (dish.[userId] > 0.) with
+    | true -> None // dish has been rated already
+    | false ->         
+        let svd = data.Svd(true)
+        let U, sigmas, Vt = svd.U(), svd.S(), svd.VT()
+        let subset = valuesForEnergy nrj sigmas
+        // fix this, directly create S'
+        let S = DiagonalMatrix(data.RowCount, data.ColumnCount, sigmas.ToArray())
+
+        let U' = U.SubMatrix(0, U.RowCount, 0, subset)
+        let S' = S.SubMatrix(0, subset, 0, subset)
+        let Vt' = Vt.SubMatrix(0, subset, 0, Vt.ColumnCount)
+
+        let data' = (data.Transpose() * U' * S').Transpose() 
+        let dish' = data'.Column(dishId)
+        let size = data'.ColumnCount
+        // Incorrect: rating should be pulled from data, not data'
+        let ratings =
+            [ 0 .. (size - 1) ]
+            |> List.map (fun col -> (weightedRating dish' (data'.Column(col)) userId sim))
+            |> List.choose id
+        match ratings with
+        | [] -> None
+        | data -> weightedAverage data
+
 let recommend (data:Generic.Matrix<float>) (userId:int) (estimatedRating:Estimator) =
     let size = data.ColumnCount
     [ 0 .. (size - 1) ] 
@@ -221,9 +261,13 @@ let v0 = data.Column(0)
 let v1 = data.Column(1)
 let v2 = data.Column(2)
 
-let euclideanEstimator = estimatedRating euclideanSimilarity
-let cosineEstimator = estimatedRating cosineSimilarity
-let pearsonEstimator = estimatedRating pearsonSimilarity
+let euclideanEstimator:Estimator = estimatedRating euclideanSimilarity
+let cosineEstimator:Estimator = estimatedRating cosineSimilarity
+let pearsonEstimator:Estimator = estimatedRating pearsonSimilarity
+
+let euclideanSvd:Estimator = svdRating euclideanSimilarity
+let cosineSvd:Estimator = svdRating cosineSimilarity
+let pearsonSvd:Estimator = svdRating pearsonSimilarity
 
 [ 0 .. 10 ]
 |> List.iter (fun userId ->
@@ -233,6 +277,9 @@ let pearsonEstimator = estimatedRating pearsonSimilarity
         let r1 = euclideanEstimator data userId dishId
         let r2 = cosineEstimator data userId dishId
         let r3 = pearsonEstimator data userId dishId
+        let s1 = euclideanSvd data userId dishId
+        let s2 = cosineSvd data userId dishId
+        let s3 = pearsonSvd data userId dishId
         printfn "... dish %i: eucl %.2A cos %.2A pear %.2A" dishId r1 r2 r3)
 )
 
@@ -271,6 +318,3 @@ for row in 0 .. (rows2 - 1) do
     let fake = createPerson template
     for col in 0 .. (cols2 - 1) do
         syntheticData.[row, col] <- fake.[col]
-
-let svd2 = syntheticData.Svd(true)
-//let U, sigmas, Vt = svd.U(), svd.S(), svd.VT()
