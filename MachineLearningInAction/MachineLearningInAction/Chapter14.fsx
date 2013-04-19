@@ -222,6 +222,14 @@ let valuesForEnergy (min:float) (sigmas:Generic.Vector<float>) =
         | false -> search (i + 1) (accEnergy + energy)
     search 0 0.
 
+// Retrieve rating of a dish and similarity with another dish
+let svdWeightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>) (unrated':Generic.Vector<float>) (rated':Generic.Vector<float>) (userId:int) (sim:similarity) =
+    if unrated.[userId] > 0. then None // we have a rating already
+    else
+        let rating = rated.[userId]
+        if rating = 0. then None // we have no rating to use
+        else Some( rating, sim unrated' rated')
+
 let svdRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId:int) =
     let dish = data.Column(dishId)
     match (dish.[userId] > 0.) with
@@ -243,7 +251,7 @@ let svdRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId
         // Incorrect: rating should be pulled from data, not data'
         let ratings =
             [ 0 .. (size - 1) ]
-            |> List.map (fun col -> (weightedRating dish' (data'.Column(col)) userId sim))
+            |> List.map (fun col -> (svdWeightedRating dish (data.Column(col)) dish' (data'.Column(col)) userId sim))
             |> List.choose id
         match ratings with
         | [] -> None
@@ -280,7 +288,7 @@ let pearsonSvd:Estimator = svdRating pearsonSimilarity
         let s1 = euclideanSvd data userId dishId
         let s2 = cosineSvd data userId dishId
         let s3 = pearsonSvd data userId dishId
-        printfn "... dish %i: eucl %.2A cos %.2A pear %.2A" dishId r1 r2 r3)
+        printfn "... dish %i: [Naive] eucl %.2A cos %.2A pear %.2A / [SVD] eucl %.2A cos %.2A pear %.2A" dishId r1 r2 r3 s1 s2 s3)
 )
 
 
@@ -318,3 +326,5 @@ for row in 0 .. (rows2 - 1) do
     let fake = createPerson template
     for col in 0 .. (cols2 - 1) do
         syntheticData.[row, col] <- fake.[col]
+
+//recommend syntheticData 4 cosineSvd;;
