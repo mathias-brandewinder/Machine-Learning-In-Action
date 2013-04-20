@@ -132,10 +132,16 @@ U' * S' * Vt' |> pretty
 
 // To make recommendations we need a similarity measure
 type similarity = Generic.Vector<float> -> Generic.Vector<float> -> float
+
+// Larger distances imply lower similarity
 let euclideanSimilarity (v1: Generic.Vector<float>) v2 =
     1. / (1. + (v1 - v2).Norm(2.))
+
+// Similarity based on the angle
 let cosineSimilarity (v1: Generic.Vector<float>) v2 =
     v1.DotProduct(v2) / (v1.Norm(2.) * v2.Norm(2.))
+
+// Similarity based on the correlation
 let pearsonSimilarity (v1: Generic.Vector<float>) v2 =
     if v1.Count > 2 
     then 0.5 + 0.5 * Correlation.Pearson(v1, v2)
@@ -146,23 +152,29 @@ let pearsonSimilarity (v1: Generic.Vector<float>) v2 =
 let dish0 = data.Column(0)
 let dish1 = data.Column(1)
 
-printfn "Euclidean similarity, Dish 1 and Dish 1: %f" (euclideanSimilarity dish0 dish0)
-printfn "Euclidean similarity, Dish 1 and Dish 2: %f" (euclideanSimilarity dish0 dish1)
-printfn "Cosine similarity, Dish 1 and Dish 1: %f" (cosineSimilarity dish0 dish0)
-printfn "Cosine similarity, Dish 1 and Dish 2: %f" (cosineSimilarity dish0 dish1)
-printfn "Pearson similarity, Dish 1 and Dish 1: %f" (pearsonSimilarity dish0 dish0)
-printfn "Pearson similarity, Dish 1 and Dish 2: %f" (pearsonSimilarity dish0 dish1)
+// A dish should be 100% similar to itself
+printfn "Euclidean similarity: %.2f" (euclideanSimilarity dish0 dish0)
+printfn "Cosine similarity: %.2f" (cosineSimilarity dish0 dish0)
+printfn "Pearson similarity: %.2f" (pearsonSimilarity dish0 dish0)
+
+// How similar are dish0 and dish1?
+printfn "Euclidean sim., Dish 1 & 2: %.2f" (euclideanSimilarity dish0 dish1)
+printfn "Cosine sim., Dish 1 & 2: %.2f" (cosineSimilarity dish0 dish1)
+printfn "Pearson sim., Dish 1 & 2: %.2f" (pearsonSimilarity dish0 dish1)
 
 // Naive recommendation
 
-// reduce 2 vectors to their non-zero pairs
-let nonZeroes (v1:Generic.Vector<float>) (v2:Generic.Vector<float>) =
+// Reduce 2 vectors to their non-zero pairs
+let nonZeroes (v1:Generic.Vector<float>) 
+              (v2:Generic.Vector<float>) =
+    // Grab non-zero pairs of ratings 
     let size = v1.Count
     let overlap =
         [ 0 .. (size - 1) ] 
         |> List.fold (fun acc i -> 
             if v1.[i] > 0. && v2.[i] > 0. 
             then (v1.[i], v2.[i])::acc else acc) []
+    // Recompose vectors if there is something left
     match overlap with
     | [] -> None
     | x  -> 
@@ -173,7 +185,9 @@ let nonZeroes (v1:Generic.Vector<float>) (v2:Generic.Vector<float>) =
         Some(DenseVector(v1'), DenseVector(v2'))
 
 // Retrieve rating of a dish and similarity with another dish
-let weightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>) (userId:int) (sim:similarity) =
+let weightedRating (unrated:Generic.Vector<float>) 
+                   (rated:Generic.Vector<float>) 
+                   (userId:int) (sim:similarity) =
     if unrated.[userId] > 0. then None // we have a rating already
     else
         let rating = rated.[userId]
@@ -184,18 +198,19 @@ let weightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<float>)
             | None -> None
             | Some(u, v) -> Some(rating, sim u v)
 
-// compute weighted average of a sequence of (value, weight)
+/// Compute weighted average of a sequence of (value, weight)
 let weightedAverage (data: (float * float) seq) = 
-    let weightedTotal, totalWeights = Seq.fold (fun (R,S) (r, s) -> (R + r * s, S + s)) (0., 0.) data
+    let weightedTotal, totalWeights = 
+        Seq.fold (fun (R,S) (r, s) -> 
+            (R + r * s, S + s)) (0., 0.) data
     if (totalWeights <= 0.) 
     then None 
     else Some(weightedTotal/totalWeights)
 
-/// data, row, col, similarity    
-type Estimator = Generic.Matrix<float> -> int -> int -> float option
-
 // Compute estimated rating for a dish not yet rated by user
-let estimatedRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId:int) =
+let estimatedRating (sim:similarity) 
+                    (data:Generic.Matrix<float>) 
+                    (userId:int) (dishId:int) =
     let dish = data.Column(dishId)
     match (dish.[userId] > 0.) with
     | true -> None // dish has been rated already
@@ -209,8 +224,36 @@ let estimatedRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (
         | [] -> None
         | data -> weightedAverage data
 
+/// data, row (user), column (item), similarity    
+type estimator = Generic.Matrix<float> -> int -> int -> float option
+
+/// Produce an ordered list of recommendations for a user,
+/// given a data matrix and a rating estimator
+let recommend (data:Generic.Matrix<float>) 
+              (userId:int) 
+              (ratingEstimator:estimator) =
+    let size = data.ColumnCount
+    [ 0 .. (size - 1) ] 
+    |> List.map (fun dishId -> 
+        dishId, ratingEstimator data userId dishId)
+    |> List.filter (fun (dishId, rating) -> rating.IsSome)
+    |> List.map (fun (dishId, rating) -> (dishId, rating.Value))
+    |> List.sortBy (fun (dishId, rating) -> - rating)
+
+// We create 3 simple estimators                        
+let euclideanSimple:estimator = estimatedRating euclideanSimilarity
+let cosineSimple:estimator = estimatedRating cosineSimilarity
+let pearsonSimple:estimator = estimatedRating pearsonSimilarity
+
+// Let's check some recommendations
+let rec0 = recommend data 0 euclideanSimple
+let rec1 = recommend data 1 cosineSimple
+let rec2 = recommend data 2 pearsonSimple
+
+// SVD-based recommendation
+
 // Energy level
-let nrj = 0.9
+let energy = 0.9
 let valuesForEnergy (min:float) (sigmas:Generic.Vector<float>) =
     let totalEnergy = sigmas.DotProduct(sigmas)
     let rec search i accEnergy =
@@ -228,7 +271,7 @@ let svdWeightedRating (unrated:Generic.Vector<float>) (rated:Generic.Vector<floa
     else
         let rating = rated.[userId]
         if rating = 0. then None // we have no rating to use
-        else Some( rating, sim unrated' rated')
+        else Some(rating, sim unrated' rated')
 
 let svdRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId:int) =
     let dish = data.Column(dishId)
@@ -257,25 +300,9 @@ let svdRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId
         | [] -> None
         | data -> weightedAverage data
 
-let recommend (data:Generic.Matrix<float>) (userId:int) (estimatedRating:Estimator) =
-    let size = data.ColumnCount
-    [ 0 .. (size - 1) ] 
-    |> List.map (fun dishId -> dishId, estimatedRating data userId dishId)
-    |> List.filter (fun (dishId, rating) -> rating.IsSome)
-    |> List.map (fun (dishId, rating) -> (dishId, rating.Value))
-    |> List.sortBy (fun (dishId, rating) -> - rating)
-                        
-let v0 = data.Column(0)
-let v1 = data.Column(1)
-let v2 = data.Column(2)
-
-let euclideanEstimator:Estimator = estimatedRating euclideanSimilarity
-let cosineEstimator:Estimator = estimatedRating cosineSimilarity
-let pearsonEstimator:Estimator = estimatedRating pearsonSimilarity
-
-let euclideanSvd:Estimator = svdRating euclideanSimilarity
-let cosineSvd:Estimator = svdRating cosineSimilarity
-let pearsonSvd:Estimator = svdRating pearsonSimilarity
+let euclideanSvd:estimator = svdRating euclideanSimilarity
+let cosineSvd:estimator = svdRating cosineSimilarity
+let pearsonSvd:estimator = svdRating pearsonSimilarity
 
 [ 0 .. 10 ]
 |> List.iter (fun userId ->
@@ -308,7 +335,7 @@ let templates = [|
     person5 |]
 
 let rng = new System.Random()
-let density = 0.2
+let density = 0.5
 
 let createPerson (template:float[]) =
     template 
@@ -327,4 +354,4 @@ for row in 0 .. (rows2 - 1) do
     for col in 0 .. (cols2 - 1) do
         syntheticData.[row, col] <- fake.[col]
 
-//recommend syntheticData 4 cosineSvd;;
+recommend syntheticData 1 cosineSvd;;
