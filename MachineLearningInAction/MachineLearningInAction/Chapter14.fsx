@@ -1,7 +1,7 @@
 ﻿// Chapter 14 covers SVD (Singular Value Decomposition)
 
-#r @"..\..\MachineLearningInAction\packages\MathNet.Numerics.2.4.0\lib\net40\MathNet.Numerics.dll"
-#r @"..\..\MachineLearningInAction\packages\MathNet.Numerics.FSharp.2.4.0\lib\net40\MathNet.Numerics.FSharp.dll"
+#r @"..\..\MachineLearningInAction\packages\MathNet.Numerics.2.5.0\lib\net40\MathNet.Numerics.dll"
+#r @"..\..\MachineLearningInAction\packages\MathNet.Numerics.FSharp.2.5.0\lib\net40\MathNet.Numerics.FSharp.dll"
 
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.LinearAlgebra.Double
@@ -134,7 +134,7 @@ U' * S' * Vt' |> pretty
 type similarity = Generic.Vector<float> -> Generic.Vector<float> -> float
 
 // Larger distances imply lower similarity
-let euclideanSimilarity (v1: Generic.Vector<float>) v2 =
+let euclideanSimilarity (v1: Generic.Vector<float>) (v2: Generic.Vector<float>) =
     1. / (1. + (v1 - v2).Norm(2.))
 
 // Similarity based on the angle
@@ -280,7 +280,7 @@ let svdRating (sim:similarity) (data:Generic.Matrix<float>) (userId:int) (dishId
     | false ->         
         let svd = data.Svd(true)
         let U, sigmas, Vt = svd.U(), svd.S(), svd.VT()
-        let subset = valuesForEnergy nrj sigmas
+        let subset = valuesForEnergy energy sigmas
         // fix this, directly create S'
         let S = DiagonalMatrix(data.RowCount, data.ColumnCount, sigmas.ToArray())
 
@@ -309,9 +309,9 @@ let pearsonSvd:estimator = svdRating pearsonSimilarity
     printfn "User %i" userId
     [ 0 .. 10 ]
     |> List.iter (fun dishId ->
-        let r1 = euclideanEstimator data userId dishId
-        let r2 = cosineEstimator data userId dishId
-        let r3 = pearsonEstimator data userId dishId
+        let r1 = euclideanSimple data userId dishId
+        let r2 = cosineSimple data userId dishId
+        let r3 = pearsonSimple data userId dishId
         let s1 = euclideanSvd data userId dishId
         let s2 = cosineSvd data userId dishId
         let s3 = pearsonSvd data userId dishId

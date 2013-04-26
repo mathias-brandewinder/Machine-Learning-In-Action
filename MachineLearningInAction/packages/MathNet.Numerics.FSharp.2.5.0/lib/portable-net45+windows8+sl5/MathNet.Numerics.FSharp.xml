@@ -698,9 +698,6 @@
 <member name="">
 
 </member>
-<member name="">
-
-</member>
 <member name="T:MathNet.Numerics.Distributions.DistributionsModule">
 
 </member>
@@ -729,12 +726,32 @@
  Create a matrix with the given entries.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofArray2(System.Double[0:,0:])">
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofListi(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{System.Tuple{System.Int32,System.Int32,System.Double}})">
 <summary>
- Create a matrix from a 2D array of floating point numbers.
+ Create a matrix with a given dimension from an indexed list of row, column, value tuples.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofSeq``2(``0)">
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofSeqi``1(System.Int32,System.Int32,``0)">
+<summary>
+ Create a matrix with a given dimension from an indexed sequences of row, column, value tuples.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofColumnsList(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Collections.FSharpList{System.Double}})">
+<summary>
+ Create a matrix from a list of float lists. Every list in the master list specifies a column.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofColumns``2(System.Int32,System.Int32,``0)">
+<summary>
+ Create a matrix from a list of sequences. Every sequence in the master sequence specifies a column.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofRowsList(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Collections.FSharpList{System.Double}})">
+<summary>
+ Create a matrix from a list of float lists. Every list in the master list specifies a row.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofRows``2(System.Int32,System.Int32,``0)">
 <summary>
  Create a matrix from a list of sequences. Every sequence in the master sequence specifies a row.
 </summary>
@@ -742,11 +759,43 @@
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofList(Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Collections.FSharpList{System.Double}})">
 <summary>
  Create a matrix from a list of float lists. Every list in the master list specifies a row.
+ If the dimensions are known, consider to use ofRowList instead to avoid multiple enumeration.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofSeq``2(``0)">
+<summary>
+ Create a matrix from a list of sequences. Every sequence in the master sequence specifies a row.
+ If the dimensions are known, consider to use ofRowSeq instead to avoid multiple enumeration.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.ofArray2(System.Double[0:,0:])">
+<summary>
+ Create a matrix from a 2D array of floating point numbers.
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.init(System.Int32,System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.Double}})">
 <summary>
  Initialize a matrix by calling a construction function for every element.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.create(System.Int32,System.Int32,System.Double)">
+<summary>
+ Create a matrix with the given dimension and set all values to x.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.randomCreate(System.Int32,System.Int32,MathNet.Numerics.Distributions.IContinuousDistribution)">
+<summary>
+ Create a random matrix with the given dimension and value distribution.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.zeroCreate(System.Int32,System.Int32)">
+<summary>
+ Create an all-zero matrix with the given dimension.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule.raw(System.Int32,System.Int32,System.Double[])">
+<summary>
+ Create a matrix that directly binds to a raw storage array in column-major (column by column) format, without copying.
 </summary>
 </member>
 <member name="T:MathNet.Numerics.LinearAlgebra.Double.DenseMatrixModule">
@@ -764,6 +813,16 @@
  Create a vector with evenly spaced entries: e.g. rangef -1.0 0.5 1.0 = [-1.0 -0.5 0.0 0.5 1.0]
 </summary>
 </member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.ofSeqi``1(System.Int32,``0)">
+<summary>
+ Create a vector with a given dimension from an indexed sequences of index, value pairs.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.ofListi(System.Int32,Microsoft.FSharp.Collections.FSharpList{System.Tuple{System.Int32,System.Double}})">
+<summary>
+ Create a vector with a given dimension from an indexed list of index, value pairs.
+</summary>
+</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.ofSeq``1(``0)">
 <summary>
  Create a vector from a sequences.
@@ -777,6 +836,26 @@
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.init(System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.Double})">
 <summary>
  Initialize a vector by calling a construction function for every element.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.create(System.Int32,System.Double)">
+<summary>
+ Initialize an all-zero vector with the given dimension.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.randomCreate(System.Int32,MathNet.Numerics.Distributions.IContinuousDistribution)">
+<summary>
+ Initialize a random vector with the given dimension and distribution.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.zeroCreate(System.Int32)">
+<summary>
+ Initialize an all-zero vector with the given dimension.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule.raw(System.Double[])">
+<summary>
+ Create a vector that directly binds to a raw storage array, without copying.
 </summary>
 </member>
 <member name="T:MathNet.Numerics.LinearAlgebra.Double.DenseVectorModule">
@@ -834,44 +913,9 @@
  Creates a sequence that iterates the non-zero entries in the matrix.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.inplaceMapi``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}}},``0)">
-<summary>
- In-place map of every matrix element using a position dependent function.
-</summary>
-</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.inplaceAssign``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.Double}},``0)">
 <summary>
  In-place assignment.
-</summary>
-</member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapRows``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
-<summary>
- Map every matrix row using the given position dependent function.
-</summary>
-</member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapCols``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
-<summary>
- Map every matrix column using the given position dependent function.
-</summary>
-</member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.inplaceMapRows``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
-<summary>
- In-place map every matrix row using the given position dependent function.
-</summary>
-</member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.inplaceMapCols``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
-<summary>
- In-place map every matrix column using the given position dependent function.
-</summary>
-</member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapi``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}}},``0)">
-<summary>
- Map every matrix element using the given position dependent function.
-</summary>
-</member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.map``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
-<summary>
- Map every matrix element using the given function.
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.existsi``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Boolean}}},``0)">
@@ -894,11 +938,6 @@
  Checks whether a predicate holds for all elements of a matrix.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.toArray2``1(``0)">
-<summary>
- Create a 2D array from a matrix.
-</summary>
-</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.foldi``2(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{System.Double,``0}}}},``0,``1)">
 <summary>
  Fold a matrix by applying a given function to all matrix elements.
@@ -912,6 +951,84 @@
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.fold``2(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpFunc{System.Double,``0}},``0,``1)">
 <summary>
  Fold a function over all matrix elements.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapRows``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
+<summary>
+ Map every matrix row using the given position dependent function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapCols``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
+<summary>
+ Map every matrix column using the given position dependent function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapinz``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}}},``0)">
+<summary>
+ Map every matrix element using the given position dependent function.
+ Zero-values may be skipped (relevant mostly for sparse matrices).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapi``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}}},``0)">
+<summary>
+ Map every matrix element using the given position dependent function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapnz``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ Map every matrix element using the given function.
+ Zero-values may be skipped (relevant mostly for sparse matrices).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.map``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ Map every matrix element using the given function.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapRowsInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
+<summary>
+ In-place map every matrix row using the given position dependent function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapColsInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double},MathNet.Numerics.LinearAlgebra.Generic.Vector{System.Double}}},``0)">
+<summary>
+ In-place map every matrix column using the given position dependent function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapinzInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}}},``0)">
+<summary>
+ In-place map of every matrix element using a position dependent function.
+ Zero-values may be skipped (relevant mostly for sparse matrices).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapnzInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ In-place map of every matrix element using a function.
+ Zero-values may be skipped (relevant mostly for sparse matrices).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapiInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}}},``0)">
+<summary>
+ In-place map of every matrix element using a position dependent function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.mapInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ In-place map of every matrix element using a function.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.MatrixModule.toArray2``1(``0)">
+<summary>
+ Transform a vector into a 2D array.
 </summary>
 </member>
 <member name="T:MathNet.Numerics.LinearAlgebra.Double.MatrixModule">
@@ -939,14 +1056,59 @@
  Create a square matrix with constant diagonal entries.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofSeq``1(System.Int32,System.Int32,``0)">
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofListi(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{System.Tuple{System.Int32,System.Int32,System.Double}})">
+<summary>
+ Create a matrix with a given dimension from an indexed list of row, column, value tuples.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofSeqi``1(System.Int32,System.Int32,``0)">
+<summary>
+ Create a matrix with a given dimension from an indexed sequences of row, column, value tuples.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofColumnsList(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Collections.FSharpList{System.Double}})">
+<summary>
+ Create a matrix from a list of float lists. Every list in the master list specifies a column.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofColumns``2(System.Int32,System.Int32,``0)">
+<summary>
+ Create a matrix from a list of sequences. Every sequence in the master sequence specifies a column.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofRowsList(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Collections.FSharpList{System.Double}})">
+<summary>
+ Create a matrix from a list of float lists. Every list in the master list specifies a row.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofRows``2(System.Int32,System.Int32,``0)">
 <summary>
  Create a matrix from a list of sequences. Every sequence in the master sequence specifies a row.
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofList(System.Int32,System.Int32,Microsoft.FSharp.Collections.FSharpList{System.Tuple{System.Int32,System.Int32,System.Double}})">
 <summary>
- Create a matrix from a list of float lists. Every list in the master list specifies a row.
+ Create a matrix with a given dimension from an indexed list of row, column, value tuples.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofSeq``1(System.Int32,System.Int32,``0)">
+<summary>
+ Create a matrix with a given dimension from an indexed sequences of row, column, value tuples.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.ofArray2(System.Double[0:,0:])">
+<summary>
+ Create a matrix from a 2D array of floating point numbers.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.init(System.Int32,System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.Double}})">
+<summary>
+ Initialize a matrix by calling a construction function for every element.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule.zeroCreate(System.Int32,System.Int32)">
+<summary>
+ Create an all-zero matrix with the given dimension.
 </summary>
 </member>
 <member name="T:MathNet.Numerics.LinearAlgebra.Double.SparseMatrixModule">
@@ -954,14 +1116,34 @@
  A module which implements functional sparse vector operations.
 </summary>
 </member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule.ofSeqi``1(System.Int32,``0)">
+<summary>
+ Create a sparse vector with a given dimension from an indexed sequence of index, value pairs.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule.ofListi(System.Int32,Microsoft.FSharp.Collections.FSharpList{System.Tuple{System.Int32,System.Double}})">
+<summary>
+ Create a sparse vector with a given dimension from an indexed list of index, value pairs.
+</summary>
+</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule.ofSeq``1(System.Int32,``0)">
 <summary>
- Create a sparse vector with a given dimension from a sequence of entry, value pairs.
+ Create a sparse vector with a given dimension from a sequence of index, value pairs.
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule.ofList(System.Int32,Microsoft.FSharp.Collections.FSharpList{System.Tuple{System.Int32,System.Double}})">
 <summary>
- Create a sparse vector with a given dimension from a list of entry, value pairs.
+ Create a sparse vector with a given dimension from a list of index, value pairs.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule.init(System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.Double})">
+<summary>
+ Initialize a vector by calling a construction function for every element.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule.zeroCreate(System.Int32)">
+<summary>
+ Initialize an all-zero vector with the given dimension.
 </summary>
 </member>
 <member name="T:MathNet.Numerics.LinearAlgebra.Double.SparseVectorModule">
@@ -1044,11 +1226,6 @@
  Fold all entries of a vector.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapi``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}},``0)">
-<summary>
- Maps a vector to a new vector by applying a function to every element.
-</summary>
-</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.iteri``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,Microsoft.FSharp.Core.Unit}},``0)">
 <summary>
  Applies a function to all elements of the vector.
@@ -1059,12 +1236,6 @@
  Applies a function to all elements of the vector.
 </summary>
 </member>
-<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.map``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
-<summary>
- Functional map operator for vectors.
- &lt;include file=&apos;../../../../FSharpExamples/DenseVector.xml&apos; path=&apos;example&apos;/&gt;
-</summary>
-</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.subInPlace``2(``0,``1)">
 <summary>
  In place vector subtraction.
@@ -1073,6 +1244,40 @@
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.addInPlace``2(``0,``1)">
 <summary>
  In-place vector addition.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapinz``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}},``0)">
+<summary>
+ Maps a vector to a new vector by applying a function to every element.
+ Zero-values may be skipped (relevant mostly for sparse vectors).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapi``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}},``0)">
+<summary>
+ Maps a vector to a new vector by applying a function to every element.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapnz``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ Maps a vector to a new vector by applying a function to every element.
+ Zero-values may be skipped (relevant mostly for sparse vectors).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.map``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ Maps a vector to a new vector by applying a function to every element.
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapinzInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}},``0)">
+<summary>
+ In-place mutation by applying a function to every element of the vector.
+ Zero-values may be skipped (relevant mostly for sparse vectors).
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapnzInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double},``0)">
+<summary>
+ In-place mutation by applying a function to every element of the vector.
+ Zero-values may be skipped (relevant mostly for sparse vectors).
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.mapiInPlace``1(Microsoft.FSharp.Core.FSharpFunc{System.Int32,Microsoft.FSharp.Core.FSharpFunc{System.Double,System.Double}},``0)">
@@ -1087,7 +1292,7 @@
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.toList``1(``0)">
 <summary>
- Transform a vector into an array.
+ Transform a vector into a list.
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Double.VectorModule.toArray``1(``0)">
@@ -1100,11 +1305,25 @@
  A module which implements functional vector operations.
 </summary>
 </member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Generic.FSharpExtensions.Matrix`1.SetSlice``1(MathNet.Numerics.LinearAlgebra.Generic.Matrix{``0},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32},MathNet.Numerics.LinearAlgebra.Generic.Matrix{``0})">
+<summary>
+ Sets a submatrix using a specified column range and
+ row range (all indices are optional)
+ This method can be used via the x.[r1 .. r2, c1 .. c2 ] &lt;- m syntax
+</summary>
+</member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Generic.FSharpExtensions.Matrix`1.GetSlice``1(MathNet.Numerics.LinearAlgebra.Generic.Matrix{``0},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32})">
 <summary>
  Gets a submatrix using a specified column range and
  row range (all indices are optional)
  This method can be used via the x.[r1 .. r2, c1 .. c2 ] syntax
+</summary>
+</member>
+<member name="M:MathNet.Numerics.LinearAlgebra.Generic.FSharpExtensions.Vector`1.SetSlice``1(MathNet.Numerics.LinearAlgebra.Generic.Vector{``0},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32},MathNet.Numerics.LinearAlgebra.Generic.Vector{``0})">
+<summary>
+ Sets a slice of a vector starting at a specified index
+ and ending at a specified index (both indices are optional)
+ This method can be used via the x.[start .. finish] &lt;- v syntax
 </summary>
 </member>
 <member name="M:MathNet.Numerics.LinearAlgebra.Generic.FSharpExtensions.Vector`1.GetSlice``1(MathNet.Numerics.LinearAlgebra.Generic.Vector{``0},Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32})">
@@ -1302,14 +1521,6 @@
 <member name="">
 
 </member>
-<member name="M:MathNet.Numerics.Random.RandomModule.crypto">
-<summary>
- Creates a default .Net cryptographic system pRNG
-</summary>
-</member>
-<member name="">
-
-</member>
 <member name="M:MathNet.Numerics.Random.RandomModule.system">
 <summary>
  Creates a default .Net system pRNG with a custom seed based on uinque GUIDs
@@ -1326,6 +1537,15 @@
 </summary>
 </member>
 <member name="T:MathNet.Numerics.Random.RandomModule">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:System.Numerics.BigIntegerExtensions">
 
 </member>
 </members>
