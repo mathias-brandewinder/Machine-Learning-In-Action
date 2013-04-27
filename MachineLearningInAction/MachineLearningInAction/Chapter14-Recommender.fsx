@@ -147,3 +147,42 @@ let simpleRecommender (s:similarity) =
                   movieIds 
                   userId
 
+// SVD based approach
+
+// Energy level
+let valuesForEnergy (min:float) (sigmas:Generic.Vector<float>) =
+    let totalEnergy = sigmas.DotProduct(sigmas)
+    let rec search i accEnergy =
+        let x = sigmas.[i]
+        let energy = x * x
+        let percent = (accEnergy + energy)/totalEnergy
+        match (percent >= min) with
+        | true -> i
+        | false -> search (i + 1) (accEnergy + energy)
+    search 0 0.
+
+let energy = 0.9
+
+let data' =
+    let svd = data.Svd(true)
+    let U, sigmas, Vt = svd.U(), svd.S(), svd.VT()
+    let subset = valuesForEnergy energy sigmas
+    let S = DiagonalMatrix(data.RowCount, data.ColumnCount, sigmas.ToArray())
+
+    let U' = U.SubMatrix(0, U.RowCount, 0, subset)
+    let S' = S.SubMatrix(0, subset, 0, subset)
+    let Vt' = Vt.SubMatrix(0, subset, 0, Vt.ColumnCount)
+
+    (data.Transpose() * U' * S').Transpose()
+
+let svdSimilarity (s:similarity) =
+    fun (movie1:MovieId) (movie2:MovieId) ->
+        let v1, v2 = data'.Column(movie1), data'.Column(movie2)
+        s v1 v2
+
+let svdRecommender (s:similarity) =
+    fun (userId:UserId) -> 
+        recommend (svdSimilarity s)
+                  simpleRating
+                  movieIds 
+                  userId
