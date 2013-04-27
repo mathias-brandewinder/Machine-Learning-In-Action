@@ -50,6 +50,7 @@
     <None Include="Chapter7.fsx" />
     <None Include="Chapter10.fsx" />
     <None Include="Chapter14.fsx" />
+    <None Include="Chapter14-Recommender.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics">
