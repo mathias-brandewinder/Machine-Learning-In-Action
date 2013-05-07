@@ -144,18 +144,14 @@ let nonZeroes (v1:Vector<float>)
     // Grab non-zero pairs of ratings 
     let size = v1.Count
     let overlap =
-        [ 0 .. (size - 1) ] 
-        |> List.fold (fun acc i -> 
+        [| for i in 0 .. (size - 1) do
             if v1.[i] > 0. && v2.[i] > 0. 
-            then (v1.[i], v2.[i])::acc else acc) []
+            then yield (v1.[i], v2.[i]) |]
     // Recompose vectors if there is something left
-    match overlap with
-    | [] -> None
-    | x  -> 
-        let v1', v2' =
-            x
-            |> List.toArray
-            |> Array.unzip
+    if overlap.Length = 0
+    then None
+    else 
+        let v1', v2' = Array.unzip overlap
         Some(DenseVector(v1'), DenseVector(v2'))
 
 // "Simple" similarity: keep only users that
