@@ -6,6 +6,7 @@
 
 open System
 open MathNet.Numerics.LinearAlgebra
+open MathNet.Numerics.LinearAlgebra.Generic
 open MathNet.Numerics.LinearAlgebra.Double
 open MathNet.Numerics.Statistics
 
@@ -121,25 +122,25 @@ let recommend (similarity:movieSimilarity)
 // Now let's build a naive recommender
 
 // To make recommendations we need a similarity measure
-type similarity = Generic.Vector<float> -> Generic.Vector<float> -> float
+type similarity = Vector<float> -> Vector<float> -> float
 
 // Larger distances imply lower similarity
-let euclideanSimilarity (v1: Generic.Vector<float>) (v2: Generic.Vector<float>) =
+let euclideanSimilarity (v1: Vector<float>) (v2: Vector<float>) =
     1. / (1. + (v1 - v2).Norm(2.))
 
 // Similarity based on the angle
-let cosineSimilarity (v1: Generic.Vector<float>) v2 =
+let cosineSimilarity (v1: Vector<float>) v2 =
     v1.DotProduct(v2) / (v1.Norm(2.) * v2.Norm(2.))
 
 // Similarity based on the Pearson correlation
-let pearsonSimilarity (v1: Generic.Vector<float>) v2 =
+let pearsonSimilarity (v1: Vector<float>) v2 =
     if v1.Count > 2 
     then 0.5 + 0.5 * Correlation.Pearson(v1, v2)
     else 1.
 
 // Reduce 2 vectors to their non-zero pairs
-let nonZeroes (v1:Generic.Vector<float>) 
-              (v2:Generic.Vector<float>) =
+let nonZeroes (v1:Vector<float>) 
+              (v2:Vector<float>) =
     // Grab non-zero pairs of ratings 
     let size = v1.Count
     let overlap =
@@ -200,7 +201,7 @@ printfn "Recommendation, Pearson: %A" (simplePearson someUser)
 // We'll retain only the largest values in the Sigma vector,
 // (the diagonal of the S-matrix), which capture more than
 // a given percentage of the "energy". 
-let valuesForEnergy (min:float) (sigmas:Generic.Vector<float>) =
+let valuesForEnergy (min:float) (sigmas:Vector<float>) =
     let totalEnergy = sigmas.DotProduct(sigmas)
     let rec search i accEnergy =
         let x = sigmas.[i]
@@ -221,7 +222,7 @@ let data' =
     let U, sigmas = svd.U(), svd.S()
     let subset = valuesForEnergy energy sigmas
     let U' = U.SubMatrix(0, U.RowCount, 0, subset)
-    let S' = DiagonalMatrix(subset, subset, sigmas.SubVector(0, (subset)).ToArray()) //S.SubMatrix(0, subset, 0, subset)
+    let S' = DiagonalMatrix(subset, subset, sigmas.SubVector(0, (subset)).ToArray())
 
     (data.Transpose() * U' * S').Transpose()
 
